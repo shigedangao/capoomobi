@@ -37,3 +37,9 @@ A cli for asking the user which kind of environment the people want to deploy
 - User preference saver
 - Namespace based (root project name or generate name with the original path of the docker-compose)
 
+-- Custom logger
+
+- Add color
+- Emojis 
+- Highlight errors
+

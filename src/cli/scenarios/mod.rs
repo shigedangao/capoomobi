@@ -1,4 +1,3 @@
-pub mod welcome;
 pub mod scenes;
 
 pub mod bootstrap {
@@ -11,7 +10,19 @@ pub mod bootstrap {
   pub fn init(main_action: String, sub_action: String) {
     match scenes_wrapper::Scenarios::from_str(&main_action) {
       Err(err) => println!("{:?}", err),
-      Ok(res) => println!("ok: {:?}", res)
+      Ok(res) => launch_scenario(res, sub_action)
+    }
+  }
+
+  /**
+   * Launch Scenario
+   * 
+   * Launch a scenario based on the input of the main action
+   */
+  fn launch_scenario(scenario: scenes_wrapper::Scenarios, sub_action: String) {
+    match scenario {
+      scenes_wrapper::Scenarios::Init => println!("Launch welcome scenario"),
+      scenes_wrapper::Scenarios::Help => println!("Launch help scenario")
     }
   }
 }
