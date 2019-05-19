@@ -1,3 +1,5 @@
+pub mod options;
+
 /**
  * CLI arguments parser
  */
@@ -9,7 +11,8 @@ pub mod cli_parser {
    */
   pub struct CliArgs {
     pub main: String,
-    pub sub: String
+    pub sub: String,
+    pub options: Vec<String>
   }
 
   /**
@@ -21,6 +24,7 @@ pub mod cli_parser {
   pub fn parse_arguments() -> Result<CliArgs, &'static str> {
     let main_action = std::env::args().nth(1);
     let sub_action = std::env::args().nth(2);
+    let options: Vec<String> = std::env::args().collect();
 
     if main_action.is_none() {
       println!("empty");
@@ -32,7 +36,8 @@ pub mod cli_parser {
 
     let args = CliArgs {
       main: main_action.unwrap(),
-      sub: sub_action.unwrap_or("default".to_string())
+      sub: sub_action.unwrap_or("default".to_string()),
+      options: options
     };
 
     return Ok(args);
