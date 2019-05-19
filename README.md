@@ -1,6 +1,6 @@
 # CapooMobi
 
-Capoo mobi is a helper tool allowing you to generate a Kubernetes boilerplate files from your docker-compose file
+Capoomobi is a project where I'm learning rust ! Capoomobi is a helper tool allowing you to generate a Kubernetes boilerplate files from your docker-compose file
 
 ## Idea
 
