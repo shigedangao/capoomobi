@@ -27,12 +27,8 @@ pub mod cli_parser {
     let options: Vec<String> = std::env::args().collect();
 
     if main_action.is_none() {
-      println!("empty");
       return Err("main action is empty");
     }
-
-    println!("action: {:?}", main_action);
-    println!("path: {:?}", sub_action);
 
     let args = CliArgs {
       main: main_action.unwrap(),

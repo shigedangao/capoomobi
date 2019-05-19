@@ -1,5 +1,6 @@
 mod scenarios;
 mod parser;
+mod config;
 
 pub fn bootstrap() {
   // scenarios::welcome::welcome_scn::bootstrap();

@@ -1,9 +1,9 @@
 /**
- * Options
+ * Parser utils
  * 
  * Parse the options Vector
  */
-pub mod options {
+pub mod parser_utils {
   /**
    * Parse Options
    * 

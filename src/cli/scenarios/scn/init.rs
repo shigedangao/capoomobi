@@ -1,7 +1,7 @@
-struct SubArgs {
-  name: String,
-  path: String
-}
+use std::fs;
+use crate::cli::parser::options;
+use crate::cli::config;
+
 
 /**
  * Launch
@@ -11,6 +11,13 @@ struct SubArgs {
  * 
  * capoomobi init <name> <path>
  */
-pub fn launch(sub_action: String, options: Vec<String>) {
-  println!("init command here");
+pub fn launch(name: String, options: Vec<String>) {
+  let optional_path = match options::parser_utils::parse_options(options, 3) {
+    Some(p) => p, 
+    None => "./".to_owned()
+  };
+
+  println!("value of path {:?}", optional_path);
+  let base_path = concat!("lol");
+  fs::create_dir_all(base_path);
 }
