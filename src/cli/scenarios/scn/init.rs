@@ -1,6 +1,5 @@
-use std::fs;
-use crate::cli::parser::options;
-use crate::cli::config;
+use crate::cli::core::parser::options;
+use crate::cli::core::fs::utility;
 
 
 /**
@@ -14,13 +13,12 @@ use crate::cli::config;
 pub fn launch(name: &str, options: Vec<String>) {
   let optional_path = match options::parser_utils::parse_options(options, 3) {
     Some(p) => p, 
-    None => String::from("./")
+    None => String::from("")
   };
-
-  let mut base_path = String::new();
-  base_path.push_str(optional_path.as_str());
-  base_path.push_str(name);
   
+  let fs_struct = utility::build_base_path(name, optional_path.as_str());
   // fs::create_dir_all(base_path);
-  println!("value of path {:?}", base_path);
+  println!("value of path {:?}", fs_struct.base_path);
+  fs_struct.build_compose_dir();
+  fs_struct.build_kube_dir();
 }

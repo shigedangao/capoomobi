@@ -1,11 +1,10 @@
 mod scenarios;
-mod parser;
-mod config;
+mod core;
 
 pub fn bootstrap() {
   // scenarios::welcome::welcome_scn::bootstrap();
   // Parse the arguments and launch a scenario
-  match parser::cli_parser::parse_arguments() {
+  match core::parser::cli_parser::parse_arguments() {
     Err(err) => println!("{:?}", err),
     Ok(args) => {
       let main = args.main.to_owned();
