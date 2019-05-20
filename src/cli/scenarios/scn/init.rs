@@ -11,13 +11,16 @@ use crate::cli::config;
  * 
  * capoomobi init <name> <path>
  */
-pub fn launch(name: String, options: Vec<String>) {
+pub fn launch(name: &str, options: Vec<String>) {
   let optional_path = match options::parser_utils::parse_options(options, 3) {
     Some(p) => p, 
-    None => "./".to_owned()
+    None => String::from("./")
   };
 
-  println!("value of path {:?}", optional_path);
-  let base_path = concat!("lol");
-  fs::create_dir_all(base_path);
+  let mut base_path = String::new();
+  base_path.push_str(optional_path.as_str());
+  base_path.push_str(name);
+  
+  // fs::create_dir_all(base_path);
+  println!("value of path {:?}", base_path);
 }
