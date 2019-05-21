@@ -1,3 +1,5 @@
+pub mod config;
+
 /**
  * Fs module
  */
