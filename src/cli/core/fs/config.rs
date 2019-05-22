@@ -6,6 +6,10 @@
  */
 pub mod config_util {
   use std::fs::File;
+  use std::path::Path;
+  use std::io;
+  // Constant defining the paths available
+  const CONFIG_FILE_PATH: &str = "~/.capoomobi.json";
   /**
    * Read
    * 
@@ -21,12 +25,12 @@ pub mod config_util {
    * Create the capoomobi file
    * /!\ When the config file can't be create the CLI should panic
    */
-  pub fn create(path: &str) {
-    match File::create(path) {
-      Ok(_) => println!("Config file create"),
-      Err(e) => println!("Unable to create config file {:?}", e)
+  pub fn create() {
+    match File::create(Path::new(CONFIG_FILE_PATH)) {
+      Ok(_) => println!("Config file has been create"),
+      Err(e) => panic!("An error occured while creating the file {:?}", e)
     }
-  } 
+  }
 
   /**
    * Exist
@@ -34,15 +38,8 @@ pub mod config_util {
    * Check if the config file exist
    * @TODO add result output
    */
-  pub fn exist(path: String) {
-    let str_path = path.as_str();
-    let f = File::open(str_path);
-    match f {
-      Ok(_) => println!("file exist"),
-      Err(e) => {
-        println!("Error while opening file {:?}", e);
-        create(str_path);
-      }
-    }
+  pub fn exist() -> io::Result<std::fs::File> {
+    let f = File::open(Path::new(CONFIG_FILE_PATH))?;
+    Ok(f)
   }
 }

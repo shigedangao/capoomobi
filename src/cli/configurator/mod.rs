@@ -10,19 +10,29 @@
  */
 pub mod configure {
   use crate::cli::core::fs::config::config_util;
-  // Constant defining the paths available
-  const CONFIG_FILE: &str = ".capoomobi.json";
-  const CONFIG_PATH: &str = "~/";
+  use std::io::ErrorKind;
 
   /**
-   * Read Config
+   * Exist Or Create
    * 
-   * Read the configuration file
+   * Check if the configuration file exist
+   * If it exist do nothing otherwise create the configuration file
    */
-  pub fn read_config() {
-    let mut path = String::from(CONFIG_PATH);
-    path.push_str(CONFIG_FILE);
+  pub fn exist_or_create() {
+    let mut fi = match config_util::exist() {
+      Ok(f) => f,
+      Err(e) => {
+        let kind = e.kind();
 
-    config_util::exist(path);
+        if kind == ErrorKind::NotFound {
+          config_util::create();
+          return;
+        }
+
+        panic!("Unable to read file");
+      }
+    };
+
+    println!("Able to read path")
   }
 }
