@@ -21,5 +21,8 @@ pub fn launch(name: &str, options: Vec<String>) {
   fs_struct.build_kube_dir();
 
   // Checking or creating if the config file exist
-  configure::exist_or_create();
+  match configure::exist_or_create() {
+    Ok(_) => println!("Yay file has been generated"),
+    Err(e) => println!("No file can not be create reason: {:?}", e)
+  }
 }
