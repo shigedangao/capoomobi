@@ -1,5 +1,6 @@
 mod scenarios;
 mod core;
+mod configurator;
 
 pub fn bootstrap() {
   // scenarios::welcome::welcome_scn::bootstrap();

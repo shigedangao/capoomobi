@@ -1,3 +1,5 @@
+pub mod config;
+
 /**
  * Fs module
  */
@@ -29,7 +31,7 @@ pub mod utility {
       compose_path.push_str(COMPOSE_PATH);
 
       match build_dir(compose_path.as_str()) {
-        Err(e) => println!("error {:?}", e),
+        Err(e) => panic!("folder compose can not be create {:?}", e),
         Ok(()) => println!("folder compose create")
       }
     }
@@ -46,7 +48,7 @@ pub mod utility {
       kube_path.push_str(KUBE_PATH);
 
       match build_dir(kube_path.as_str()) {
-        Err(e) => println!("Error {:?}", e),
+        Err(e) => panic!("folder kube can not be create {:?}", e),
         Ok(()) => println!("Folder kube create")
       }
     }

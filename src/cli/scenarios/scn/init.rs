@@ -1,6 +1,6 @@
 use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
-
+use crate::cli::configurator::configure;
 
 /**
  * Launch
@@ -17,8 +17,12 @@ pub fn launch(name: &str, options: Vec<String>) {
   };
   
   let fs_struct = utility::build_base_path(name, optional_path.as_str());
-  // fs::create_dir_all(base_path);
-  println!("value of path {:?}", fs_struct.base_path);
   fs_struct.build_compose_dir();
   fs_struct.build_kube_dir();
+
+  // Checking or creating if the config file exist
+  match configure::exist_or_create() {
+    Ok(_) => println!("Yay file has been generated"),
+    Err(e) => println!("No file can not be create reason: {:?}", e)
+  }
 }
