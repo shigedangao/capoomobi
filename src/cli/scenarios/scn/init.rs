@@ -26,8 +26,10 @@ pub fn launch(name: &str, options: Vec<String>) {
   };
 
   // Checking or creating if the config file exist
-  match configure::exist_or_create() {
-    Ok(_) => configure::write(name, abs_path),
-    Err(e) => println!("No file can not be create reason: {:?}", e)
+  let fi = match configure::exist_or_create() {
+    Ok(f) => f,
+    Err(e) => panic!(e)
   };
+
+  fi.write_object(name, abs_path);
 }

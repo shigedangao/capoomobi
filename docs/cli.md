@@ -15,8 +15,14 @@ init <name> <path>: Create a folder with a name where the Kubernetes yaml file w
 
 {
   projects: [
-    "foo": "Absolute path",
-    "bar": "Absolute path"
+    {
+      name: "foo",
+      path: "/foo/bar"
+    },
+    {
+      name: "Miam",
+      path: "/miam/bao"
+    }
   ],
   "current": "foo"
 }

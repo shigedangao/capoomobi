@@ -5,4 +5,5 @@ authors = ["Yellowman <marc.inthaamnouay@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-dirs = "1.0.5"
+dirs = "2.0.0"
+serde = { version = "1.0.91", features = ["derive"] }
