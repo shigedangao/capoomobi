@@ -5,9 +5,10 @@ pub mod config;
  */
 pub mod utility {
   use std::fs;
+  use std::path::PathBuf;
   // Constant use defining the available folders in the project
-  const COMPOSE_PATH: &str = "/compose";
-  const KUBE_PATH: &str = "/kube";
+  const COMPOSE_PATH: &str = "compose";
+  const KUBE_PATH: &str = "kube";
 
   /**
    * Fs struct
@@ -15,7 +16,7 @@ pub mod utility {
    * The fs struct store the base_path
    */
   pub struct Fs {
-    pub base_path: String
+    pub base_path: PathBuf
   }
 
   impl Fs {
@@ -26,11 +27,10 @@ pub mod utility {
      * <base_path>/<COMPOSE_PATH>
      */
     pub fn build_compose_dir(&self) {
-      let mut compose_path = String::from(self.base_path.as_str());
-      compose_path.push_str("/");
-      compose_path.push_str(COMPOSE_PATH);
+      let mut compose_path = PathBuf::from(&self.base_path);
+      compose_path.push(COMPOSE_PATH);
 
-      match build_dir(compose_path.as_str()) {
+      match build_dir(compose_path) {
         Err(e) => panic!("folder compose can not be create {:?}", e),
         Ok(()) => println!("folder compose create")
       }
@@ -43,15 +43,24 @@ pub mod utility {
      * <base_path>/<KUBE_PATH>
      */
     pub fn build_kube_dir(&self) {
-      let mut kube_path = String::from(self.base_path.as_str());
-      kube_path.push_str("/");
-      kube_path.push_str(KUBE_PATH);
+      let mut kube_path = PathBuf::from(&self.base_path);
+      kube_path.push(KUBE_PATH);
 
-      match build_dir(kube_path.as_str()) {
+      match build_dir(kube_path) {
         Err(e) => panic!("folder kube can not be create {:?}", e),
         Ok(()) => println!("Folder kube create")
       }
     }
+
+      /**
+       * Get Abs Path
+       * 
+       * Get the absolute path from a string
+       */
+      pub fn get_abs_path(&self) -> std::io::Result<PathBuf> {
+        let path = fs::canonicalize(&self.base_path)?;
+        Ok(path)
+      }
   }
 
   /**
@@ -60,16 +69,15 @@ pub mod utility {
    * Build the base path which is use across the CLI
    */
   pub fn build_base_path(name: &str, optional_path: &str) -> Fs {
-    let mut base_path = String::new();
+    let mut base_path = PathBuf::new();
 
     if optional_path.is_empty() {
-      base_path.push_str("./");    
+      base_path.push("./");    
     } else {
-      base_path.push_str(optional_path);
-      base_path.push_str("/");
+      base_path.push(optional_path);
     }
 
-    base_path.push_str(name);
+    base_path.push(name);
     let str_struct = Fs {
       base_path: base_path
     };
@@ -82,7 +90,7 @@ pub mod utility {
    * 
    * Build a directory and return a Result
    */
-  fn build_dir(path: &str) -> std::io::Result<()> {
+  fn build_dir(path: PathBuf) -> std::io::Result<()> {
     fs::create_dir_all(path)?;
     Ok(())
   }

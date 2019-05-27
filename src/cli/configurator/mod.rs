@@ -11,6 +11,7 @@
 pub mod configure {
   use crate::cli::core::fs::config::config_util;
   use std::io::ErrorKind;
+  use std::path::PathBuf;
 
   // Constant referencing the error
   const CONFIG_GENERATE_ERROR: &str = "Unable to generate the config file"; 
@@ -38,5 +39,15 @@ pub mod configure {
     };
 
     return Ok(());
+  }
+
+  /**
+   * Write
+   * 
+   * Write the project into the .capoomobi JSON file
+   */
+  pub fn write(project_name: &str, path: PathBuf) {
+    println!("project name: {:?}", project_name);
+    println!("path of the project {:?}", path);
   }
 }

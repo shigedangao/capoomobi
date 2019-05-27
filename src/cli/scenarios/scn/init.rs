@@ -20,9 +20,14 @@ pub fn launch(name: &str, options: Vec<String>) {
   fs_struct.build_compose_dir();
   fs_struct.build_kube_dir();
 
+  let abs_path = match fs_struct.get_abs_path() {
+    Ok(p) => p,
+    Err(e) => panic!("Unable to retrieve absolute path {:?}", e)
+  };
+
   // Checking or creating if the config file exist
   match configure::exist_or_create() {
-    Ok(_) => println!("Yay file has been generated"),
+    Ok(_) => configure::write(name, abs_path),
     Err(e) => println!("No file can not be create reason: {:?}", e)
-  }
+  };
 }
