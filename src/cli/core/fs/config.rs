@@ -30,14 +30,18 @@ pub mod config_util {
    * Create the capoomobi file
    * /!\ When the config file can't be create the CLI should panic
    */
-  pub fn create() {
+  pub fn create() -> Result<PathBuf, std::io::Error> {
     let mut home_dir = get_home_dir();
     home_dir.push(CONFIG_FILE_PATH);
 
     match File::create(Path::new(&home_dir)) {
-      Ok(_) => println!("Config file has been create"),
-      Err(e) => panic!("An error occured while creating the file {:?}", e)
-    }
+      Ok(f) => f,
+      Err(e) => {
+        return Err(e);
+      }
+    };
+
+    return Ok(home_dir);
   }
 
   /**
@@ -46,11 +50,11 @@ pub mod config_util {
    * Check if the config file exist
    * @TODO add result output
    */
-  pub fn open() -> io::Result<std::fs::File> {
+  pub fn open() -> io::Result<PathBuf> {
     let mut home_dir = get_home_dir();
     home_dir.push(CONFIG_FILE_PATH);
 
-    let f = File::open(Path::new(&home_dir))?;
-    Ok(f)
+    File::open(Path::new(&home_dir))?;
+    Ok(home_dir)
   }
 }
