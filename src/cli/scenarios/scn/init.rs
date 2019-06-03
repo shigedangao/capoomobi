@@ -1,6 +1,7 @@
 use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
 use crate::cli::configurator::configure;
+use crate::cli::configurator::json::json_util;
 
 /**
  * Launch
@@ -31,5 +32,13 @@ pub fn launch(name: &str, options: Vec<String>) {
     Err(e) => panic!(e)
   };
 
-  configurator.write_object(name, abs_path);
+  let json_str = match json_util::generate_project_conf(String::from(name), abs_path) {
+    Ok(content) => content,
+    Err(e) => panic!(e)
+  };
+
+  match configurator.write_json(json_str) {
+    Ok(_) => println!("yes has been write"),
+    Err(e) => panic!(e)
+  }
 }
