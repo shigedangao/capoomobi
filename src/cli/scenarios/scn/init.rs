@@ -26,10 +26,10 @@ pub fn launch(name: &str, options: Vec<String>) {
   };
 
   // Checking or creating if the config file exist
-  let fi = match configure::exist_or_create() {
+  let configurator = match configure::exist_or_create() {
     Ok(f) => f,
     Err(e) => panic!(e)
   };
 
-  fi.write_object(name, abs_path);
+  configurator.write_object(name, abs_path);
 }
