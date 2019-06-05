@@ -1,7 +1,7 @@
 use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
 use crate::cli::configurator::configure;
-use crate::cli::configurator::json::json_util;
+use crate::cli::configurator::builder::json_util;
 
 /**
  * Launch
@@ -39,6 +39,11 @@ pub fn launch(name: &str, options: Vec<String>) {
 
   match configurator.write_json(json_str) {
     Ok(_) => println!("yes has been write"),
+    Err(e) => panic!(e)
+  }
+
+  match configure::read_config_file() {
+    Ok(_) => println!("read sucess"),
     Err(e) => panic!(e)
   }
 }

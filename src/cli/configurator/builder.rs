@@ -11,16 +11,16 @@ pub mod json_util {
 
   // Structure refering to a project
   #[derive(Serialize, Deserialize, Debug)]
-  struct Project {
-    name: String,
-    path: String,
+  pub struct Project {
+    pub name: String,
+    pub path: String,
   }
 
   // Structure refering to a set of projects
   #[derive(Serialize, Deserialize, Debug)]
   pub struct Projects {
-    projects: Vec<Project>,
-    current: String,
+    pub projects: Vec<Project>,
+    pub current: String,
   }
 
   /**
@@ -60,6 +60,15 @@ pub mod json_util {
     } else {
       Err("Unable to generate project list for capoomobi.json")
     }
+  }
 
+  /**
+   * Parse Str To Struct
+   * 
+   * Parse the values of the config file into a struct
+   */
+  pub fn parse_str_to_struct(config_values: &String) -> std::io::Result<Projects> {
+    let p: Projects = serde_json::from_str(&config_values.to_owned())?;
+    Ok(p)
   }
 }

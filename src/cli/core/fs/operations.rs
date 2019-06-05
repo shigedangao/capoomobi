@@ -1,21 +1,18 @@
 extern crate dirs;
 
 /**
- * Config util
+ * Toolbox
  * 
  * A mod executing io::fs methods
- * for interacting with the ~/.capoomobi.json
+ * for interacting with any file
  */
-pub mod config_util {
+pub mod toolbox {
   use std::fs::File;
   use std::path::Path;
   use std::path::PathBuf;
   use std::io;
 
-  // Constant defining the paths available
-  const CONFIG_FILE_PATH: &str = ".capoomobi.json";
-
-  fn get_home_dir() -> PathBuf {
+  pub fn get_home_dir() -> PathBuf {
     let home_dir = match dirs::home_dir() {
       Some(path) => path,
       None => PathBuf::new()
@@ -28,11 +25,10 @@ pub mod config_util {
    * Create
    * 
    * Create the capoomobi file
-   * /!\ When the config file can't be create the CLI should panic
    */
-  pub fn create() -> Result<PathBuf, std::io::Error> {
+  pub fn create(file_path: &str) -> Result<PathBuf, std::io::Error> {
     let mut home_dir = get_home_dir();
-    home_dir.push(CONFIG_FILE_PATH);
+    home_dir.push(file_path);
 
     match File::create(Path::new(&home_dir)) {
       Ok(f) => f,
@@ -48,11 +44,10 @@ pub mod config_util {
    * Open
    * 
    * Check if the config file exist
-   * @TODO add result output
    */
-  pub fn open() -> io::Result<PathBuf> {
+  pub fn open(file_path: &str) -> io::Result<PathBuf> {
     let mut home_dir = get_home_dir();
-    home_dir.push(CONFIG_FILE_PATH);
+    home_dir.push(file_path);
 
     File::open(Path::new(&home_dir))?;
     Ok(home_dir)
