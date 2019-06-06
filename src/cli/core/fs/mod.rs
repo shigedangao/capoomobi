@@ -52,15 +52,15 @@ pub mod utility {
       }
     }
 
-      /**
-       * Get Abs Path
-       * 
-       * Get the absolute path from a string
-       */
-      pub fn get_abs_path(&self) -> std::io::Result<PathBuf> {
-        let path = fs::canonicalize(&self.base_path)?;
-        Ok(path)
-      }
+    /**
+     * Get Abs Path
+     * 
+     * Get the absolute path from a string
+     */
+    pub fn get_abs_path(&self) -> std::io::Result<PathBuf> {
+      let path = fs::canonicalize(&self.base_path)?;
+      Ok(path)
+    }
   }
 
   /**

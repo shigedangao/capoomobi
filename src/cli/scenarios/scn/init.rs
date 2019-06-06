@@ -41,9 +41,4 @@ pub fn launch(name: &str, options: Vec<String>) {
     Ok(_) => println!("yes has been write"),
     Err(e) => panic!(e)
   }
-
-  match configure::read_config_file() {
-    Ok(_) => println!("read sucess"),
-    Err(e) => panic!(e)
-  }
 }

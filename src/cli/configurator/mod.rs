@@ -103,7 +103,6 @@ pub mod configure {
       }
     };
 
-    println!("Value of project {:?}", projects.current);
     Ok(projects)
   }
 }
