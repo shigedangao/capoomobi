@@ -1,7 +1,7 @@
 use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
 use crate::cli::configurator::configure;
-use crate::cli::configurator::json::json_util;
+use crate::cli::configurator::builder::json_util;
 
 /**
  * Launch
