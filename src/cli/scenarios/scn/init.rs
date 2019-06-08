@@ -3,6 +3,8 @@ use crate::cli::core::fs::utility;
 use crate::cli::configurator::configure;
 use crate::cli::configurator::builder::json_util;
 
+const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
+
 /**
  * Launch
  * 
@@ -23,7 +25,7 @@ pub fn launch(name: &str, options: Vec<String>) {
 
   let abs_path = match fs_struct.get_abs_path() {
     Ok(p) => p,
-    Err(e) => panic!("Unable to retrieve absolute path {:?}", e)
+    Err(e) => panic!(format!("{}{:?}", PATH_ERROR, e))
   };
 
   // Checking or creating if the config file exist
