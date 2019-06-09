@@ -6,9 +6,15 @@ pub mod operations;
 pub mod utility {
   use std::fs;
   use std::path::PathBuf;
+  use crate::cli::core::logger;
+
   // Constant use defining the available folders in the project
   const COMPOSE_PATH: &str = "compose";
   const KUBE_PATH: &str = "kube";
+
+  // Errors constants
+  const COMPOSE_FOLDER_CREATE_ERR: &str = "folder compose can not be create";
+  const KUBE_FOLDER_CREATE_ERR: &str = "folder kube can not be create";
 
   /**
    * Fs struct
@@ -31,8 +37,10 @@ pub mod utility {
       compose_path.push(COMPOSE_PATH);
 
       match build_dir(compose_path) {
-        Err(e) => panic!("folder compose can not be create {:?}", e),
-        Ok(()) => println!("folder compose create")
+        Err(e) => panic!(
+          format!("{}{:?}", COMPOSE_FOLDER_CREATE_ERR, e)
+        ),
+        Ok(()) => logger::write(logger::LogType::Info, "Compose folder create", None)
       }
     }
 
@@ -47,8 +55,10 @@ pub mod utility {
       kube_path.push(KUBE_PATH);
 
       match build_dir(kube_path) {
-        Err(e) => panic!("folder kube can not be create {:?}", e),
-        Ok(()) => println!("Folder kube create")
+        Err(e) => panic!(
+          format!("{}{:?}", KUBE_FOLDER_CREATE_ERR, e)
+        ),
+        Ok(()) => logger::write(logger::LogType::Info, "Kube folder create", None)
       }
     }
 
@@ -60,6 +70,25 @@ pub mod utility {
     pub fn get_abs_path(&self) -> std::io::Result<PathBuf> {
       let path = fs::canonicalize(&self.base_path)?;
       Ok(path)
+    }
+
+    /**
+     * Get Path As String
+     * 
+     * Return the absolute path as a string
+     */
+    pub fn get_path_as_string(&self) -> String {
+      let abs_path = match self.get_abs_path() {
+        Ok(p) => p,
+        Err(e) => panic!(e)
+      };
+
+      let path = match abs_path.to_str() {
+        Some(p) => p,
+        None => ""
+      };
+
+      return String::from(path);
     }
   }
 

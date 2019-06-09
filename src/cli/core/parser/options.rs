@@ -11,7 +11,6 @@ pub mod parser_utils {
    */
   pub fn parse_options(vec: Vec<String>, idx: usize) -> Option<String> {
     if vec.is_empty() {
-      println!("vector is empty");
       return None;
     }
 
