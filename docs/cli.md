@@ -49,7 +49,7 @@ The CLI will ask the user several questions
 
 ## Revert command
 
-capoomobi reverte <number>
+capoomobi revert <number>
 
 Revert & generate a set of kubernetes files based on a docker-compose<version number> file.
 
