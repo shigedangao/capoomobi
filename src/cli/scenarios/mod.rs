@@ -5,7 +5,7 @@ pub mod bootstrap {
   use crate::cli::scenarios::scenes::scenes_helper;
   use crate::cli::scenarios::scenes::scenes_helper::EnumHelper;
   use crate::cli::scenarios::scn;
-  use crate::cli::core::logger;
+  use crate::cli::core::logger::logging;
 
   /**
    * Init
@@ -14,7 +14,7 @@ pub mod bootstrap {
    */
   pub fn init(main_action: &str, sub_action: &str, options: Vec<String>) {
     match scenes_helper::Scenarios::from_str(main_action) {
-      Err(err) => logger::write(logger::LogType::Error, err, None),
+      Err(err) => logging::write(logging::LogType::Error, err, None),
       Ok(res) => launch_scenario(res, sub_action, options)
     }
   }

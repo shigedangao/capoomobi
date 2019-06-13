@@ -1,4 +1,5 @@
 use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper, Help_scenarios};
+use crate::cli::core::logger::logging::{HelpLogType, write_help};
 
 // Error constants
 const EMPTY_OPTIONS_ERROR: &str = "Please select an option";
@@ -26,7 +27,12 @@ pub fn launch(main_action: &str) {
 }
 
 fn describe_init() {
-  println!("describe init")
+  write_help(HelpLogType::Cmd, "capoomobi init <args>");
+  write_help(
+    HelpLogType::Description,
+    "Initialize and set a capoomobi project based on the provided name and path"
+  );
+  write_help(HelpLogType::Example, "capoomobi init little_mouse ../cat");
 }
 
 fn describe_generate() {

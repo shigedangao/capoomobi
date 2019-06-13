@@ -1,6 +1,6 @@
 use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
-use crate::cli::core::logger;
+use crate::cli::core::logger::logging;
 use crate::cli::configurator::configure;
 use crate::cli::configurator::builder::json_util;
 
@@ -41,8 +41,8 @@ pub fn launch(name: &str, options: Vec<String>) {
   };
 
   match configurator.write_json(json_str) {
-    Ok(_) => logger::write(
-      logger::LogType::Success,
+    Ok(_) => logging::write(
+      logging::LogType::Success,
       "Project successfully created",
       Some(fs_struct.get_path_as_string())
     ),
