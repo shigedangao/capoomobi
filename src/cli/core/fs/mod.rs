@@ -6,7 +6,7 @@ pub mod operations;
 pub mod utility {
   use std::fs;
   use std::path::PathBuf;
-  use crate::cli::core::logger;
+  use crate::cli::core::logger::logging;
 
   // Constant use defining the available folders in the project
   const COMPOSE_PATH: &str = "compose";
@@ -40,7 +40,7 @@ pub mod utility {
         Err(e) => panic!(
           format!("{}{:?}", COMPOSE_FOLDER_CREATE_ERR, e)
         ),
-        Ok(()) => logger::write(logger::LogType::Info, "Compose folder create", None)
+        Ok(()) => logging::write(logging::LogType::Info, "Compose folder create", None)
       }
     }
 
@@ -58,7 +58,7 @@ pub mod utility {
         Err(e) => panic!(
           format!("{}{:?}", KUBE_FOLDER_CREATE_ERR, e)
         ),
-        Ok(()) => logger::write(logger::LogType::Info, "Kube folder create", None)
+        Ok(()) => logging::write(logging::LogType::Info, "Kube folder create", None)
       }
     }
 
