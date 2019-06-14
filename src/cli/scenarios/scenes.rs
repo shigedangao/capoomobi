@@ -15,7 +15,7 @@ pub mod scenes_helper {
   // Scenarios available for the Help command
   // capoomobi help <actions>
   #[derive(Debug)]
-  pub enum Help_scenarios {
+  pub enum HelpScenarios {
     Init,
     Generate,
     Project,
@@ -33,14 +33,14 @@ pub mod scenes_helper {
     }
   }
 
-  impl EnumHelper<Help_scenarios> for Help_scenarios {
-    fn from_str(action: &str) -> Result<Help_scenarios, &'static str> {
+  impl EnumHelper<HelpScenarios> for HelpScenarios {
+    fn from_str(action: &str) -> Result<HelpScenarios, &'static str> {
       match action {
-        "init" => Ok(Help_scenarios::Init),
-        "generate" => Ok(Help_scenarios::Generate),
-        "project" => Ok(Help_scenarios::Project),
-        "revert" => Ok(Help_scenarios::Revert),
-        "verify" => Ok(Help_scenarios::Verify),
+        "init" => Ok(HelpScenarios::Init),
+        "generate" => Ok(HelpScenarios::Generate),
+        "project" => Ok(HelpScenarios::Project),
+        "revert" => Ok(HelpScenarios::Revert),
+        "verify" => Ok(HelpScenarios::Verify),
         _ => Err("")
       }
     }

@@ -3,8 +3,6 @@
  */
 pub mod logging {
   use colored::*;
-  use std::io;
-  use std::io::{Write};
   
   /**
    * Log Type
