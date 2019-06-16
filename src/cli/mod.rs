@@ -1,5 +1,5 @@
+pub mod core;
 mod scenarios;
-mod core;
 mod configurator;
 
 use crate::cli::core::logger::logging;

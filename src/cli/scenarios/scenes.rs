@@ -10,6 +10,7 @@ pub mod scenes_helper {
   pub enum Scenarios {
     Init,
     Help,
+    Generate
   }
 
   // Scenarios available for the Help command
@@ -28,6 +29,7 @@ pub mod scenes_helper {
       match action {
         "init" => Ok(Scenarios::Init),
         "help" => Ok(Scenarios::Help),
+        "generate" => Ok(Scenarios::Generate),
         _ => Err("")
       }
     }

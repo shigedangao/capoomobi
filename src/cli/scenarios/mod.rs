@@ -27,7 +27,8 @@ pub mod bootstrap {
   fn launch_scenario(scenario: scenes_helper::Scenarios, sub_action: &str, options: Vec<String>) {
     match scenario {
       scenes_helper::Scenarios::Init => scn::init::launch(sub_action, options),
-      scenes_helper::Scenarios::Help => scn::help::launch(sub_action)
+      scenes_helper::Scenarios::Help => scn::help::launch(sub_action),
+      scenes_helper::Scenarios::Generate => scn::generate::launch(sub_action)
     }
   }
 }
