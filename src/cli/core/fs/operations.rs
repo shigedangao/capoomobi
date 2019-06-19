@@ -58,11 +58,8 @@ pub mod toolbox {
    * 
    * Open a file 
    */
-  pub fn open_get_str_content(file_path: &str) -> io::Result<String> {
-    let mut dir = get_home_dir();
-    dir.push(file_path);
-
-    let file = fs::read_to_string(file_path)?;
+  pub fn open_get_str_content(file_path: PathBuf) -> io::Result<String> {
+    let file = fs::read_to_string(Path::new(&file_path))?;
     Ok(file)
   }
 }

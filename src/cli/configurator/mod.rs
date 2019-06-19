@@ -80,7 +80,10 @@ pub mod configure {
    * Read the config file and return the set of json objects
    */
   pub fn read_config_file() -> Result<builder::json_util::Projects, String>{
-    let contents = match toolbox::open_get_str_content(CONFIG_FILE_PATH) {
+    let mut config_file_path = toolbox::get_home_dir();
+    config_file_path.push(CONFIG_FILE_PATH);
+   
+    let contents = match toolbox::open_get_str_content(config_file_path) {
       Ok(c) => c,
       Err(e) => {
         return Err(format!("{}{:?}", FILE_NOT_PARSABLE_ERROR, e));

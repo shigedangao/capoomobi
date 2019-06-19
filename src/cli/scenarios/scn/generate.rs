@@ -10,5 +10,8 @@ const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
  * capoomobi generate <docker-compose.yml> path
  */
 pub fn launch(sub_action: &str) {
-  yaml::yaml_parser::parse(COMPOSE_FILE_NAME, sub_action);
+  match yaml::yaml_parser::parse(sub_action, COMPOSE_FILE_NAME) {
+    Ok(_) => println!("generate ok"),
+    Err(e) => panic!(e)
+  }
 }

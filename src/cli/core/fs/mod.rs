@@ -63,22 +63,12 @@ pub mod utility {
     }
 
     /**
-     * Get Abs Path
-     * 
-     * Get the absolute path from a string
-     */
-    pub fn get_abs_path(&self) -> std::io::Result<PathBuf> {
-      let path = fs::canonicalize(&self.base_path)?;
-      Ok(path)
-    }
-
-    /**
      * Get Path As String
      * 
      * Return the absolute path as a string
      */
     pub fn get_path_as_string(&self) -> String {
-      let abs_path = match self.get_abs_path() {
+      let abs_path = match get_abs_path(&self.base_path) {
         Ok(p) => p,
         Err(e) => panic!(e)
       };
@@ -112,6 +102,16 @@ pub mod utility {
     };
 
     return str_struct;
+  }
+
+  /**
+   * Get Abs Path
+   * 
+   * Get the absolute path from a string
+   */
+  pub fn get_abs_path(path: &PathBuf) -> std::io::Result<PathBuf> {
+    let path = fs::canonicalize(path)?;
+    Ok(path)
   }
 
   /**
