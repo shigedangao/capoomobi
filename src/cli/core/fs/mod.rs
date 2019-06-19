@@ -16,6 +16,8 @@ pub mod utility {
   const COMPOSE_FOLDER_CREATE_ERR: &str = "folder compose can not be create";
   const KUBE_FOLDER_CREATE_ERR: &str = "folder kube can not be create";
 
+  // Public errors constant
+  pub const ABS_PATH_ERROR: &str = "Unable to generate absolute path";
   /**
    * Fs struct
    * 
