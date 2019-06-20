@@ -1,4 +1,4 @@
-mod compose;
+pub mod compose;
 
 /**
  * Yaml Parser
