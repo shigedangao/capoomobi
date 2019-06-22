@@ -23,9 +23,9 @@ pub mod Compose {
   // Services
   // Representing the list of services gather from the 
   // docker-compose.yaml
+  #[derive(Debug)]
   struct Services {
-    name: String,
-    services: Vec<Service>
+    name: String
   }
 
   /**
@@ -41,11 +41,23 @@ pub mod Compose {
 
     let compose_content  = &content[0];
     let services_content = compose_content["services"].to_owned();
-
     let iter = services_content.into_hash().unwrap().into_iter();
-    for (i, n) in iter.enumerate() {
-      println!("value of n {:?}", n);
-    }
+
+    let services: Vec<Services> = iter
+      .map(|yaml| {
+        let service_name = yaml.0.into_string();
+        if let Some(service) = service_name {
+          return Services {
+            name: service
+          }
+        } else {
+          panic!("Unable to retrieve services");
+        }
+      })
+      .collect();
+
+    println!("value of services {:?}", services);
+
     Ok(())
   }
 }
