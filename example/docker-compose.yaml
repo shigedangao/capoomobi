@@ -1,7 +1,8 @@
 version: 3
 services:
-  lol:
+  web:
     name: "bar"
-    nah: "nah"
+    image: "alpine/alpine"
+    ports: "5000:5000"
   bar:
     ma: "lol"

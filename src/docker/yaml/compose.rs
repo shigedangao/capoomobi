@@ -10,21 +10,13 @@ pub mod compose {
   const EMPTY_YAML_CONTENT: &str = "Unable to parse empty content of docker-compose.yaml file";
   const SVC_NOT_ARR: &str = "Services attribute is not an array";
 
-  // list of supported fields
-  const SUPPORTED_ATTRIBUTES: &'static [&'static str] = &[
-    "name",
-    "image",
-    "command",
-    "ports",
-    "labels"
-  ];
-
   // Service represent a service in the compose file
   // e.g services.portainer
   #[derive(Debug, Default)]
   pub struct Service {
     name: String,
     image: String,
+    port: String,
     command: Vec<String>,
     ports: Vec<String>,
     labels: Vec<String>
@@ -37,6 +29,23 @@ pub mod compose {
   pub struct ComposeServices {
     name: String,
     service: Vec<Service>
+  }
+
+  /**
+   * Get Supported attributes
+   * 
+   * Return a vector of the supported list of attributes
+   */
+  fn get_supported_attributes() -> Vec<&'static str> {
+    let vec: Vec<&'static str> = vec![
+      "name",
+      "image",
+      "port",
+      "labels",
+      "replicas"
+    ];
+
+    return vec;
   }
 
   /**
@@ -68,19 +77,22 @@ pub mod compose {
   }
 
 
+  /**
+   * Get Service
+   * 
+   * Get attribute value for each services
+   */
   fn get_service(yaml_service: yaml::Yaml) -> Service {
-
-    let vec: Vec<&str> = SUPPORTED_ATTRIBUTES
+    let vec: Vec<&str> = get_supported_attributes()
         .into_iter()
-        .map(|key| {
-          println!("value of name {:?}", yaml_service);
-          yaml_service["name"].as_str().unwrap()
-        })
+        .map(|key| yaml_service[key].as_str().unwrap_or(""))
         .collect();
 
-    println!("value of vec {:?}", vec);
-    
+
     Service {
+      name: String::from(vec[0]),
+      image: String::from(vec[1]),
+      port: String::from(vec[2]),
       ..Default::default()
     }
   }
