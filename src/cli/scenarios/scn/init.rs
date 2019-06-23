@@ -20,11 +20,15 @@ pub fn launch(name: &str, options: Vec<String>) {
     None => String::from("")
   };
   
+  // Generate a struct which will be used to build the folders
   let fs_struct = utility::build_base_path(name, optional_path.as_str());
+  
+  // Build the project folders
   fs_struct.build_compose_dir();
   fs_struct.build_kube_dir();
 
-  let abs_path = match fs_struct.get_abs_path() {
+  // Generate the absolute path from the current set path
+  let abs_path = match utility::get_abs_path(&fs_struct.base_path) {
     Ok(p) => p,
     Err(e) => panic!(format!("{}{:?}", PATH_ERROR, e))
   };

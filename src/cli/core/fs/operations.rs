@@ -11,6 +11,7 @@ pub mod toolbox {
   use std::path::Path;
   use std::path::PathBuf;
   use std::io;
+  use std::fs;
 
   pub fn get_home_dir() -> PathBuf {
     let home_dir = match dirs::home_dir() {
@@ -41,15 +42,24 @@ pub mod toolbox {
   }
 
   /**
-   * Open
+   * File exist
    * 
-   * Check if the config file exist
+   * Check if a file exist
    */
-  pub fn open(file_path: &str) -> io::Result<PathBuf> {
+  pub fn file_exist(file_path: &str) -> bool {
     let mut home_dir = get_home_dir();
     home_dir.push(file_path);
 
-    File::open(Path::new(&home_dir))?;
-    Ok(home_dir)
+    Path::new(&home_dir).exists()
+  }
+
+  /**
+   * Open and get str content
+   * 
+   * Open a file 
+   */
+  pub fn open_get_str_content(file_path: PathBuf) -> io::Result<String> {
+    let file = fs::read_to_string(Path::new(&file_path))?;
+    Ok(file)
   }
 }

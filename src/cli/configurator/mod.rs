@@ -15,7 +15,6 @@ pub mod configure {
   use crate::cli::configurator::builder;
   use std::path::PathBuf;
   use std::path::Path;
-  use std::io::ErrorKind;
   use std::fs;
 
   // Constant defining the paths available
@@ -42,6 +41,7 @@ pub mod configure {
       Ok(())
     }
   }
+  
   /**
    * Exist Or Create
    * 
@@ -53,43 +53,37 @@ pub mod configure {
    * If the error is different then return an error
    */
   pub fn exist_or_create() -> Result<Configure, String> {
-    return match toolbox::open(CONFIG_FILE_PATH) {
-      Ok(e_path) => Ok(Configure{
-        path: e_path
+    if toolbox::file_exist(CONFIG_FILE_PATH) {
+      let mut g_path = toolbox::get_home_dir();
+      g_path.push(CONFIG_FILE_PATH);
+      
+      return Ok(Configure{
+        path: g_path
+      });
+    }
+
+    match toolbox::create(CONFIG_FILE_PATH) {
+      Ok(created_path) => Ok(Configure{
+        path: created_path
       }),
       Err(e) => {
-        let kind = e.kind();
-        if kind != ErrorKind::NotFound {
-          return Err(
-            format!("{}{:?}", CONFIG_GENERATE_ERROR, kind)
-          );
-        }
-
-        let created_path = match toolbox::create(CONFIG_FILE_PATH) {
-          Ok(created_path) => created_path,
-          Err(e) => {
-            return Err(
-              format!("{}{:?}", CONFIG_GENERATE_ERROR, e)
-            );
-          }
-        };
-
-        Ok(Configure{
-          path: created_path
-        })
+        return Err(
+          format!("{}{:?}", CONFIG_GENERATE_ERROR, e)
+        );
       }
-    };
+    }
   }
 
   /**
-   * Read Config File
+   * Read Config Files
    * 
    * Read the config file and return the set of json objects
    */
   pub fn read_config_file() -> Result<builder::json_util::Projects, String>{
-    let mut config_path = toolbox::get_home_dir();
-    config_path.push(CONFIG_FILE_PATH);
-    let contents = match fs::read_to_string(config_path) {
+    let mut config_file_path = toolbox::get_home_dir();
+    config_file_path.push(CONFIG_FILE_PATH);
+   
+    let contents = match toolbox::open_get_str_content(config_file_path) {
       Ok(c) => c,
       Err(e) => {
         return Err(format!("{}{:?}", FILE_NOT_PARSABLE_ERROR, e));
