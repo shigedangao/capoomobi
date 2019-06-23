@@ -1,6 +1,7 @@
 version: 3
 services:
   lol:
-    foo: "bar"
+    name: "bar"
+    nah: "nah"
   bar:
     ma: "lol"

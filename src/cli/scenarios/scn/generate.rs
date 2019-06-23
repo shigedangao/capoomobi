@@ -19,5 +19,5 @@ pub fn launch(sub_action: &str) {
     }
   };
 
-  compose::Compose::generate_docker_project_structure(yaml_content);
+  compose::compose::get_docker_service_structure(yaml_content);
 }
