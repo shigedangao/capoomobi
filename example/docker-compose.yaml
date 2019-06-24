@@ -4,5 +4,8 @@ services:
     name: "bar"
     image: "alpine/alpine"
     ports: "5000:5000"
+    environment:
+     - "mouse"
+     - "cat"
   bar:
     ma: "lol"
