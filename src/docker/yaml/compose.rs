@@ -5,6 +5,7 @@
  */
 pub mod compose {
   use yaml_rust::{yaml};
+  use std::collections::HashMap;
 
   // constant error
   const EMPTY_YAML_CONTENT: &str = "Unable to parse empty content of docker-compose.yaml file";
@@ -12,14 +13,16 @@ pub mod compose {
 
   // Service represent a service in the compose file
   // e.g services.portainer
-  #[derive(Debug, Default)]
+  #[derive(Debug)]
   pub struct Service {
     name: String,
     image: String,
     port: String,
-    command: Vec<String>,
-    ports: Vec<String>,
-    labels: Vec<String>
+    command: Option<Vec<String>>,
+    ports: Option<Vec<String>>,
+    labels: Option<Vec<String>>,
+    environment: Option<Vec<String>>,
+    volumes: Option<Vec<String>>
   }
 
   // Compose Services
@@ -31,21 +34,38 @@ pub mod compose {
     service: Vec<Service>
   }
 
+  // Enumeration Field Kind
+  // Use to choice which type of field to filter
+  enum FieldKind {
+    SingleField,
+    ArrayField
+  }
+
   /**
    * Get Supported attributes
    * 
    * Return a vector of the supported list of attributes
    */
-  fn get_supported_attributes() -> Vec<&'static str> {
-    let vec: Vec<&'static str> = vec![
-      "name",
-      "image",
-      "port",
-      "labels",
-      "replicas"
-    ];
-
-    return vec;
+  fn get_supported_attributes(field: FieldKind) -> Vec<&'static str> {
+    match field {
+      FieldKind::SingleField => {
+        return vec![
+          "name",
+          "image",
+          "labels",
+          "replicas"
+        ];
+      },
+      FieldKind::ArrayField => {
+        return vec![
+          "command",
+          "ports",
+          "labels",
+          "environment",
+          "volumes",
+        ];
+      }
+    };
   }
 
   /**
@@ -83,17 +103,40 @@ pub mod compose {
    * Get attribute value for each services
    */
   fn get_service(yaml_service: yaml::Yaml) -> Service {
-    let vec: Vec<&str> = get_supported_attributes()
+    let str_field_vec: Vec<&str> = get_supported_attributes(FieldKind::SingleField)
         .into_iter()
         .map(|key| yaml_service[key].as_str().unwrap_or(""))
         .collect();
 
+    let mut array_attributes = HashMap::new();
+    let attributes = get_supported_attributes(FieldKind::ArrayField);
+
+    for attr in attributes.into_iter() {
+      let vec = yaml_service[attr].as_vec();
+      if let Some(array) = vec {
+        let str_vec_fields: Vec<String> = array
+          .into_iter()
+          .map(|value| value.as_str().unwrap_or(""))
+          .map(|each| String::from(each))
+          .collect();
+        
+        array_attributes.insert(attr, str_vec_fields);        
+      } else {
+        array_attributes.insert(attr, Vec::new());
+      }
+    }
 
     Service {
-      name: String::from(vec[0]),
-      image: String::from(vec[1]),
-      port: String::from(vec[2]),
-      ..Default::default()
+      // Single line field
+      name: String::from(str_field_vec[0]),
+      image: String::from(str_field_vec[1]),
+      port: String::from(str_field_vec[2]),
+      // Array fields
+      command: array_attributes.get("command").cloned(),
+      ports: array_attributes.get("ports").cloned(),
+      labels: array_attributes.get("label").cloned(),
+      environment: array_attributes.get("environment").cloned(),
+      volumes: array_attributes.get("volumes").cloned(),
     }
   }
 }
