@@ -7,5 +7,6 @@ services:
     environment:
      - "mouse"
      - "cat"
+    command: "lol"
   bar:
     ma: "lol"

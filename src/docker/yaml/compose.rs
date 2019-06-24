@@ -13,14 +13,16 @@ pub mod compose {
 
   // Service represent a service in the compose file
   // e.g services.portainer
-  #[derive(Debug, Default)]
+  #[derive(Debug)]
   pub struct Service {
     name: String,
     image: String,
     port: String,
-    command: Vec<String>,
-    ports: Vec<String>,
-    labels: Vec<String>
+    command: Option<Vec<String>>,
+    ports: Option<Vec<String>>,
+    labels: Option<Vec<String>>,
+    environment: Option<Vec<String>>,
+    volumes: Option<Vec<String>>
   }
 
   // Compose Services
@@ -32,6 +34,8 @@ pub mod compose {
     service: Vec<Service>
   }
 
+  // Enumeration Field Kind
+  // Use to choice which type of field to filter
   enum FieldKind {
     SingleField,
     ArrayField
@@ -54,11 +58,11 @@ pub mod compose {
       },
       FieldKind::ArrayField => {
         return vec![
-          "ports",
           "command",
+          "ports",
+          "labels",
           "environment",
           "volumes",
-          "labels"
         ];
       }
     };
@@ -110,22 +114,29 @@ pub mod compose {
     for attr in attributes.into_iter() {
       let vec = yaml_service[attr].as_vec();
       if let Some(array) = vec {
-        let str_vec_fields: Vec<&str> = array
+        let str_vec_fields: Vec<String> = array
           .into_iter()
           .map(|value| value.as_str().unwrap_or(""))
+          .map(|each| String::from(each))
           .collect();
         
         array_attributes.insert(attr, str_vec_fields);        
+      } else {
+        array_attributes.insert(attr, Vec::new());
       }
     }
 
-    println!("value of str_field {:?}", array_attributes);
-
     Service {
+      // Single line field
       name: String::from(str_field_vec[0]),
       image: String::from(str_field_vec[1]),
       port: String::from(str_field_vec[2]),
-      ..Default::default()
+      // Array fields
+      command: array_attributes.get("command").cloned(),
+      ports: array_attributes.get("ports").cloned(),
+      labels: array_attributes.get("label").cloned(),
+      environment: array_attributes.get("environment").cloned(),
+      volumes: array_attributes.get("volumes").cloned(),
     }
   }
 }
