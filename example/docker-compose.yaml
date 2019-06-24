@@ -1,8 +1,33 @@
 version: 3
 services:
   web:
-    name: "bar"
-    image: "alpine/alpine"
-    ports: "5000:5000"
-  bar:
-    ma: "lol"
+    name: goserver
+    image: golang:1.12.6-stretch
+    ports: 
+      - 5000:5000
+    environment:
+     - "GO111MODULE=on"
+    command:
+      - "sh start.sh"
+  mysql:
+    name: mysql
+    image: mysql:5:7
+    ports:
+      - 3306:3306
+    environment:
+      - "MYSQL_ROOT_PASSWORD=capoomobi"
+      - "MYSQL_DATABASE=capoomobi"
+      - "MYSQL_USER=little_mouse"
+      - "MYSQL_PASSWORD=big_cat"
+    labels:
+      - "little_mouse"
+      - "little_cat"
+  front:
+    name: capoomobi_front
+    image: node:12.4.0-stretch
+    ports:
+      - 8000:8000
+    command:
+      - "npm install"
+      - "npm run build"
+      - "npm run start"

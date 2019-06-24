@@ -19,5 +19,10 @@ pub fn launch(sub_action: &str) {
     }
   };
 
-  compose::compose::get_docker_service_structure(yaml_content);
+  match compose::compose::get_docker_service_structure(yaml_content) {
+    Ok(structure) => println!("struct value {:?}", structure),
+    Err(e) => {
+      return logging::write(logging::LogType::Error, e, None)
+    }
+  };
 }
