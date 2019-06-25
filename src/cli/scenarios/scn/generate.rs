@@ -19,7 +19,7 @@ pub fn launch(sub_action: &str) {
     }
   };
 
-  match compose::compose::get_docker_service_structure(yaml_content) {
+  let services = match compose::compose::get_docker_service_structure(yaml_content) {
     Ok(structure) => println!("struct value {:?}", structure),
     Err(e) => {
       return logging::write(logging::LogType::Error, e, None)

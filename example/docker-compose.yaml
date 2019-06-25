@@ -1,7 +1,6 @@
-version: 3
+version: "3"
 services:
   web:
-    name: goserver
     image: golang:1.12.6-stretch
     ports: 
       - 5000:5000
@@ -9,8 +8,10 @@ services:
      - "GO111MODULE=on"
     command:
       - "sh start.sh"
+    labels:
+      "hey little mouse"
   mysql:
-    name: mysql
+    # replicas: 5
     image: mysql:5:7
     ports:
       - 3306:3306
@@ -22,8 +23,8 @@ services:
     labels:
       - "little_mouse"
       - "little_cat"
+    command: "sh ./help.sh"
   front:
-    name: capoomobi_front
     image: node:12.4.0-stretch
     ports:
       - 8000:8000

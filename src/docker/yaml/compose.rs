@@ -17,21 +17,13 @@ pub mod compose {
   pub struct Service {
     name: String,
     image: String,
-    port: String,
-    command: Option<Vec<String>>,
+    command: String,
+    label: String,
+    commands: Option<Vec<String>>,
     ports: Option<Vec<String>>,
     labels: Option<Vec<String>>,
     environment: Option<Vec<String>>,
     volumes: Option<Vec<String>>
-  }
-
-  // Compose Services
-  // Representing the list of services gather from the 
-  // docker-compose.yaml
-  #[derive(Debug, Default)]
-  pub struct ComposeServices {
-    name: String,
-    service: Vec<Service>
   }
 
   // Enumeration Field Kind
@@ -50,10 +42,9 @@ pub mod compose {
     match field {
       FieldKind::SingleField => {
         return vec![
-          "name",
           "image",
+          "command",
           "labels",
-          "replicas"
         ];
       },
       FieldKind::ArrayField => {
@@ -87,7 +78,7 @@ pub mod compose {
       let iter = hashes.into_iter();
 
       let services: Vec<Service> = iter
-        .map(|yaml| get_service(yaml.1))
+        .map(|yaml| get_service(yaml.0, yaml.1))
         .collect();
 
       return Ok(services);
@@ -102,7 +93,7 @@ pub mod compose {
    * 
    * Get attribute value for each services
    */
-  fn get_service(yaml_service: yaml::Yaml) -> Service {
+  fn get_service(service_name: yaml::Yaml, yaml_service: yaml::Yaml) -> Service {
     let str_field_vec: Vec<&str> = get_supported_attributes(FieldKind::SingleField)
         .into_iter()
         .map(|key| yaml_service[key].as_str().unwrap_or(""))
@@ -127,12 +118,13 @@ pub mod compose {
     }
 
     Service {
+      name: String::from(service_name.as_str().unwrap_or("unknown")),
       // Single line field
-      name: String::from(str_field_vec[0]),
-      image: String::from(str_field_vec[1]),
-      port: String::from(str_field_vec[2]),
+      image: String::from(str_field_vec[0]),
+      command: String::from(str_field_vec[1]),
+      label: String::from(str_field_vec[2]),
       // Array fields
-      command: array_attributes.get("command").cloned(),
+      commands: array_attributes.get("command").cloned(),
       ports: array_attributes.get("ports").cloned(),
       labels: array_attributes.get("label").cloned(),
       environment: array_attributes.get("environment").cloned(),
