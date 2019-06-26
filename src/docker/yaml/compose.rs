@@ -15,7 +15,7 @@ pub mod compose {
   // e.g services.portainer
   #[derive(Debug)]
   pub struct Service {
-    name: String,
+    pub name: String,
     image: String,
     command: String,
     label: String,
