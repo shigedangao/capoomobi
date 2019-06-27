@@ -1,5 +1,5 @@
-use crate::docker::yaml;
-use crate::docker::yaml::compose;
+use crate::docker::lexer;
+use crate::docker::lexer::compose;
 use crate::cli::core::logger::logging;
 use crate::cli::core::input::input;
 use std::collections::HashMap;
@@ -20,7 +20,7 @@ pub fn launch(sub_action: &str) {
     Some(String::from(sub_action))
   );
 
-  let yaml_content = match yaml::yaml_parser::parse(sub_action, COMPOSE_FILE_NAME) {
+  let yaml_content = match lexer::yaml_parser::parse(sub_action, COMPOSE_FILE_NAME) {
     Ok(content) => content,
     Err(e) => {
       return logging::write(logging::LogType::Error, e, None);
@@ -35,7 +35,6 @@ pub fn launch(sub_action: &str) {
   };
 
   let prefs = ask_services_details(services);
-  println!("value of prefs {:?}", prefs);
 }
 
 /**
