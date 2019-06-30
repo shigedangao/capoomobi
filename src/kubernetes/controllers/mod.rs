@@ -1,12 +1,2 @@
-/**
- * Controllers
- * 
- */
-pub mod controllers {
-  
-  enum Controllers {
-    Deployment,
-    ReplicaSet,
-    StatefulSet
-  };
-}
+pub mod container;
+pub mod service;

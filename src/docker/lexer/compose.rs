@@ -16,14 +16,14 @@ pub mod compose {
   #[derive(Debug)]
   pub struct Service {
     pub name: String,
-    image: String,
-    command: String,
-    label: String,
-    commands: Option<Vec<String>>,
-    ports: Option<Vec<String>>,
-    labels: Option<Vec<String>>,
-    environment: Option<Vec<String>>,
-    volumes: Option<Vec<String>>
+    pub image: String,
+    pub command: String,
+    pub label: String,
+    pub commands: Option<Vec<String>>,
+    pub ports: Option<Vec<String>>,
+    pub labels: Option<Vec<String>>,
+    pub environment: Option<Vec<String>>,
+    pub volumes: Option<Vec<String>>
   }
 
   // Enumeration Field Kind

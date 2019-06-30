@@ -5,16 +5,29 @@
  * representing a Kubernetes files
  */
 pub mod generator {
-  use std::collections;
-  use crate::docker::lexer;
+  use std::collections::HashMap;
+  use crate::docker::lexer::compose::compose::{Service};
+  use crate::kubernetes::controllers::container::container;
+  use crate::kubernetes::controllers::service::service;
 
   /**
-   * Get Kubernets Struct
+   * Kube
    * 
-   * Get a structure representing the abstract tree
-   * of a kubernetes file
+   * Structure representing a kube file component
    */
-  pub fn get_kubernetes_struct(docker_services: lexer::compose::Serice, options: Vec<HashMap<&str, String>>) {
+  pub struct Kube {
+    object: container::KubeContainer,
+    service: service::KubeService,
+  }
 
+  /**
+   * Get Kube Abstract Tree
+   * 
+   * Get a structure representing the tree of a k8s file
+   */
+  pub fn get_kube_abstract_tree(docker_services: Vec<Service>, options: Vec<HashMap<&str, String>>) {
+    let objects = docker_services
+      .into_iter()
+      
   }
 }
