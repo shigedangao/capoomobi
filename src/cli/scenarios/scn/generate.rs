@@ -35,8 +35,10 @@ pub fn launch(sub_action: &str) {
     }
   };
 
-  let prefs = ask_services_details(services);
+  let prefs = ask_services_details(&services);
   println!("value of prefs {:?}", prefs);
+
+  generator::get_kube_abstract_tree(services, prefs);
 }
 
 /**
@@ -45,7 +47,7 @@ pub fn launch(sub_action: &str) {
  * Ask questions to users regarding the configuration
  * of the kubernetes files
  */
-fn ask_services_details(services: Vec<compose::compose::Service>) -> HashMap<String, HashMap<&'static str, String>> {
+fn ask_services_details(services: &Vec<compose::compose::Service>) -> HashMap<String, HashMap<&'static str, String>> {
   let mut preferences: HashMap<String, HashMap<&str, String>> = HashMap::new();
   for service in services.into_iter() {
     logging::write(
@@ -63,7 +65,7 @@ fn ask_services_details(services: Vec<compose::compose::Service>) -> HashMap<Str
     prefs.insert("nodeport", nodeport);
     prefs.insert("controller", controller);
 
-    let name = String::from(service.name);
+    let name = service.name.to_string();
     preferences.insert(name, prefs);
   }
 
