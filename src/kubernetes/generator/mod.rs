@@ -25,9 +25,7 @@ pub mod generator {
    * 
    * Get a structure representing the tree of a k8s file
    */
-  pub fn get_kube_abstract_tree(docker_services: Vec<Service>, options: Vec<HashMap<&str, String>>) {
-    let objects = docker_services
-      .into_iter()
-      
+  pub fn get_kube_abstract_tree(docker_services: Vec<Service>, options: HashMap<String, HashMap<&str, String>>) {
+     
   }
 }

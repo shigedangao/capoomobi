@@ -19,11 +19,11 @@ pub mod compose {
     pub image: String,
     pub command: String,
     pub label: String,
-    pub commands: Option<Vec<String>>,
-    pub ports: Option<Vec<String>>,
-    pub labels: Option<Vec<String>>,
-    pub environment: Option<Vec<String>>,
-    pub volumes: Option<Vec<String>>
+    pub commands: Vec<String>,
+    pub ports: Vec<String>,
+    pub labels: Vec<String>,
+    pub environment: Vec<String>,
+    pub volumes: Vec<String>
   }
 
   // Enumeration Field Kind
@@ -101,6 +101,7 @@ pub mod compose {
 
     let mut array_attributes = HashMap::new();
     let attributes = get_supported_attributes(FieldKind::ArrayField);
+    let empty_vec = vec![String::from("empty")];
 
     for attr in attributes.into_iter() {
       let vec = yaml_service[attr].as_vec();
@@ -124,11 +125,11 @@ pub mod compose {
       command: String::from(str_field_vec[1]),
       label: String::from(str_field_vec[2]),
       // Array fields
-      commands: array_attributes.get("command").cloned(),
-      ports: array_attributes.get("ports").cloned(),
-      labels: array_attributes.get("label").cloned(),
-      environment: array_attributes.get("environment").cloned(),
-      volumes: array_attributes.get("volumes").cloned(),
+      commands: array_attributes.get("command").unwrap_or(&empty_vec).to_vec(),
+      ports: array_attributes.get("ports").unwrap_or(&empty_vec).to_vec(),
+      labels: array_attributes.get("label").unwrap_or(&empty_vec).to_vec(),
+      environment: array_attributes.get("environment").unwrap_or(&empty_vec).to_vec(),
+      volumes: array_attributes.get("volumes").unwrap_or(&empty_vec).to_vec(),
     }
   }
 }

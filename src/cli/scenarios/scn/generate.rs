@@ -36,6 +36,7 @@ pub fn launch(sub_action: &str) {
   };
 
   let prefs = ask_services_details(services);
+  println!("value of prefs {:?}", prefs);
 }
 
 /**
@@ -44,26 +45,27 @@ pub fn launch(sub_action: &str) {
  * Ask questions to users regarding the configuration
  * of the kubernetes files
  */
-fn ask_services_details(services: Vec<compose::compose::Service>) -> Vec<HashMap<&'static str, String>> {
-  let preferences: Vec<HashMap<&str, String>> = services
-    .into_iter()
-    .map(|service| service.name)
-    .map(|name| {
-      logging::write(logging::LogType::Info, name.as_str(), None);
+fn ask_services_details(services: Vec<compose::compose::Service>) -> HashMap<String, HashMap<&'static str, String>> {
+  let mut preferences: HashMap<String, HashMap<&str, String>> = HashMap::new();
+  for service in services.into_iter() {
+    logging::write(
+      logging::LogType::Info,
+      format!("{}{}", "Preparing services for: ", service.name).as_str(),
+      None
+    );
 
-      let mut prefs = HashMap::new();
-      let replicas = input::get_user_input("Enter number of wishes replicas (e.g: 5)");
-      let nodeport = input::get_user_input("Enter NodePort number if needed (e.g: 30120) or (e.g: N) for no NodePort");
-      let controller = input::get_user_input("Enter controller type");
+    let replicas = input::get_user_input("Enter number of wishes replicas (e.g: 5)");
+    let nodeport = input::get_user_input("Enter NodePort number if needed (e.g: 30120) or (e.g: N) for no NodePort");
+    let controller = input::get_user_input("Enter controller type");
 
-      prefs.insert("name", name);
-      prefs.insert("replicas", replicas);
-      prefs.insert("nodeport", nodeport);
-      prefs.insert("controller", controller);
+    let mut prefs: HashMap<&str, String> = HashMap::new();
+    prefs.insert("replicas", replicas);
+    prefs.insert("nodeport", nodeport);
+    prefs.insert("controller", controller);
 
-      return prefs;
-    })
-    .collect();
+    let name = String::from(service.name);
+    preferences.insert(name, prefs);
+  }
 
   return preferences;
 }

@@ -54,10 +54,5 @@ pub mod container {
     if let Some(controller) = option.get("controller") {
       controller_kind = ControllerKind::from_str(controller).unwrap();
     }
-
-    let commands = match docker_service.commands {
-      Some(cmds) => cmds,
-      None => panic!(format!("{}{}", UNWRAP_ERR, "Docker commands parameters"))
-    };
   }
 }
