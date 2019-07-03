@@ -2,7 +2,7 @@ use crate::docker::lexer;
 use crate::docker::lexer::compose;
 use crate::cli::core::logger::logging;
 use crate::cli::core::input::input;
-use crate::kubernetes::generator::generator;
+use crate::kubernetes::generator;
 use std::collections::HashMap;
 
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
@@ -57,11 +57,13 @@ fn ask_services_details(services: &Vec<compose::compose::Service>) -> HashMap<St
     );
 
     let replicas = input::get_user_input("Enter number of wishes replicas (e.g: 5)");
+    let service_type = input::get_user_input("Enter service type (NodePort, ClusterIP)");
     let nodeport = input::get_user_input("Enter NodePort number if needed (e.g: 30120) or (e.g: N) for no NodePort");
     let controller = input::get_user_input("Enter controller type");
 
     let mut prefs: HashMap<&str, String> = HashMap::new();
     prefs.insert("replicas", replicas);
+    prefs.insert("service", service_type);
     prefs.insert("nodeport", nodeport);
     prefs.insert("controller", controller);
 

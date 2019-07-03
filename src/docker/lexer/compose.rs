@@ -101,7 +101,7 @@ pub mod compose {
 
     let mut array_attributes = HashMap::new();
     let attributes = get_supported_attributes(FieldKind::ArrayField);
-    let empty_vec = vec![String::from("empty")];
+    let empty_vec = vec![String::from("")];
 
     for attr in attributes.into_iter() {
       let vec = yaml_service[attr].as_vec();

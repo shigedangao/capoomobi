@@ -1,10 +1,7 @@
 pub mod container {
   use std::collections::HashMap;
-  use crate::cli::core::logger::logging;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
-
-  const UNWRAP_ERR: &str = "A value can not be deserialize. Make sure that this value is set";
 
   /**
    * List of supported K8S controllers
@@ -18,6 +15,9 @@ pub mod container {
     DaemonSet
   }
 
+  /**
+   * Parse string to enum ControllerKind deployment
+   */
   impl EnumHelper<ControllerKind> for ControllerKind {
     fn from_str(controller: &str) -> Result<ControllerKind, &'static str> {
       match controller {
