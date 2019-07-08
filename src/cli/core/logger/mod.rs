@@ -25,7 +25,7 @@ pub mod logging {
    * Log
    *    Main entry point for logging a message
    */
-  pub fn write(level: LogType, message: &'static str, rest: Option<String>) {
+  pub fn write(level: LogType, message: &str, rest: Option<String>) {
 
     match level {
       LogType::Info => println!("{}{}", "Info: ".blue().bold(), message),
