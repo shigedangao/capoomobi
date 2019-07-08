@@ -43,7 +43,7 @@ pub mod container {
     replicas: u8,
     commands: Vec<String>,
     labels: Vec<String>,
-    environemnt: Vec<String>,
+    environement: Vec<String>,
   }
 
   /**
@@ -54,7 +54,7 @@ pub mod container {
   pub fn create_kube_struct(docker_service: Service, option: &HashMap<&str, String>) -> KubeContainer {
     let mut controller_kind: ControllerKind = ControllerKind::Deployment;
     if let Some(controller) = option.get("controller") {
-      controller_kind = ControllerKind::from_str(controller).unwrap();
+      controller_kind = ControllerKind::from_str(controller.to_lowercase().as_str()).unwrap();
     }
 
     let mut replica_count: u8 = 3;
@@ -69,7 +69,7 @@ pub mod container {
       replicas: replica_count,
       commands: docker_service.commands,
       labels: docker_service.labels,
-      environemnt: docker_service.environment
+      environement: docker_service.environment
     };
 
     return kube_container;

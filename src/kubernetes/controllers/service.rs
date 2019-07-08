@@ -2,17 +2,16 @@
  * Service
  */
 pub mod service {
-  use std::collections::HashMap;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
-  use crate::docker::lexer::compose::compose::{Service};
   
   const UNSUPPORT_PARSE_SERVICE: &str = "Unsupported service type";
-  const WRONG_FORMAT: &str = "Wrong port format for NodePort";
+  const EMPTY_PORT: &str = "Ports value is empty";
 
   /**
    * Service Type enum
    */
   #[derive(PartialEq)]
+  #[derive(Debug)]
   pub enum ServiceType {
     ClusterIP,
     NodePort
@@ -34,24 +33,42 @@ pub mod service {
   /**
    * Structure representing a Kubernetes service
    */
+  #[derive(Debug)]
   pub struct KubeService {
-    port: String,
-    service_type: String,
-    nodePort: u16,
+    container_port: u16,
+    target_port: u16,
+    service_type: ServiceType,
     labels: Vec<String>
   }
 
-  pub fn create_kube_service(docker_service: Service, option: &HashMap<&str, String>) {
-    let service_type_str = option.get("service").unwrap_or(&String::from(""));
-    let service_type = match ServiceType::from_str(service_type_str) {
+  /**
+   * Create Kube Service
+   * 
+   * Create the service object data structure which represent a service in Kubernetes
+   */
+  pub fn create_kube_service(docker_ports: &Vec<String>, labels: &Vec<String>, service_type_str: &String) -> KubeService {
+    let service_type = match ServiceType::from_str(service_type_str.to_lowercase().as_str()) {
       Ok(svc) => svc,
       Err(e) => panic!(e)
     };
 
-    if docker_service.ports.len() == 1 && service_type == ServiceType::NodePort {
-      panic!(WRONG_FORMAT);
+    if docker_ports.is_empty() {
+      panic!(EMPTY_PORT);
     }
 
-    return kube_service;
+    let mapped_ports: Vec<u16> = docker_ports[0]
+      .split(':')
+      .into_iter()
+      .map(|port| port.parse::<u16>().unwrap_or(0))
+      .collect();
+
+    let kube_service = KubeService {
+      container_port: mapped_ports[0],
+      target_port: mapped_ports[1],
+      service_type: service_type,
+      labels: labels.clone()
+    };
+
+    return kube_service
   }
 }

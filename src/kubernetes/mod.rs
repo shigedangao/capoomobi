@@ -17,6 +17,7 @@ pub mod generator {
    * 
    * Structure representing a kube file component
    */
+  #[derive(Debug)]
   pub struct Kube {
     object: container::KubeContainer,
     service: service::KubeService,
@@ -33,8 +34,14 @@ pub mod generator {
       .filter(|service| options.get(&service.name).is_some())
       .map(|service| {
         let option = options.get(&service.name).unwrap();
-        let object = container::create_kube_struct(service, option);
+        let svc_type = option.get("service").unwrap_or(&String::from("")).to_owned();
+        let kube_svc = service::create_kube_service(&service.ports, &service.labels, &svc_type);
+        let kube_obj = container::create_kube_struct(service, option);
         
+        return Kube {
+          object: kube_obj,
+          service: kube_svc
+        }
       })
       .collect();
 

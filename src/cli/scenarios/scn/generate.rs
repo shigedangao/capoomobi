@@ -5,6 +5,7 @@ use crate::cli::core::input::input;
 use crate::kubernetes::generator;
 use std::collections::HashMap;
 
+// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 
 /**
@@ -36,7 +37,6 @@ pub fn launch(sub_action: &str) {
   };
 
   let prefs = ask_services_details(&services);
-  println!("value of prefs {:?}", prefs);
 
   generator::get_kube_abstract_tree(services, prefs);
 }
