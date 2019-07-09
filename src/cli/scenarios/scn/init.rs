@@ -2,7 +2,7 @@ use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
 use crate::cli::core::logger::logging;
 use crate::cli::configurator::configure;
-use crate::cli::configurator::builder::json_util;
+use crate::cli::configurator::builder::builder;
 
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
 
@@ -39,7 +39,7 @@ pub fn launch(name: &str, options: Vec<String>) {
     Err(e) => panic!(e)
   };
 
-  let json_str = match json_util::generate_project_conf(String::from(name), abs_path) {
+  let json_str = match builder::generate_project_conf(String::from(name), abs_path) {
     Ok(content) => content,
     Err(e) => panic!(e)
   };

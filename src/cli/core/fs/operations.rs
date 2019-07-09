@@ -25,7 +25,7 @@ pub mod toolbox {
   /**
    * Create
    * 
-   * Create the capoomobi file
+   * Create a file
    */
   pub fn create(file_path: &str) -> Result<PathBuf, std::io::Error> {
     let mut home_dir = get_home_dir();

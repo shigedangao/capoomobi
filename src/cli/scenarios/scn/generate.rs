@@ -2,7 +2,7 @@ use crate::docker::lexer;
 use crate::docker::lexer::compose;
 use crate::cli::core::logger::logging;
 use crate::cli::core::input::input;
-use crate::kubernetes::generator;
+use crate::kubernetes::{generator, compiler};
 use std::collections::HashMap;
 
 // Constant referring to the compose file which need to be parse
@@ -37,8 +37,8 @@ pub fn launch(sub_action: &str) {
   };
 
   let prefs = ask_services_details(&services);
-
-  generator::get_kube_abstract_tree(services, prefs);
+  let kubes = generator::get_kube_abstract_tree(services, prefs);
+  compiler::kube_compiler::compile_kube_vector(kubes);
 }
 
 /**

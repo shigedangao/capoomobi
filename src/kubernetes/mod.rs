@@ -1,4 +1,5 @@
 pub mod controllers;
+pub mod compiler;
 
 /**
  * Generator
@@ -28,7 +29,7 @@ pub mod generator {
    * 
    * Get a structure representing the tree of a k8s file
    */
-  pub fn get_kube_abstract_tree(docker_services: Vec<Service>, options: HashMap<String, HashMap<&str, String>>) {
+  pub fn get_kube_abstract_tree(docker_services: Vec<Service>, options: HashMap<String, HashMap<&str, String>>) -> Vec<Kube> {
     let kube_containers: Vec<Kube> = docker_services
       .into_iter()
       .filter(|service| options.get(&service.name).is_some())
@@ -45,6 +46,6 @@ pub mod generator {
       })
       .collect();
 
-    println!("value of kube containers {:?}", kube_containers);
+    return kube_containers
   }
 }

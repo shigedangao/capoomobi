@@ -1,4 +1,5 @@
 pub mod builder;
+pub mod config;
 
 /**
  * Configure mod
@@ -12,7 +13,7 @@ pub mod builder;
  */
 pub mod configure {
   use crate::cli::core::fs::operations::toolbox;
-  use crate::cli::configurator::builder;
+  use crate::cli::configurator::builder::builder;
   use std::path::PathBuf;
   use std::path::Path;
   use std::fs;
@@ -79,7 +80,7 @@ pub mod configure {
    * 
    * Read the config file and return the set of json objects
    */
-  pub fn read_config_file() -> Result<builder::json_util::Projects, String>{
+  pub fn read_config_file() -> Result<builder::Projects, String>{
     let mut config_file_path = toolbox::get_home_dir();
     config_file_path.push(CONFIG_FILE_PATH);
    
@@ -90,7 +91,7 @@ pub mod configure {
       }
     };
 
-    let projects = match builder::json_util::parse_str_to_struct(&contents) {
+    let projects = match builder::parse_str_to_struct(&contents) {
       Ok(p) => p,
       Err(e) => {
         return Err(format!("{}{:?}", DECODE_ERROR, e));

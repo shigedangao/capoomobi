@@ -1,6 +1,6 @@
 pub mod core;
 pub mod scenarios;
-mod configurator;
+pub mod configurator;
 
 use crate::cli::core::logger::logging;
 

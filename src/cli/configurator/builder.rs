@@ -1,10 +1,10 @@
 /**
- * Json mod
+ * Builder module
  * 
  * This mod manipulate struct regarding JSON
  * It mainly manipulate raw string from capoomobi.json
  */
-pub mod json_util {
+pub mod builder {
   use crate::cli::configurator::configure;
   use std::path::PathBuf;
   use serde::{Serialize, Deserialize};
@@ -17,15 +17,15 @@ pub mod json_util {
   // Structure refering to a project
   #[derive(Serialize, Deserialize, Debug)]
   pub struct Project {
-    name: String,
-    path: String,
+    pub name: String,
+    pub path: String,
   }
 
   // Structure refering to a set of projects
   #[derive(Serialize, Deserialize, Debug)]
   pub struct Projects {
-    projects: Vec<Project>,
-    current: String,
+    pub projects: Vec<Project>,
+    pub current: String,
   }
 
   /**

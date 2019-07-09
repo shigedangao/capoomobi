@@ -1,3 +1,8 @@
+/**
+ * Container
+ * 
+ * Module use to create a container of a T kubernetes controller
+ */
 pub mod container {
   use std::collections::HashMap;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
