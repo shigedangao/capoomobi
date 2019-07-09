@@ -43,7 +43,7 @@ pub mod container {
   #[derive(Debug)]
   pub struct KubeContainer {
     controller_type: ControllerKind,
-    name: String,
+    pub name: String,
     image: String,
     replicas: u8,
     commands: Vec<String>,

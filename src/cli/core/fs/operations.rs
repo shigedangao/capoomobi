@@ -13,6 +13,11 @@ pub mod toolbox {
   use std::io;
   use std::fs;
 
+  /**
+   * Get Home Dir
+   * 
+   * Return the home directory path
+   */
   pub fn get_home_dir() -> PathBuf {
     let home_dir = match dirs::home_dir() {
       Some(path) => path,
@@ -62,4 +67,16 @@ pub mod toolbox {
     let file = fs::read_to_string(Path::new(&file_path))?;
     Ok(file)
   }
+
+  /**
+   * Concat String Path
+   * 
+   * Concat string paths
+   */
+  pub fn concat_string_path(base: String, extra: String) -> PathBuf {
+    let path = PathBuf::from(base);
+    path.push(extra);
+
+    return path;
+  } 
 }

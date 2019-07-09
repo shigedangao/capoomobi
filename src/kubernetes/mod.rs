@@ -20,7 +20,7 @@ pub mod generator {
    */
   #[derive(Debug)]
   pub struct Kube {
-    object: container::KubeContainer,
+    pub object: container::KubeContainer,
     service: service::KubeService,
   }
 
