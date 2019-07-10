@@ -69,12 +69,21 @@ pub mod toolbox {
   }
 
   /**
+   * Create Folder
+   * 
+   * Create a folder based on the path
+   */
+  pub fn create_folder_from_pathbuf(path: PathBuf) -> io::Result<()> {
+    fs::create_dir_all(path)
+  }
+
+  /**
    * Concat String Path
    * 
    * Concat string paths
    */
-  pub fn concat_string_path(base: String, extra: String) -> PathBuf {
-    let path = PathBuf::from(base);
+  pub fn concat_string_path(base: &String, extra: &String) -> PathBuf {
+    let mut path = PathBuf::from(base);
     path.push(extra);
 
     return path;
