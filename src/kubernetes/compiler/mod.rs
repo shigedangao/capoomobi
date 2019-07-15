@@ -45,7 +45,10 @@ pub mod kube_compiler {
    * Create kubernetes folders based on the saved project path and the parsed services
    */
   fn create_kubernetes_folder(base_path: String, service_name: String) -> Result<(), &'static str> {
-    let service_full_path = toolbox::concat_string_path(&base_path, &service_name);
+    let mut kube_folder_path = String::from(base_path);
+    kube_folder_path.push_str("/kube");
+    
+    let service_full_path = toolbox::concat_string_path(&kube_folder_path, &service_name);
     match toolbox::create_folder_from_pathbuf(service_full_path) {
       Ok(()) => {
         logging::write(
