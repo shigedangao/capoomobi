@@ -7,6 +7,7 @@ pub mod container {
   use std::collections::HashMap;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
+  use crate::errors::cli_error::{CliErr};
 
   /**
    * List of supported K8S controllers
@@ -24,13 +25,13 @@ pub mod container {
    * Parse string to enum ControllerKind deployment
    */
   impl EnumHelper<ControllerKind> for ControllerKind {
-    fn from_str(controller: &str) -> Result<ControllerKind, &'static str> {
+    fn from_str(controller: &str) -> Option<ControllerKind> {
       match controller {
-        "deployment" => Ok(ControllerKind::Deployment),
-        "replicaset" => Ok(ControllerKind::ReplicaSet),
-        "statefulset" => Ok(ControllerKind::StatefulSet),
-        "daemonset" => Ok(ControllerKind::DaemonSet),
-        _ => Ok(ControllerKind::Deployment)
+        "deployment" => Some(ControllerKind::Deployment),
+        "replicaset" => Some(ControllerKind::ReplicaSet),
+        "statefulset" => Some(ControllerKind::StatefulSet),
+        "daemonset" => Some(ControllerKind::DaemonSet),
+        _ => Some(ControllerKind::Deployment)
       }
     }
   }

@@ -9,6 +9,7 @@ pub mod kube_compiler {
   use crate::cli::configurator::config::Helper;
   use crate::cli::core::fs::operations::toolbox;
   use crate::cli::core::logger::logging;
+  use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
 
   // Error constant
   const EMPTY_PROJECT_PATH: &str = "The project path is not set";
@@ -17,7 +18,7 @@ pub mod kube_compiler {
   /**
    * Compile Kube Vector
    */
-  pub fn compile_kube_vector(kubes: Vec<Kube>) -> Result<(), &'static str> {
+  pub fn compile_kube_vector(kubes: Vec<Kube>) -> Result<(), CliErr> {
     logging::write(
       logging::LogType::Info, 
       "Creating kubernetes folders...",
@@ -27,12 +28,16 @@ pub mod kube_compiler {
     for kube in kubes.into_iter() {
       let project_path = Helper::get_current_project_path();
       if let None = project_path {
-        return Err(EMPTY_PROJECT_PATH);
+        return Err(
+          CliErr::new(EMPTY_PROJECT_PATH, "", ErrCode::NotFound)
+        );
       }
 
       let folder_creation_res = create_kubernetes_folder(project_path.unwrap(), kube.object.name);
       if let Err(err) = folder_creation_res {
-        return Err(err);
+        return Err(
+          CliErr::new(err, "", ErrCode::IOError)
+        );
       }
     }
 

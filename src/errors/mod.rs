@@ -16,7 +16,9 @@ pub mod cli_error {
   pub enum ErrCode {
     ParsingError,
     SerializeError,
-    MissingFieldError
+    MissingFieldError,
+    IOError,
+    NotFound
   }
 
   /**
@@ -57,6 +59,7 @@ pub mod cli_error {
         ErrCode::MissingFieldError => 44,
         ErrCode::ParsingError => 50,
         ErrCode::SerializeError => 42,
+        ErrCode::NotFound => 44,
         _ => 44
       };
       

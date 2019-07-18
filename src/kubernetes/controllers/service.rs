@@ -4,7 +4,7 @@
 pub mod service {
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   
-  const UNSUPPORT_PARSE_SERVICE: &str = "Unsupported service type";
+  const UNSUPPORT_CONTROLLER: &str = "Unsupport type of controller";
   const EMPTY_PORT: &str = "Ports value is empty";
 
   /**
@@ -21,11 +21,11 @@ pub mod service {
    * Parse string to enum ServiceType
    */
   impl EnumHelper<ServiceType> for ServiceType {
-    fn from_str(service_type: &str) -> Result<ServiceType, &'static str> {
+    fn from_str(service_type: &str) -> Option<ServiceType> {
       match service_type {
-        "clusterip" => Ok(ServiceType::ClusterIP),
-        "nodeport" => Ok(ServiceType::NodePort),
-        _ => Err(UNSUPPORT_PARSE_SERVICE)
+        "clusterip" => Some(ServiceType::ClusterIP),
+        "nodeport" => Some(ServiceType::NodePort),
+        _ => None
       }
     }
   }
@@ -48,8 +48,8 @@ pub mod service {
    */
   pub fn create_kube_service(docker_ports: &Vec<String>, labels: &Vec<String>, service_type_str: &String) -> KubeService {
     let service_type = match ServiceType::from_str(service_type_str.to_lowercase().as_str()) {
-      Ok(svc) => svc,
-      Err(e) => panic!(e)
+      Some(svc) => svc,
+      None => panic!(format!("{}", UNSUPPORT_CONTROLLER))
     };
 
     if docker_ports.is_empty() {

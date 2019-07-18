@@ -7,6 +7,9 @@ pub mod bootstrap {
   use crate::cli::scenarios::scn;
   use crate::cli::core::logger::logging;
 
+  // errors
+  const UNKNOWN_SCENARIO_ERR: &str = "Scenarios not found";
+
   /**
    * Init
    * 
@@ -14,8 +17,8 @@ pub mod bootstrap {
    */
   pub fn init(main_action: &str, sub_action: &str, options: Vec<String>) {
     match scenes_helper::Scenarios::from_str(main_action) {
-      Err(err) => logging::write(logging::LogType::Error, err, None),
-      Ok(res) => launch_scenario(res, sub_action, options)
+      None => logging::write(logging::LogType::Error, UNKNOWN_SCENARIO_ERR, None),
+      Some(res) => launch_scenario(res, sub_action, options)
     }
   }
 
