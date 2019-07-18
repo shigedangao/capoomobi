@@ -7,7 +7,6 @@ pub mod container {
   use std::collections::HashMap;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
-  use crate::errors::cli_error::{CliErr};
 
   /**
    * List of supported K8S controllers

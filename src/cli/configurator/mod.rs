@@ -63,7 +63,7 @@ pub mod configure {
       });
     }
 
-    match toolbox::create(CONFIG_FILE_PATH) {
+    match toolbox::create_file(CONFIG_FILE_PATH) {
       Ok(created_path) => Ok(Configure{
         path: created_path
       }),

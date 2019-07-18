@@ -28,11 +28,11 @@ pub mod toolbox {
   }
 
   /**
-   * Create
+   * Create File
    * 
    * Create a file
    */
-  pub fn create(file_path: &str) -> Result<PathBuf, std::io::Error> {
+  pub fn create_file(file_path: &str) -> Result<PathBuf, std::io::Error> {
     let mut home_dir = get_home_dir();
     home_dir.push(file_path);
 
