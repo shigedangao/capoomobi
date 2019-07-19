@@ -5,14 +5,17 @@
  * It mainly manipulate raw string from capoomobi.json
  */
 pub mod builder {
-  use crate::cli::configurator::configure;
   use std::path::PathBuf;
   use serde::{Serialize, Deserialize};
   use serde_json;
+  use crate::cli::configurator::configure;
+  use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
 
   // Errors
-  const PATH_GENERATE_ERROR: &str = "Unable to generate path for encoding purposes";
+  const PATH_GENERATE_ERROR: &str = "Error while generating absolute path";
+  const PATH_GENERATE_REASON: &str = "An error occured while converting the path";
   const PROJECT_GENERATE_ERROR: &str = "Unable to generate new config for capoomobi.json";
+  const PROJECT_GENERATE_REASON: &str = "An error occured while serializing the project";
 
   // Structure refering to a project
   #[derive(Serialize, Deserialize, Debug)]
@@ -44,14 +47,20 @@ pub mod builder {
    * ],
    * "current": <project_name>
    */
-  pub fn generate_project_conf(project_name: String, path: PathBuf) -> Result<String, &'static str> {
+  pub fn generate_project_conf(project_name: String, path: PathBuf) -> Result<String, CliErr> {
     let str_path = match path.to_str() {
       Some(p) => p,
       None => ""
     };
 
     if str_path.is_empty() {
-      return Err(PATH_GENERATE_ERROR);
+      return Err(
+        CliErr::new(
+          PATH_GENERATE_ERROR,
+          PATH_GENERATE_REASON,
+          ErrCode::ParsingError
+        )
+      );
     }
 
     // Read the capoomobi.json file and parse the content
@@ -77,7 +86,13 @@ pub mod builder {
     if let Ok(content) = serialized_projects {
       Ok(content)
     } else {
-      Err(PROJECT_GENERATE_ERROR)
+      Err(
+        CliErr::new(
+          PROJECT_GENERATE_ERROR,
+          PROJECT_GENERATE_REASON,
+          ErrCode::SerializeError
+        )
+      )
     }
   }
 

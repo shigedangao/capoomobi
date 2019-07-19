@@ -54,16 +54,16 @@ pub mod configure {
    * If the error is different then return an error
    */
   pub fn exist_or_create() -> Result<Configure, String> {
-    if toolbox::file_exist(CONFIG_FILE_PATH) {
-      let mut g_path = toolbox::get_home_dir();
-      g_path.push(CONFIG_FILE_PATH);
-      
+    let mut config_file_path = toolbox::get_home_dir();
+    config_file_path.push(CONFIG_FILE_PATH);
+
+    if let Some(res_path) = toolbox::file_exist(&config_file_path) {
       return Ok(Configure{
-        path: g_path
+        path: res_path
       });
     }
 
-    match toolbox::create(CONFIG_FILE_PATH) {
+    match toolbox::create_file(config_file_path) {
       Ok(created_path) => Ok(Configure{
         path: created_path
       }),
