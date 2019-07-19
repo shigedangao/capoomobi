@@ -1,4 +1,5 @@
 pub mod builder;
+pub mod config;
 
 /**
  * Configure mod
@@ -12,7 +13,7 @@ pub mod builder;
  */
 pub mod configure {
   use crate::cli::core::fs::operations::toolbox;
-  use crate::cli::configurator::builder;
+  use crate::cli::configurator::builder::builder;
   use std::path::PathBuf;
   use std::path::Path;
   use std::fs;
@@ -53,16 +54,16 @@ pub mod configure {
    * If the error is different then return an error
    */
   pub fn exist_or_create() -> Result<Configure, String> {
-    if toolbox::file_exist(CONFIG_FILE_PATH) {
-      let mut g_path = toolbox::get_home_dir();
-      g_path.push(CONFIG_FILE_PATH);
-      
+    let mut config_file_path = toolbox::get_home_dir();
+    config_file_path.push(CONFIG_FILE_PATH);
+
+    if let Some(res_path) = toolbox::file_exist(&config_file_path) {
       return Ok(Configure{
-        path: g_path
+        path: res_path
       });
     }
 
-    match toolbox::create(CONFIG_FILE_PATH) {
+    match toolbox::create_file(config_file_path) {
       Ok(created_path) => Ok(Configure{
         path: created_path
       }),
@@ -79,7 +80,7 @@ pub mod configure {
    * 
    * Read the config file and return the set of json objects
    */
-  pub fn read_config_file() -> Result<builder::json_util::Projects, String>{
+  pub fn read_config_file() -> Result<builder::Projects, String>{
     let mut config_file_path = toolbox::get_home_dir();
     config_file_path.push(CONFIG_FILE_PATH);
    
@@ -90,7 +91,7 @@ pub mod configure {
       }
     };
 
-    let projects = match builder::json_util::parse_str_to_struct(&contents) {
+    let projects = match builder::parse_str_to_struct(&contents) {
       Ok(p) => p,
       Err(e) => {
         return Err(format!("{}{:?}", DECODE_ERROR, e));

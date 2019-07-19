@@ -1,3 +1,8 @@
+/**
+ * Container
+ * 
+ * Module use to create a container of a T kubernetes controller
+ */
 pub mod container {
   use std::collections::HashMap;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
@@ -19,13 +24,13 @@ pub mod container {
    * Parse string to enum ControllerKind deployment
    */
   impl EnumHelper<ControllerKind> for ControllerKind {
-    fn from_str(controller: &str) -> Result<ControllerKind, &'static str> {
+    fn from_str(controller: &str) -> Option<ControllerKind> {
       match controller {
-        "deployment" => Ok(ControllerKind::Deployment),
-        "replicaset" => Ok(ControllerKind::ReplicaSet),
-        "statefulset" => Ok(ControllerKind::StatefulSet),
-        "daemonset" => Ok(ControllerKind::DaemonSet),
-        _ => Ok(ControllerKind::Deployment)
+        "deployment" => Some(ControllerKind::Deployment),
+        "replicaset" => Some(ControllerKind::ReplicaSet),
+        "statefulset" => Some(ControllerKind::StatefulSet),
+        "daemonset" => Some(ControllerKind::DaemonSet),
+        _ => Some(ControllerKind::Deployment)
       }
     }
   }
@@ -38,7 +43,7 @@ pub mod container {
   #[derive(Debug)]
   pub struct KubeContainer {
     controller_type: ControllerKind,
-    name: String,
+    pub name: String,
     image: String,
     replicas: u8,
     commands: Vec<String>,

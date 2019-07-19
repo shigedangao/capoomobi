@@ -1,7 +1,7 @@
 pub mod scenes_helper {
   // Trait to parse to get enum from string
   pub trait EnumHelper<T> {
-    fn from_str(action: &str) -> Result<T, &'static str>;
+    fn from_str(action: &str) -> Option<T>;
   }
 
   // Scenario available for the main action
@@ -25,25 +25,25 @@ pub mod scenes_helper {
   }
 
   impl EnumHelper<Scenarios> for Scenarios {
-    fn from_str(action: &str) -> Result<Scenarios, &'static str> {
+    fn from_str(action: &str) -> Option<Scenarios> {
       match action {
-        "init" => Ok(Scenarios::Init),
-        "help" => Ok(Scenarios::Help),
-        "generate" => Ok(Scenarios::Generate),
-        _ => Err("")
+        "init" => Some(Scenarios::Init),
+        "help" => Some(Scenarios::Help),
+        "generate" => Some(Scenarios::Generate),
+        _ => None
       }
     }
   }
 
   impl EnumHelper<HelpScenarios> for HelpScenarios {
-    fn from_str(action: &str) -> Result<HelpScenarios, &'static str> {
+    fn from_str(action: &str) -> Option<HelpScenarios> {
       match action {
-        "init" => Ok(HelpScenarios::Init),
-        "generate" => Ok(HelpScenarios::Generate),
-        "project" => Ok(HelpScenarios::Project),
-        "revert" => Ok(HelpScenarios::Revert),
-        "verify" => Ok(HelpScenarios::Verify),
-        _ => Err("")
+        "init" => Some(HelpScenarios::Init),
+        "generate" => Some(HelpScenarios::Generate),
+        "project" => Some(HelpScenarios::Project),
+        "revert" => Some(HelpScenarios::Revert),
+        "verify" => Some(HelpScenarios::Verify),
+        _ => None
       }
     }
   }

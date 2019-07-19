@@ -1,9 +1,10 @@
+use std::collections::HashMap;
 use crate::docker::lexer;
 use crate::docker::lexer::compose;
 use crate::cli::core::logger::logging;
 use crate::cli::core::input::input;
-use crate::kubernetes::generator;
-use std::collections::HashMap;
+use crate::kubernetes::{generator, io};
+use crate::errors::cli_error::ErrorHelper;
 
 // Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
@@ -32,13 +33,13 @@ pub fn launch(sub_action: &str) {
   let services = match compose::compose::get_docker_service_structure(yaml_content) {
     Ok(vector) => vector,
     Err(e) => {
-      return logging::write(logging::LogType::Error, e, None)
+      return e.log_pretty()
     }
   };
 
   let prefs = ask_services_details(&services);
-
-  generator::get_kube_abstract_tree(services, prefs);
+  let kubes = generator::get_kube_abstract_tree(services, prefs);
+  io::kube_io::prepare_kube(kubes);
 }
 
 /**

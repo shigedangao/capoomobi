@@ -13,8 +13,8 @@ const EMPTY_OPTIONS_ERROR: &str = "Please select an option";
  */
 pub fn launch(main_action: &str) {
   let parsed_action = match HelpScenarios::from_str(main_action) {
-    Ok(value) => value,
-    Err(_) => panic!(format!("{}", EMPTY_OPTIONS_ERROR))
+    Some(value) => value,
+    None => panic!(format!("{}", EMPTY_OPTIONS_ERROR))
   };
 
   match parsed_action {

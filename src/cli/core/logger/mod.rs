@@ -47,5 +47,4 @@ pub mod logging {
       HelpLogType::Example => println!("{}{}", "\nEXAMPLE: \n\n".green().bold(), message)
     }
   }
-
 }
