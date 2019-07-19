@@ -39,7 +39,7 @@ pub fn launch(sub_action: &str) {
 
   let prefs = ask_services_details(&services);
   let kubes = generator::get_kube_abstract_tree(services, prefs);
-  compiler::kube_compiler::compile_kube_vector(kubes);
+  io::kube_compiler::compile_kube_vector(kubes);
 }
 
 /**

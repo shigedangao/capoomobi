@@ -7,6 +7,7 @@ extern crate dirs;
  * for interacting with any file
  */
 pub mod toolbox {
+  use std::error::Error;
   use std::fs::File;
   use std::path::Path;
   use std::path::PathBuf;
@@ -32,18 +33,15 @@ pub mod toolbox {
    * 
    * Create a file
    */
-  pub fn create_file(file_path: &str) -> Result<PathBuf, std::io::Error> {
-    let mut home_dir = get_home_dir();
-    home_dir.push(file_path);
-
-    match File::create(Path::new(&home_dir)) {
+  pub fn create_file(file_path: PathBuf) -> Result<PathBuf, std::io::Error> {
+    match File::create(Path::new(&file_path)) {
       Ok(f) => f,
       Err(e) => {
         return Err(e);
       }
     };
 
-    return Ok(home_dir);
+    return Ok(file_path);
   }
 
   /**
@@ -51,11 +49,12 @@ pub mod toolbox {
    * 
    * Check if a file exist
    */
-  pub fn file_exist(file_path: &str) -> bool {
-    let mut home_dir = get_home_dir();
-    home_dir.push(file_path);
+  pub fn file_exist(file_path: &PathBuf) -> Option<PathBuf> {
+    if Path::new(&file_path).exists() {
+      Some(file_path);
+    }
 
-    Path::new(&home_dir).exists()
+    None
   }
 
   /**

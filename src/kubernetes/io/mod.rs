@@ -5,8 +5,8 @@
  * @TODO rename this module as it's not a compiler at all
  */
 pub mod kube_compiler {
+  use std::path::PathBuf;
   use crate::kubernetes::generator::{Kube};
-  use crate::kubernetes::controllers::container::container::ControllerKind;
   use crate::cli::configurator::config::Helper;
   use crate::cli::core::fs::operations::toolbox;
   use crate::cli::core::logger::logging;
@@ -15,8 +15,13 @@ pub mod kube_compiler {
   // Errors
   const EMPTY_PROJECT_PATH: &str = "The project path is not set";
   const CREATE_FOLDER_ERROR: &str = "Unable to create kubernetes services folders";
-  
+  const INITIALIZE_KUBE_FILE: &str = "Unable to initialize kubernetes controller file";
+  const INITIALIZE_SVC_FILE: &str = "Unable to initialize kubernetes service file";
+
+  // Constants
   const KUBE_FOLDER: &str = "/kube";
+  const CONTROLLER_FILENAME: &str = "controller.yaml";
+  const SERVICE_FILENAME: &str = "service.yaml";
 
   /**
    * Compile Kube Vector
@@ -39,7 +44,11 @@ pub mod kube_compiler {
     // Create the main folder for each services
     let create_folder_errors: Vec<Result<(), CliErr>> = kubes
       .into_iter()
-      .map(|kube| create_kubernetes_folder(project_path, kube.object.name))
+      .map(|kube| {
+        create_kubernetes_folder(&project_path, kube.object.name)
+          .and_then(create_controller_empty_file)
+          .and_then(create_service_empty_file)
+      })
       .filter(|res| res.is_err())
       .collect();
 
@@ -62,17 +71,18 @@ pub mod kube_compiler {
    * 
    * Create kubernetes folders based on the saved project path and the parsed services
    */
-  fn create_kubernetes_folder(base_path: String, service_name: String) -> Result<(), CliErr> {
+  fn create_kubernetes_folder(base_path: &String, service_name: String) -> Result<PathBuf, CliErr> {
     let svc_path = toolbox::concat_string_path(&base_path, &service_name);
     match toolbox::create_folder_from_pathbuf(svc_path) {
       Ok(()) => {
+        let target_path = toolbox::concat_string_path(&base_path, &service_name);
         logging::write(
           logging::LogType::Info,
           format!("{}{}", "Successfully creating folder: ", service_name).as_str(),
           None
         );
 
-        Ok(())
+        Ok(target_path)
       },
       // @TODO see how to pass the description to the error handler
       Err(_) => Err(CliErr::new(CREATE_FOLDER_ERROR, "", ErrCode::IOError))
@@ -81,11 +91,48 @@ pub mod kube_compiler {
 
   /**
    * Create Kubernetes Empty File
+   * 
+   * Create kubernetes file based on the path and the service name
    */
-  fn create_kubernetes_empty_file(base_path: String, service_name: String) -> Result<(), CliErr> {
-    let mut svc_folder_path = toolbox::concat_string_path(&base_path, &service_name);
-    match toolbox::create_file() {
-      
+  fn create_controller_empty_file(base_path: PathBuf) -> Result<PathBuf, CliErr> {
+    // Controller file path
+    // Need of cloning the base_path as we need to reuse it later on
+    let mut file_path = PathBuf::from(base_path.clone());
+    file_path.push(CONTROLLER_FILENAME);
+    match toolbox::create_file(file_path) {
+      Ok(_) => {
+        logging::write(
+          logging::LogType::Success,
+          "Successfully initialize deployment file",
+          None
+        );
+
+        Ok(base_path)
+      },
+      Err(_) => Err(CliErr::new(INITIALIZE_KUBE_FILE, "", ErrCode::IOError))
+    }
+  }
+
+  /**
+   * Create Service Empty File
+   * 
+   * Create service kubernetes file
+   */
+  fn create_service_empty_file(base_path: PathBuf) -> Result<(), CliErr> {
+    // Service file path
+    let mut service_path = PathBuf::from(base_path);
+    service_path.push(SERVICE_FILENAME);
+    match toolbox::create_file(service_path) {
+      Ok(_) => {
+        logging::write(
+          logging::LogType::Success,
+          "Successfully initialize service file",
+          None
+        );
+
+        Ok(())
+      },
+      Err(_) => Err(CliErr::new(INITIALIZE_SVC_FILE, "", ErrCode::IOError))
     }
   }
 }
