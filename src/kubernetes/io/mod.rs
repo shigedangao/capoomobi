@@ -4,7 +4,7 @@
  * Compiler is use to take the datastructure and output the yaml values
  * @TODO rename this module as it's not a compiler at all
  */
-pub mod kube_compiler {
+pub mod kube_io {
   use std::path::PathBuf;
   use crate::kubernetes::generator::{Kube};
   use crate::cli::configurator::config::Helper;
@@ -24,9 +24,11 @@ pub mod kube_compiler {
   const SERVICE_FILENAME: &str = "service.yaml";
 
   /**
-   * Compile Kube Vector
+   * Prepare Kube
+   * 
+   * Prepare the folder and the kubernetes files
    */
-  pub fn compile_kube_vector(kubes: Vec<Kube>) -> Result<(), CliErr> {
+  pub fn prepare_kube(kubes: Vec<Kube>) -> Result<(), CliErr> {
     logging::write(
       logging::LogType::Info, 
       "Creating kubernetes folders...",
