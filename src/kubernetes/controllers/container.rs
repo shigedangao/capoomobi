@@ -5,8 +5,10 @@
  */
 pub mod container {
   use std::collections::HashMap;
+  use std::collections::BTreeMap;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
+  use crate::kubernetes::controllers::common::{KubeHelper};
 
   /**
    * List of supported K8S controllers
@@ -42,13 +44,23 @@ pub mod container {
    */
   #[derive(Debug)]
   pub struct KubeContainer {
-    controller_type: ControllerKind,
+    pub controller_type: ControllerKind,
     pub name: String,
-    image: String,
-    replicas: u8,
-    commands: Vec<String>,
-    labels: Vec<String>,
-    environement: Vec<String>,
+    pub image: String,
+    pub replicas: u8,
+    pub commands: Vec<String>,
+    pub labels: Vec<String>,
+    pub environement: Vec<String>,
+  }
+
+  impl KubeHelper<&'static str, String> for KubeContainer {
+    fn get_tree_map(&self) -> BTreeMap<&'static str, String> {
+      let mut tree = BTreeMap::new();
+      tree.insert("name", String::from(&self.name));
+      tree.insert("image", String::from(&self.image));
+
+      return tree;
+    }
   }
 
   /**

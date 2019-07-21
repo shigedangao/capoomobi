@@ -7,7 +7,6 @@ extern crate dirs;
  * for interacting with any file
  */
 pub mod toolbox {
-  use std::error::Error;
   use std::fs::File;
   use std::path::Path;
   use std::path::PathBuf;

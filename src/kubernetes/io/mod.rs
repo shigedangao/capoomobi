@@ -1,12 +1,13 @@
+pub mod writer;
+
 /**
- * Kube Compiler
+ * Kube IO
  * 
- * Compiler is use to take the datastructure and output the yaml values
- * @TODO rename this module as it's not a compiler at all
+ * IO is use to prepare folders & files for being write later on
  */
 pub mod kube_io {
   use std::path::PathBuf;
-  use crate::kubernetes::generator::{Kube};
+  use crate::kubernetes::tree::Tree::{Kube};
   use crate::cli::configurator::config::Helper;
   use crate::cli::core::fs::operations::toolbox;
   use crate::cli::core::logger::logging;
@@ -28,7 +29,7 @@ pub mod kube_io {
    * 
    * Prepare the folder and the kubernetes files
    */
-  pub fn prepare_kube(kubes: Vec<Kube>) -> Result<(), CliErr> {
+  pub fn prepare_kube(kubes: &Vec<Kube>) -> Result<(), CliErr> {
     logging::write(
       logging::LogType::Info, 
       "Creating kubernetes folders...",
@@ -41,13 +42,13 @@ pub mod kube_io {
         return Err(CliErr::new(EMPTY_PROJECT_PATH, "", ErrCode::NotFound));
       }
     };
-    project_path.push_str(KUBE_FOLDER);
 
+    project_path.push_str(KUBE_FOLDER);
     // Create the main folder for each services
     let create_folder_errors: Vec<Result<(), CliErr>> = kubes
       .into_iter()
       .map(|kube| {
-        create_kubernetes_folder(&project_path, kube.object.name)
+        create_kubernetes_folder(&project_path, &kube.object.name)
           .and_then(create_controller_empty_file)
           .and_then(create_service_empty_file)
       })
@@ -55,13 +56,6 @@ pub mod kube_io {
       .collect();
 
     if create_folder_errors.len() > 0 {
-      // @TODO see if we need to repeat this operation many times.
-      for err in create_folder_errors.into_iter() {
-        if let Err(e) = err {
-          e.log_pretty();
-        }
-      }
-
       return Err(CliErr::new(CREATE_FOLDER_ERROR, "", ErrCode::IOError));
     }
 
@@ -73,7 +67,7 @@ pub mod kube_io {
    * 
    * Create kubernetes folders based on the saved project path and the parsed services
    */
-  fn create_kubernetes_folder(base_path: &String, service_name: String) -> Result<PathBuf, CliErr> {
+  fn create_kubernetes_folder(base_path: &String, service_name: &String) -> Result<PathBuf, CliErr> {
     let svc_path = toolbox::concat_string_path(&base_path, &service_name);
     match toolbox::create_folder_from_pathbuf(svc_path) {
       Ok(()) => {
