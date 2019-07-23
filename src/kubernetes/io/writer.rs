@@ -4,8 +4,9 @@
  * Module use to trigger asynchronous 
  */
 pub mod Writer {
-  use crate::kubernetes::tree::Tree::{Kube};
   use futures::future::lazy;
+  use crate::kubernetes::tree::Tree::{Kube};
+  use crate::kubernetes::template::controller::controller;
 
   /**
    * Async Yaml Writer
@@ -16,7 +17,7 @@ pub mod Writer {
     tokio::run(lazy(|| {
       for kube in kubes.into_iter() {
         tokio::spawn(lazy(move || {
-          println!("hello ! {:?}", kube);
+          controller::template(kube.object);
           Ok(())
         }));
       }

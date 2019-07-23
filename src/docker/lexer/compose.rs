@@ -18,8 +18,6 @@ pub mod compose {
   pub struct Service {
     pub name: String,
     pub image: String,
-    pub command: String,
-    pub label: String,
     pub commands: Vec<String>,
     pub ports: Vec<String>,
     pub labels: Vec<String>,
@@ -116,6 +114,7 @@ pub mod compose {
     let attributes = get_supported_attributes(FieldKind::ArrayField);
     let empty_vec = vec![String::from("")];
 
+    // @TODO refactor for using BTree instead
     for attr in attributes.into_iter() {
       let vec = yaml_service[attr].as_vec();
       if let Some(array) = vec {
@@ -131,16 +130,20 @@ pub mod compose {
       }
     }
 
+    let fallback_cmd = vec![String::from(str_field_vec[1])];
+    let fallback_label = vec![String::from(str_field_vec[2])];
+    
+    println!("value of fallback_label {:?}", fallback_label);
+
     Service {
       name: String::from(service_name.as_str().unwrap_or("unknown")),
       // Single line field
+      // @TODO Put these fields as the unwrap_or values
       image: String::from(str_field_vec[0]),
-      command: String::from(str_field_vec[1]),
-      label: String::from(str_field_vec[2]),
       // Array fields
-      commands: array_attributes.get("command").unwrap_or(&empty_vec).to_vec(),
+      commands: array_attributes.get("command").unwrap_or(&fallback_cmd).to_vec(),
       ports: array_attributes.get("ports").unwrap_or(&empty_vec).to_vec(),
-      labels: array_attributes.get("label").unwrap_or(&empty_vec).to_vec(),
+      labels: array_attributes.get("labels").unwrap_or(&fallback_label).to_vec(),
       environment: array_attributes.get("environment").unwrap_or(&empty_vec).to_vec(),
       volumes: array_attributes.get("volumes").unwrap_or(&empty_vec).to_vec(),
     }

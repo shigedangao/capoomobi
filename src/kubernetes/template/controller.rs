@@ -7,7 +7,6 @@ pub mod controller {
   use yaml_rust::{YamlLoader, Yaml};
   use handlebars::Handlebars;
   use crate::kubernetes::controllers::container::container::{KubeContainer};
-  use crate::kubernetes::controllers::common::KubeHelper;
 
   /**
    * Template
@@ -15,15 +14,19 @@ pub mod controller {
    * Template the kuberntes deployment file
    */
   pub fn template(container: KubeContainer) {
-    let mut reg = Handlebars::new();
+    let reg = Handlebars::new();
     
     // basic kuberntes controller template
+    // @TODO create helper
     let content = r#"
       apiVersion: apps/v1
-      kind: {{ kind }}
+      kind: {{ controller_type }}
       metadata:
         name: {{ name }}
-        labels: {{ labels }}
+        labels:
+          {{ #each labels as |label| }}
+            {{- label}}
+          {{ /each }}
       spec:
         replicas: {{ replicas }}
         selector:
@@ -39,9 +42,8 @@ pub mod controller {
               - containerPort: {{ ports }}
     "#;
 
-    let tree = container.get_tree_map();
     // temmplate the content
-    match reg.render_template(content, &tree) {
+    match reg.render_template(content, &container) {
       Ok(p) => println!("{}", p),
       Err(e) => println!("{}", e)
     };

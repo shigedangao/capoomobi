@@ -6,6 +6,7 @@
 pub mod container {
   use std::collections::HashMap;
   use std::collections::BTreeMap;
+  use serde::Serialize;
   use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
   use crate::kubernetes::controllers::common::{KubeHelper};
@@ -15,6 +16,7 @@ pub mod container {
    * by the generator
    */
   #[derive(Debug)]
+  #[derive(Serialize)]
   pub enum ControllerKind {
     Deployment,
     ReplicaSet,
@@ -43,6 +45,7 @@ pub mod container {
    * Structure representing a kubernetes container
    */
   #[derive(Debug)]
+  #[derive(Serialize)]
   pub struct KubeContainer {
     pub controller_type: ControllerKind,
     pub name: String,
@@ -78,6 +81,8 @@ pub mod container {
     if let Some(replicas) = option.get("replicas") {
       replica_count = replicas.parse::<u8>().unwrap_or(3);
     }
+
+    println!("value of docker_service {:?}", docker_service);
 
     let kube_container = KubeContainer {
       controller_type: controller_kind,
