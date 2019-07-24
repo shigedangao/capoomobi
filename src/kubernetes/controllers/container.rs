@@ -82,8 +82,6 @@ pub mod container {
       replica_count = replicas.parse::<u8>().unwrap_or(3);
     }
 
-    println!("value of docker_service {:?}", docker_service);
-
     let kube_container = KubeContainer {
       controller_type: controller_kind,
       name: docker_service.name,
