@@ -9,12 +9,17 @@ pub mod helper {
 
   impl HelperDef for TemplateHelper {
     fn call<'reg: 'rc, 'rc>(&self, h: &Helper, _: &Handlebars, _: &Context, rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
-      let param = h.param(0).unwrap();
-      let value = param.value().as_array();
+      let array_param = h.param(0).unwrap();
+      let indent_param = h.param(1).unwrap();
 
-      if let Some(v) = value {
+      // converted value
+      let values = array_param.value().as_array();
+      let ident = indent_param.value().as_u64().unwrap_or(0);
+
+      if let Some(v) = values {
         for key in v {
-          out.write(format!("- {}", key).as_str())?;
+          let value = format!("\n {:ident$}- {}", "", key, ident=ident as usize);
+          out.write(value.as_str())?;
         }
       }
 

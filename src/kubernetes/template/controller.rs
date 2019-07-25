@@ -4,7 +4,6 @@
  * Templating controller String model
  */
 pub mod controller {
-  use yaml_rust::{YamlLoader, Yaml};
   use handlebars::Handlebars;
   use crate::kubernetes::controllers::container::container::{KubeContainer};
   use crate::kubernetes::template::helper::helper::{TemplateHelper};
@@ -14,29 +13,22 @@ pub mod controller {
    * 
    * Template the kuberntes deployment file
    */
-  pub fn template(container: KubeContainer) {
+  pub fn template(container: KubeContainer) -> Option<String> {
     let mut handlebars = Handlebars::new();
     
-    // basic kuberntes controller template
-    // @TODO create helper
-
-
-    //     labels: {{ #each labels as |label| }}
-    //      - {{ label }}{{ /each }}
     let content = r#"
       apiVersion: apps/v1
       kind: {{ controller_type }}
       metadata:
         name: {{ name }}
-        labels:
-          {{ lilmouse labels }}
+        labels: {{ lilmouse labels 8 }}
       spec:
         replicas: {{ replicas }}
         selector:
-          matchLabels: {{ labels }}
+          matchLabels: {{ lilmouse labels 8 }}
         template:
           metadata:
-            labels: {{ labels  }}
+            labels: {{ lilmouse labels 8 }}
           spec:
             containers:
             - name: {{ name }}
@@ -49,8 +41,12 @@ pub mod controller {
     handlebars.register_helper("lilmouse", Box::new(TemplateHelper));
     // temmplate the content
     match handlebars.render_template(content, &container) {
-      Ok(p) => println!("{}", p),
-      Err(e) => println!("{}", e)
-    };
+      Ok(p) => Some(p),
+      Err(e) => {
+        // @TODO use CliErr
+        println!("{}", e);
+        None
+      }
+    }
   }
 }

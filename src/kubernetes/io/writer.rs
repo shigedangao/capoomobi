@@ -4,6 +4,8 @@
  * Module use to trigger asynchronous 
  */
 pub mod Writer {
+  use std::fs;
+  use std::path::PathBuf;
   use futures::future::lazy;
   use crate::kubernetes::tree::Tree::{Kube};
   use crate::kubernetes::template::controller::controller;
@@ -17,12 +19,21 @@ pub mod Writer {
     tokio::run(lazy(|| {
       for kube in kubes.into_iter() {
         tokio::spawn(lazy(move || {
-          controller::template(kube.object);
+          let option = controller::template(kube.object);
+          if let Some(template) = option {
+            write_yaml(kube.object.path, template);
+          }
+
           Ok(())
         }));
       }
 
       Ok(())
     }));
+  }
+
+  fn write_yaml(p: PathBuf, template: String) -> std::io::Result<()> {
+    fs::write(p, template.as_bytes())?;
+    Ok(())
   }
 }
