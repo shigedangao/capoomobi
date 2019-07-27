@@ -2,7 +2,7 @@ pub mod core;
 pub mod scenarios;
 pub mod configurator;
 
-use crate::errors::cli_error::{ErrorHelper};
+use crate::errors::cli_error::{ErrHelper};
 
 pub fn bootstrap() {
   // scenarios::welcome::welcome_scn::bootstrap();

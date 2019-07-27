@@ -1,11 +1,11 @@
-/**
- * Template helper
- */
+/// Helper
+/// 
+/// # Path
+/// kubernetes/template/path
 pub mod helper {
   use handlebars::{Handlebars, HelperDef, RenderContext, Helper, Context, JsonRender, HelperResult, Output, RenderError};
   
-  // Helper struct use for creating 
-  // a custom handlebar helper
+  /// Handlebar helper struct
   #[derive(Clone, Copy)]
   pub struct TemplateHelper;
 

@@ -6,7 +6,7 @@
 pub mod compose {
   use std::collections::HashMap;
   use yaml_rust::{yaml};
-  use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
+  use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
   // constant error
   const EMPTY_YAML_CONTENT_ERROR: &str = "Unable to parse empty content of docker-compose.yaml file";

@@ -5,11 +5,10 @@
  */
 pub mod bootstrap {
   use std::path::PathBuf;
-  use std::error::Error;
-  use crate::kubernetes::tree::Tree::{Kube};
+  use crate::kubernetes::tree::tree::{Kube};
   use crate::cli::core::fs::operations::toolbox;
   use crate::cli::core::logger::logging;
-  use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
+  use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
   /**
    * Prepare Kube

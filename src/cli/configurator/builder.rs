@@ -9,7 +9,7 @@ pub mod builder {
   use serde::{Serialize, Deserialize};
   use serde_json;
   use crate::cli::configurator::configure;
-  use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
+  use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
   // Errors
   const PATH_GENERATE_ERROR: &str = "Error while generating absolute path";
