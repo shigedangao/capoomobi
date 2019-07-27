@@ -36,7 +36,7 @@ pub mod service {
   #[derive(Serialize)]
   pub struct KubeService {
     name: String,
-    container_port: u16,
+    svc_port: u16,
     target_port: u16,
     service_type: ServiceType,
     labels: Vec<String>
@@ -76,7 +76,7 @@ pub mod service {
 
     let kube_service = KubeService {
       name: service_name,
-      container_port: mapped_ports[0],
+      svc_port: mapped_ports[0],
       target_port: mapped_ports[1],
       service_type: service_type,
       labels: labels.clone()

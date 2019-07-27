@@ -9,7 +9,8 @@ pub mod writer {
   use futures::future::lazy;
   use crate::kubernetes::tree::Tree::{Kube};
   use crate::kubernetes::template::controller::controller;
-  use crate::kubernetes::template::service::service;
+  use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
+  use crate::kubernetes::template::common::TemplateBuilder;
 
   /**
    * Async Yaml Writer
@@ -20,16 +21,23 @@ pub mod writer {
     tokio::run(lazy(|| {
       for kube in kubes.into_iter() {
         tokio::spawn(lazy(move || {
-          let controller_path = PathBuf::from(&kube.object.controller_path);
-          
-          let option = controller::template(kube.object);
-          if let Some(template) = option {
-            match write_yaml(controller_path, template) {
-              Ok(()) => {
-                println!("success !!!!");
-                return Ok(())
-              },
-              Err(err) => panic!(err)
+          let ctrl_path = PathBuf::from(&kube.object.controller_path);
+          let svc_path = PathBuf::from(&kube.object.service_path);
+
+          let ctrl_tmpl = controller::template(kube.object);
+          if let Some(template) = ctrl_tmpl {
+            let res = write_yaml(ctrl_path, template);
+            if let Err(err) = res {
+              panic!(err);
+            }
+          }
+
+          let service = ServiceTmplBuilder::new(kube.service);
+          let service_tmpl = service.template();
+          if let Some(tmpl) = service_tmpl {
+            let res = write_yaml(svc_path, tmpl);
+            if let Err(err) = res {
+              panic!(err);
             }
           }
 

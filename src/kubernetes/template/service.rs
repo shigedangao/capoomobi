@@ -11,7 +11,7 @@ pub mod service {
   use crate::kubernetes::template::common::{TemplateBuilder};
 
   /// Structure use to implement the service template builder
-  struct ServiceTmplBuilder {
+  pub struct ServiceTmplBuilder {
     service: KubeService
   }
 
@@ -29,12 +29,13 @@ pub mod service {
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-service
+  name: {{ name }}
+  labels: {{ lilmouse labels 2 }}
 spec:
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 9376
+    port: {{ svc_port }}
+    targetPort: {{ target_port }}
       ";
 
       handlebars.register_helper("lilmouse", Box::new(TemplateHelper));
