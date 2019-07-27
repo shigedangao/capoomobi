@@ -34,7 +34,7 @@ pub mod Tree {
       .map(|service| {
         let option = options.get(&service.name).unwrap();
         let svc_type = option.get("service").unwrap_or(&String::from("")).to_owned();
-        let kube_svc = service::create_kube_service(&service.ports, &service.labels, &svc_type);
+        let kube_svc = service::create_kube_service(&service.name, &service.ports, &service.labels, &svc_type);
         let kube_obj = container::create_kube_struct(service, option);
         
         return Kube {

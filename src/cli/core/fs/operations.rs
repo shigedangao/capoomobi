@@ -97,7 +97,7 @@ pub mod toolbox {
   /**
    * Get Kube Path For Service
    */
-  pub fn get_kube_path_for_service(name: String) -> Option<PathBuf> {
+  pub fn get_kube_path_for_service(name: &String) -> Option<PathBuf> {
     let project_path_opts = Helper::get_current_project_path();
     if let None = project_path_opts {
       return None;

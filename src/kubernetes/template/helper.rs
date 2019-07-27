@@ -4,6 +4,8 @@
 pub mod helper {
   use handlebars::{Handlebars, HelperDef, RenderContext, Helper, Context, JsonRender, HelperResult, Output, RenderError};
   
+  // Helper struct use for creating 
+  // a custom handlebar helper
   #[derive(Clone, Copy)]
   pub struct TemplateHelper;
 

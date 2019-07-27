@@ -40,7 +40,7 @@ pub fn launch(sub_action: &str) {
   let prefs = ask_services_details(&services);
   let kubes = tree::Tree::get_kube_abstract_tree(services, prefs);
   match io::bootstrap::bootstrap::prepare_kube(&kubes) {
-    Ok(()) => io::writer::Writer::write_kubernetes_yaml(kubes),
+    Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
     Err(e) => panic!("error {:?}", e)
   };
 }
