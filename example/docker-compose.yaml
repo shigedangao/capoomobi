@@ -9,7 +9,8 @@ services:
     command:
       - "sh start.sh"
     labels:
-      "hey little mouse"
+      - "hey little mouse"
+      - "hey big cat"
   # mysql:
   #   # replicas: 5
   #   image: mysql:5:7

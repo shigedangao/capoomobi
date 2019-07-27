@@ -4,8 +4,8 @@
  * List of struct defining the docker-compose file
  */
 pub mod compose {
-  use yaml_rust::{yaml};
   use std::collections::HashMap;
+  use yaml_rust::{yaml};
   use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
 
   // constant error
@@ -18,8 +18,6 @@ pub mod compose {
   pub struct Service {
     pub name: String,
     pub image: String,
-    pub command: String,
-    pub label: String,
     pub commands: Vec<String>,
     pub ports: Vec<String>,
     pub labels: Vec<String>,
@@ -68,13 +66,7 @@ pub mod compose {
    */
   pub fn get_docker_service_structure(content: Vec<yaml::Yaml>) -> Result<Vec<Service>, CliErr> {
     if content.is_empty() {
-      return Err(
-        CliErr::new(
-          EMPTY_YAML_CONTENT_ERROR,
-          "",
-          ErrCode::NotFound
-        )
-      );
+      return Err(CliErr::new(EMPTY_YAML_CONTENT_ERROR, "", ErrCode::NotFound));
     }
 
     let compose_content  = &content[0];
@@ -91,15 +83,19 @@ pub mod compose {
       return Ok(services);
     }
 
-    Err(
-      CliErr::new(
-        SVC_NOT_ARRAY_TYPE_ERROR,
-        "",
-        ErrCode::ParsingError
-      )
-    )
+    Err(CliErr::new(SVC_NOT_ARRAY_TYPE_ERROR, "", ErrCode::ParsingError))
   }
 
+  /**
+   * Get Array Or Single Attr
+   */
+  fn get_array_or_single_attr(array: Vec<String>, single: Vec<String>) -> Vec<String> {
+    if array.is_empty() {
+      return single;
+    }
+
+    return array;
+  }
 
   /**
    * Get Service
@@ -107,42 +103,56 @@ pub mod compose {
    * Get attribute value for each services
    */
   fn get_service(service_name: yaml::Yaml, yaml_service: yaml::Yaml) -> Service {
+    let mut attrs_vec = HashMap::new();
+    let empty_vec = vec![String::from("")];
+
+    // Retrieve string attributes
     let str_field_vec: Vec<&str> = get_supported_attributes(FieldKind::SingleField)
         .into_iter()
         .map(|key| yaml_service[key].as_str().unwrap_or(""))
         .collect();
 
-    let mut array_attributes = HashMap::new();
+    // Retrieve array attributes
     let attributes = get_supported_attributes(FieldKind::ArrayField);
-    let empty_vec = vec![String::from("")];
 
     for attr in attributes.into_iter() {
-      let vec = yaml_service[attr].as_vec();
-      if let Some(array) = vec {
-        let str_vec_fields: Vec<String> = array
-          .into_iter()
-          .map(|value| value.as_str().unwrap_or(""))
-          .map(|each| String::from(each))
-          .collect();
-        
-        array_attributes.insert(attr, str_vec_fields);        
-      } else {
-        array_attributes.insert(attr, Vec::new());
+      match yaml_service[attr].as_vec() {
+        Some(arr) => {
+          let str_vec_fields: Vec<String> = arr
+            .into_iter()
+            .map(|value| String::from(value.as_str().unwrap_or("")))
+            .collect();
+
+          attrs_vec.insert(attr, str_vec_fields);
+        },
+        None => {
+          attrs_vec.insert(attr, Vec::new());
+        }
       }
     }
 
+    let fallback_cmd = vec![String::from(str_field_vec[1])];
+    let fallback_label = vec![String::from(str_field_vec[2])];
+    
     Service {
-      name: String::from(service_name.as_str().unwrap_or("unknown")),
       // Single line field
+      name: String::from(service_name.as_str().unwrap_or("unknown")),
       image: String::from(str_field_vec[0]),
-      command: String::from(str_field_vec[1]),
-      label: String::from(str_field_vec[2]),
       // Array fields
-      commands: array_attributes.get("command").unwrap_or(&empty_vec).to_vec(),
-      ports: array_attributes.get("ports").unwrap_or(&empty_vec).to_vec(),
-      labels: array_attributes.get("label").unwrap_or(&empty_vec).to_vec(),
-      environment: array_attributes.get("environment").unwrap_or(&empty_vec).to_vec(),
-      volumes: array_attributes.get("volumes").unwrap_or(&empty_vec).to_vec(),
+      // Reference to the the docker "commands" value
+      commands: get_array_or_single_attr(
+        attrs_vec.get("command").unwrap_or(&empty_vec).to_vec(),
+        fallback_cmd
+      ),
+      // Reference to the docker "labels" value
+      labels: get_array_or_single_attr(
+        attrs_vec.get("labels").unwrap_or(&empty_vec).to_vec(),
+        fallback_label
+      ),
+      // Reference to the docker "ports" values
+      ports: attrs_vec.get("ports").unwrap_or(&empty_vec).to_vec(),
+      environment: attrs_vec.get("environment").unwrap_or(&empty_vec).to_vec(),
+      volumes: attrs_vec.get("volumes").unwrap_or(&empty_vec).to_vec(),
     }
   }
 }

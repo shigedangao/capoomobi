@@ -3,7 +3,7 @@ use crate::docker::lexer;
 use crate::docker::lexer::compose;
 use crate::cli::core::logger::logging;
 use crate::cli::core::input::input;
-use crate::kubernetes::{generator, io};
+use crate::kubernetes::{tree, io};
 use crate::errors::cli_error::ErrorHelper;
 
 // Constant referring to the compose file which need to be parse
@@ -38,8 +38,11 @@ pub fn launch(sub_action: &str) {
   };
 
   let prefs = ask_services_details(&services);
-  let kubes = generator::get_kube_abstract_tree(services, prefs);
-  io::kube_io::prepare_kube(kubes);
+  let kubes = tree::Tree::get_kube_abstract_tree(services, prefs);
+  match io::bootstrap::bootstrap::prepare_kube(&kubes) {
+    Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
+    Err(e) => panic!("error {:?}", e)
+  };
 }
 
 /**
