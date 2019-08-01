@@ -5,10 +5,14 @@
  */
 pub mod bootstrap {
   use std::path::PathBuf;
+  use std::error::Error;
   use crate::kubernetes::tree::tree::{Kube};
   use crate::cli::core::fs::operations::toolbox;
   use crate::cli::core::logger::logging;
   use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
+
+  const CREATE_KUBE_FOLDER_ERR: &str = "Unable to create kubernetes folder";
+  const CREATE_KUBE_FILES_ERR: &str = "Unable to create kubernetes file";
 
   /**
    * Prepare Kube
@@ -46,7 +50,7 @@ pub mod bootstrap {
         );
       },
       Err(err) => {
-        CliErr::new("", "", ErrCode::IOError).log_pretty();
+        CliErr::new(CREATE_KUBE_FOLDER_ERR, String::from(err.description()), ErrCode::IOError).log_pretty();
         panic!(err);
       }
     }
@@ -67,7 +71,7 @@ pub mod bootstrap {
         );
       },
       Err(err) => {
-        CliErr::new("", "", ErrCode::IOError).log_pretty();
+        CliErr::new(CREATE_KUBE_FILES_ERR, String::from(err.description()), ErrCode::IOError).log_pretty();
         panic!(err);
       }
     }

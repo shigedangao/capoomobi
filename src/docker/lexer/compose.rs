@@ -66,7 +66,13 @@ pub mod compose {
    */
   pub fn get_docker_service_structure(content: Vec<yaml::Yaml>) -> Result<Vec<Service>, CliErr> {
     if content.is_empty() {
-      return Err(CliErr::new(EMPTY_YAML_CONTENT_ERROR, "", ErrCode::NotFound));
+      return Err(
+        CliErr::new(
+          EMPTY_YAML_CONTENT_ERROR,
+          String::new(),
+          ErrCode::NotFound
+        )
+      );
     }
 
     let compose_content  = &content[0];
@@ -83,7 +89,13 @@ pub mod compose {
       return Ok(services);
     }
 
-    Err(CliErr::new(SVC_NOT_ARRAY_TYPE_ERROR, "", ErrCode::ParsingError))
+    Err(
+      CliErr::new(
+        SVC_NOT_ARRAY_TYPE_ERROR,
+        String::new(),
+        ErrCode::ParsingError
+      )
+    )
   }
 
   /**

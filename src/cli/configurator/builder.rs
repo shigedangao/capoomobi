@@ -57,7 +57,7 @@ pub mod builder {
       return Err(
         CliErr::new(
           PATH_GENERATE_ERROR,
-          PATH_GENERATE_REASON,
+          String::from(PATH_GENERATE_REASON),
           ErrCode::ParsingError
         )
       );
@@ -89,7 +89,7 @@ pub mod builder {
       Err(
         CliErr::new(
           PROJECT_GENERATE_ERROR,
-          PROJECT_GENERATE_REASON,
+          String::from(PROJECT_GENERATE_REASON),
           ErrCode::SerializeError
         )
       )

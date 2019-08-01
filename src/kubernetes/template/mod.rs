@@ -20,11 +20,20 @@ pub mod common {
     fn template(&self) -> Option<Y>;
   }
 
-  pub fn handle_error(err: Option<&RenderError>) {
+  /// Handle Error
+  /// 
+  /// # Description
+  /// Method use to handle comment templating error
+  /// 
+  /// # Arguments
+  /// * `err` Option ptr of RenderError ptr
+  pub fn handle_error(err: &Option<&RenderError>) {
     if let Some(details) = err {
+      let detail = &details.desc;
+
       CliErr::new(
         "An error happened while rendering the template",
-        String::from(details.desc).as_str(),
+        format!("{}", detail),
         ErrCode::RendererError
       );
     }

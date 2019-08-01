@@ -43,7 +43,7 @@ spec:
         Ok(p) => Some(p),
         Err(e) => {
           let renderer_error = e.as_render_error();
-          handle_error(renderer_error);
+          handle_error(&renderer_error);
           None
         }
       }

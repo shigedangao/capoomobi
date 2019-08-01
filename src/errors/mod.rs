@@ -33,7 +33,7 @@ pub mod cli_error {
      * 
      * Return a new CliErr structure
      */
-    fn new(message: &'static str, reason: &'static str, codename: ErrCode) -> Self;
+    fn new(message: &'static str, reason: String, codename: ErrCode) -> Self;
     /**
      * Log Pretty
      * 
@@ -50,12 +50,12 @@ pub mod cli_error {
    */
   pub struct CliErr {
     message: &'static str,
-    reason: &'static str,
+    reason: String,
     code: u8
   }
 
   impl ErrHelper for CliErr {
-    fn new(message: &'static str, reason: &'static str, codename: ErrCode) -> CliErr {
+    fn new(message: &'static str, reason: String, codename: ErrCode) -> CliErr {
       let code = match codename {
         ErrCode::MissingFieldError => 44,
         ErrCode::ParsingError => 50,
