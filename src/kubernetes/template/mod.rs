@@ -3,6 +3,9 @@ pub mod service;
 mod helper;
 
 pub mod common {
+  use handlebars::{RenderError};
+  use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+
   /// Use as an interface to create a common template builder method
   pub trait TemplateBuilder<T, Y> {
     /// Return a new strucutre
@@ -15,5 +18,24 @@ pub mod common {
     /// 
     /// Option<Y>
     fn template(&self) -> Option<Y>;
+  }
+
+  /// Handle Error
+  /// 
+  /// # Description
+  /// Method use to handle comment templating error
+  /// 
+  /// # Arguments
+  /// * `err` Option ptr of RenderError ptr
+  pub fn handle_error(err: &Option<&RenderError>) {
+    if let Some(details) = err {
+      let detail = &details.desc;
+
+      CliErr::new(
+        "An error happened while rendering the template",
+        format!("{}", detail),
+        ErrCode::RendererError
+      );
+    }
   }
 }

@@ -18,7 +18,8 @@ pub mod cli_error {
     SerializeError,
     MissingFieldError,
     IOError,
-    NotFound
+    NotFound,
+    RendererError
   }
 
   /**
@@ -26,13 +27,13 @@ pub mod cli_error {
    * 
    * Define a set of common method to use the custom errors
    */
-  pub trait ErrorHelper {
+  pub trait ErrHelper {
     /**
      * New
      * 
      * Return a new CliErr structure
      */
-    fn new(message: &'static str, reason: &'static str, codename: ErrCode) -> Self;
+    fn new(message: &'static str, reason: String, codename: ErrCode) -> Self;
     /**
      * Log Pretty
      * 
@@ -49,12 +50,12 @@ pub mod cli_error {
    */
   pub struct CliErr {
     message: &'static str,
-    reason: &'static str,
+    reason: String,
     code: u8
   }
 
-  impl ErrorHelper for CliErr {
-    fn new(message: &'static str, reason: &'static str, codename: ErrCode) -> CliErr {
+  impl ErrHelper for CliErr {
+    fn new(message: &'static str, reason: String, codename: ErrCode) -> CliErr {
       let code = match codename {
         ErrCode::MissingFieldError => 44,
         ErrCode::ParsingError => 50,

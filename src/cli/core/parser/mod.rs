@@ -4,7 +4,7 @@ pub mod options;
  * CLI arguments parser
  */
 pub mod cli_parser {
-  use crate::errors::cli_error::{CliErr, ErrorHelper, ErrCode};
+  use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
   
   /**
    * Cli Args
@@ -32,7 +32,7 @@ pub mod cli_parser {
       return Err(
         CliErr::new(
           "main action is empty",
-          "required one argument",
+          String::from("required one argument"),
           ErrCode::MissingFieldError
         )
       );
