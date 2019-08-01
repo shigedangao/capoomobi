@@ -46,7 +46,7 @@ spec:
       - name: {{ name }}
         image: {{ image }}
         ports:
-        - containerPort: {{ ports }}
+        - containerPort: {{ lilmouse ports 9 }}
       ";
 
       match handlebars.render_template(content, &self.controller) {

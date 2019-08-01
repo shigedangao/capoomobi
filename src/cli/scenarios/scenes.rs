@@ -1,7 +1,11 @@
-pub mod scenes_helper {
+/// Picker
+/// 
+/// # Description
+/// Module use to retrieve a Scenario from an action
+pub mod picker {
   // Trait to parse to get enum from string
   pub trait EnumHelper<T> {
-    fn from_str(action: &str) -> Option<T>;
+    fn from_string(action: &String) -> Option<T>;
   }
 
   // Scenario available for the main action
@@ -25,7 +29,7 @@ pub mod scenes_helper {
   }
 
   impl EnumHelper<Scenarios> for Scenarios {
-    fn from_str(action: &str) -> Option<Scenarios> {
+    fn from_string(action: &String) -> Option<Scenarios> {
       match action {
         "init" => Some(Scenarios::Init),
         "help" => Some(Scenarios::Help),
@@ -36,7 +40,7 @@ pub mod scenes_helper {
   }
 
   impl EnumHelper<HelpScenarios> for HelpScenarios {
-    fn from_str(action: &str) -> Option<HelpScenarios> {
+    fn from_string(action: &String) -> Option<HelpScenarios> {
       match action {
         "init" => Some(HelpScenarios::Init),
         "generate" => Some(HelpScenarios::Generate),
