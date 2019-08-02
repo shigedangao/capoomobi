@@ -7,13 +7,13 @@ pub mod parser {
   use std::env;
   use crate::cli::scenarios::scenes::picker::{EnumHelper, Scenarios};
   use crate::cli::scenarios::sketch;
-  use crate::cli::core::logger::logging;
+  use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
   /// errors
   const UNKNOWN_SCENARIO_ERR: &str = "Scenario not found";
 
   /// default scenario to launch
-  const DEFAULT_SCENARIO: &str = "help";
+  const DEFAULT_ACTION_SIZE: usize = 3;
 
   /// Arguments structure
   pub struct Arguments {
@@ -27,17 +27,25 @@ pub mod parser {
   /// # Description
   /// Parse arguments provided by the bootstrap method
   /// 
-  /// # Arguments
-  /// * `main`: &str
-  /// * `secondary`: &str
-  /// * `options`: Vec<String>
-  pub fn parse(main: &str, secondary: &str, options: Vec<String>) {
+  /// # Return
+  /// Return a result
+  pub fn parse() -> Result<(), CliErr> {
     let args = retrieve_args();
 
-    match Scenarios::from_string(&args.main) {
-      None => logging::write(logging::LogType::Error, UNKNOWN_SCENARIO_ERR, None),
-      Some(res) => trigger_scenario(res, &args.secondary, &args.options)
+    if let Some(arg) = args {
+      match Scenarios::from_string(&arg.main) {
+        None => {
+          return Err(
+            CliErr::new(UNKNOWN_SCENARIO_ERR, String::new(),ErrCode::NotFound)    
+          )
+        },
+        Some(res) => trigger_scenario(res, &arg.secondary, &arg.options)
+      }
+
+      return Ok(());
     }
+
+    Err(CliErr::new(UNKNOWN_SCENARIO_ERR, String::new(),ErrCode::MissingFieldError))
   }
 
   /// Trigger Scenario
@@ -46,8 +54,10 @@ pub mod parser {
   /// Trigger the selected scenario
   /// 
   /// # Arguments
-  ///`
-  fn trigger_scenario(scenario: Scenarios, sub_action: String, options: Vec<String>) {
+  /// * `scenario` Scenarios enum value
+  /// * `sub_action` Reference to a String struct
+  /// * `options` Reference to a vec of String
+  fn trigger_scenario(scenario: Scenarios, sub_action: &String, options: &Vec<String>) {
     match scenario {
       Scenarios::Init => sketch::init::launch(sub_action, options),
       Scenarios::Help => sketch::help::launch(sub_action),
@@ -61,18 +71,34 @@ pub mod parser {
   /// Retrieve the arguments from the cli
   /// 
   /// # Return
-  /// Return an `Arguments` struct
-  fn retrieve_args() -> Arguments {
-    let arguments: Vec<String> = env::args().collect();
+  /// Return an `Arguments` option
+  fn retrieve_args() -> Option<Arguments> {
+    let actions: Vec<String> = env::args()
+      .enumerate()
+      .filter(|tuple| tuple.0 < DEFAULT_ACTION_SIZE)
+      .map(|tuple| tuple.1)
+      .collect();
+
+    if actions.len() < DEFAULT_ACTION_SIZE {
+      return None
+    }
+
+    let arguments: Vec<String> = env::args()
+      .enumerate()
+      .filter(|tuple| tuple.0 >= DEFAULT_ACTION_SIZE)
+      .map(|tuple| tuple.1)
+      .collect();
     
     // retrieve the actions
-    let main = arguments.get(0).unwrap_or(String::from(DEFAULT_SCENARIO));
-    let secondary = arguments.get(1).unwrap(String::from(""));
+    let main = actions.get(1).unwrap();
+    let secondary = actions.get(2).unwrap();
 
-    Arguments {
-      main: main,
-      secondary: secondary,
+    let arg = Arguments {
+      main: String::from(main),
+      secondary: String::from(secondary),
       options: arguments
-    }
+    };
+
+    Some(arg)
   }
 }

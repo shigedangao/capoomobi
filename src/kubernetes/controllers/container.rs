@@ -3,12 +3,11 @@
 /// Module use to create a K8S controller datastructure
 pub mod container {
   use std::collections::HashMap;
-  use std::collections::BTreeMap;
   use std::path::PathBuf;
   use serde::Serialize;
-  use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
   use crate::cli::core::fs::operations::toolbox;
+  use crate::kubernetes::controllers::helper::{KubeEnumHelper};
 
   // Constant
   const CONTROLLER_FILENAME: &str = "controller.yaml";
@@ -27,7 +26,7 @@ pub mod container {
     DaemonSet
   }
 
-  impl EnumHelper<ControllerKind> for ControllerKind {
+  impl KubeEnumHelper<ControllerKind> for ControllerKind {
     fn from_str(controller: &str) -> Option<ControllerKind> {
       match controller {
         "deployment" => Some(ControllerKind::Deployment),

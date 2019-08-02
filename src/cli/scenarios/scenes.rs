@@ -3,13 +3,15 @@
 /// # Description
 /// Module use to retrieve a Scenario from an action
 pub mod picker {
-  // Trait to parse to get enum from string
+  /// Trait to parse to get enum from string
   pub trait EnumHelper<T> {
     fn from_string(action: &String) -> Option<T>;
   }
 
-  // Scenario available for the main action
-  // capoomobi <main_action>
+  /// Scenarios
+  /// 
+  /// # Description
+  /// Supported main scenarios supported by the CLI (e.g: capoomobi init ...)
   #[derive(Debug)]
   pub enum Scenarios {
     Init,
@@ -17,8 +19,10 @@ pub mod picker {
     Generate
   }
 
-  // Scenarios available for the Help command
-  // capoomobi help <actions>
+  /// Helper Scenarios
+  /// 
+  /// # Description
+  /// List of supported sub command after using the help command (e.g: capoomobi help init)
   #[derive(Debug)]
   pub enum HelpScenarios {
     Init,
@@ -29,8 +33,8 @@ pub mod picker {
   }
 
   impl EnumHelper<Scenarios> for Scenarios {
-    fn from_string(action: &String) -> Option<Scenarios> {
-      match action {
+    fn from_string(action: &String) -> Option<Scenarios> {      
+      match action.as_str() {
         "init" => Some(Scenarios::Init),
         "help" => Some(Scenarios::Help),
         "generate" => Some(Scenarios::Generate),
@@ -41,7 +45,7 @@ pub mod picker {
 
   impl EnumHelper<HelpScenarios> for HelpScenarios {
     fn from_string(action: &String) -> Option<HelpScenarios> {
-      match action {
+      match action.as_str() {
         "init" => Some(HelpScenarios::Init),
         "generate" => Some(HelpScenarios::Generate),
         "project" => Some(HelpScenarios::Project),

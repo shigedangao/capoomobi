@@ -1,21 +1,24 @@
-use crate::cli::core::parser::options;
 use crate::cli::core::fs::utility;
 use crate::cli::core::logger::logging;
 use crate::cli::configurator::configure;
 use crate::cli::configurator::builder::builder;
 
+// Error constant
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
 
-/**
- * Launch
- * 
- * Launch the scenario of the init command
- * Structure of how the cmd is called
- * 
- * capoomobi init <name> <path>
- */
-pub fn launch(name: &str, options: Vec<String>) {
-  let optional_path = match options::parser_utils::parse_options(options, 3) {
+/// Launch
+/// 
+/// # Description
+/// Launch the init scenario it is launch with the command below 
+/// capoomobi init <project_name> <path>
+/// e.g: capoomobi init lilmouse ../lilcat
+/// 
+/// # Arguments
+/// * `name`: slice of string
+/// * `options`: reference to Vec of string
+/// 
+pub fn launch(name: &str, options: &Vec<String>) {
+  let optional_path = match retrieve_options_by_idx(options, 0) {
     Some(p) => p, 
     None => String::from("")
   };
@@ -51,5 +54,27 @@ pub fn launch(name: &str, options: Vec<String>) {
       Some(fs_struct.get_path_as_string())
     ),
     Err(e) => panic!(e)
+  }
+}
+
+/// Retrieve options by idx
+/// 
+/// # Description
+/// Retrieve an optional String by it's index
+/// 
+/// # Arguments
+/// * `vec` Reference to a vector of string
+/// * `idx` usize
+/// 
+/// # Return
+/// * `options` option of string
+fn retrieve_options_by_idx(vec: &Vec<String>, idx: usize) -> Option<String> {
+  if vec.is_empty() {
+    return None;
+  }
+
+  match vec.get(idx) {
+    Some(res) => Some(res.to_string()),
+    None => None
   }
 }
