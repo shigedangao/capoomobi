@@ -1,4 +1,5 @@
 pub mod operations;
+pub mod configurator;
 
 /**
  * Fs module

@@ -108,4 +108,14 @@ pub mod toolbox {
 
     Some(concat_string_path(&path_str, &name))
   }
+
+  /**
+   * Get Abs Path
+   * 
+   * Get the absolute path from a string
+   */
+  pub fn get_absolute_path(path: &PathBuf) -> std::io::Result<PathBuf> {
+    let path = fs::canonicalize(path)?;
+    Ok(path)
+  }
 }

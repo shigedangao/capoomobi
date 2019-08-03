@@ -6,16 +6,18 @@ use crate::cli::core::input::input;
 use crate::kubernetes::{tree, io};
 use crate::errors::cli_error::ErrHelper;
 
-// Constant referring to the compose file which need to be parse
+/// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 
-/**
- * Launch
- * 
- * Launch the scenario of the generate command
- * 
- * capoomobi generate <docker-compose.yml> path
- */
+/// Launch
+/// 
+/// # Description
+/// Launch the generate scenario with the command below
+/// capoomobi generate <path_to_docker-compose.yaml>
+/// e.g: capoomobi generate ./example
+/// 
+/// # Arguments
+/// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str) {
   logging::write(
     logging::LogType::Info,
@@ -45,12 +47,18 @@ pub fn launch(sub_action: &str) {
   };
 }
 
-/**
- * Ask services details
- * 
- * Ask questions to users regarding the configuration
- * of the kubernetes files
- */
+/// Ask Services Details
+/// 
+/// # Description
+/// Set of questions ask to the user in order to get more
+/// information on each docker services
+/// 
+/// # Arguments
+/// * `services` Reference to a Vector of a docker service
+/// 
+/// # Return
+/// HashMap of a hashmap containing answer. The hashmap is mapped like
+/// so: [service_foo => [{...}], service_bar => [{...}]]
 fn ask_services_details(services: &Vec<compose::compose::Service>) -> HashMap<String, HashMap<&'static str, String>> {
   let mut preferences: HashMap<String, HashMap<&str, String>> = HashMap::new();
   for service in services.into_iter() {

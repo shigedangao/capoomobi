@@ -5,7 +5,6 @@ mod kubernetes;
 mod bootstrap;
 
 extern crate tokio;
-#[macro_use]
 extern crate handlebars;
 
 fn main() {

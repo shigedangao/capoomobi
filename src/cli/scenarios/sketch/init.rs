@@ -2,8 +2,10 @@ use crate::cli::core::fs::utility;
 use crate::cli::core::logger::logging;
 use crate::cli::configurator::configure;
 use crate::cli::configurator::builder::builder;
+use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
+use crate::errors::cli_error::ErrHelper;
 
-// Error constant
+/// Error constant
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
 
 /// Launch
@@ -14,21 +16,30 @@ const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
 /// e.g: capoomobi init lilmouse ../lilcat
 /// 
 /// # Arguments
-/// * `name`: slice of string
+/// * `project_name`: slice of string
 /// * `options`: reference to Vec of string
-/// 
-pub fn launch(name: &str, options: &Vec<String>) {
-  let optional_path = match retrieve_options_by_idx(options, 0) {
+pub fn launch(project_name: &str, options: &Vec<String>) {
+  let project_path = match retrieve_options_by_idx(options, 0) {
     Some(p) => p, 
-    None => String::from("")
+    None => String::new()
   };
   
   // Generate a struct which will be used to build the folders
-  let fs_struct = utility::build_base_path(name, optional_path.as_str());
+  // let fs_struct = utility::build_base_path(name, optional_path.as_str());
   
-  // Build the project folders
-  fs_struct.build_compose_dir();
-  fs_struct.build_kube_dir();
+  // // Build the project folders
+  // fs_struct.build_compose_dir();
+  // fs_struct.build_kube_dir();
+
+  let config_io = ConfiguratorIO::new(project_name, project_path);
+  let io_result = config_io
+    .build_compose_folder()
+    .and_then(|res: &ConfiguratorIO| res.build_kube_folder());
+
+  if let Err(err) = io_result {
+    err.log_pretty();
+    panic!();
+  }
 
   // Generate the absolute path from the current set path
   let abs_path = match utility::get_abs_path(&fs_struct.base_path) {
