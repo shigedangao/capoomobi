@@ -12,7 +12,7 @@ pub mod config;
  * values in the config.json 
  */
 pub mod configure {
-  use crate::cli::core::fs::operations::toolbox;
+  use crate::cli::core::fs::toolbox;
   use crate::cli::configurator::builder::builder;
   use std::path::PathBuf;
   use std::path::Path;
@@ -84,7 +84,7 @@ pub mod configure {
     let mut config_file_path = toolbox::get_home_dir();
     config_file_path.push(CONFIG_FILE_PATH);
    
-    let contents = match toolbox::open_get_str_content(config_file_path) {
+    let contents = match toolbox::open_and_read_string_file(config_file_path) {
       Ok(c) => c,
       Err(e) => {
         return Err(format!("{}{:?}", FILE_NOT_PARSABLE_ERROR, e));

@@ -7,8 +7,7 @@ pub mod compose;
  */
 pub mod yaml_parser {
   use std::path::PathBuf;
-  use crate::cli::core::fs::operations;
-  use crate::cli::core::fs::operations::toolbox;
+  use crate::cli::core::fs::toolbox;
   use yaml_rust::{YamlLoader, yaml};
 
   // Error constant
@@ -31,7 +30,7 @@ pub mod yaml_parser {
       Err(_) => return Err(ABS_PATH_ERROR)
     };
 
-    let content = operations::toolbox::open_get_str_content(compose_file_path);
+    let content = toolbox::open_and_read_string_file(compose_file_path);
     if let Ok(value) = content {
        return match parse_yaml_tree(value) {
          Ok(yaml_content) => Ok(yaml_content),

@@ -2,7 +2,7 @@ use crate::cli::core::logger::logging;
 use crate::cli::configurator::configure;
 use crate::cli::configurator::builder::builder;
 use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
-use crate::cli::core::fs::operations::toolbox;
+use crate::cli::core::fs::toolbox;
 use crate::errors::cli_error::ErrHelper;
 
 /// Error constant
