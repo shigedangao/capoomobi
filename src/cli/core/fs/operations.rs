@@ -16,7 +16,6 @@ pub mod toolbox {
 
   // Errors
   const EMPTY_PROJECT_PATH: &str = "The project path is not set";
-
   // constants
   const KUBE_FOLDER: &str = "/kube";
 
@@ -118,4 +117,13 @@ pub mod toolbox {
     let path = fs::canonicalize(path)?;
     Ok(path)
   }
+
+  pub fn get_path_as_string(path: &PathBuf) -> String {
+    let path_str = match path.to_str() {
+      Some(p) => p,
+      None => ""
+    };
+
+    String::from(path_str)
+  } 
 }

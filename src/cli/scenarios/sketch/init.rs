@@ -1,8 +1,8 @@
-use crate::cli::core::fs::utility;
 use crate::cli::core::logger::logging;
 use crate::cli::configurator::configure;
 use crate::cli::configurator::builder::builder;
 use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
+use crate::cli::core::fs::operations::toolbox;
 use crate::errors::cli_error::ErrHelper;
 
 /// Error constant
@@ -23,13 +23,6 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
     Some(p) => p, 
     None => String::new()
   };
-  
-  // Generate a struct which will be used to build the folders
-  // let fs_struct = utility::build_base_path(name, optional_path.as_str());
-  
-  // // Build the project folders
-  // fs_struct.build_compose_dir();
-  // fs_struct.build_kube_dir();
 
   let config_io = ConfiguratorIO::new(project_name, project_path);
   let io_result = config_io
@@ -38,11 +31,11 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
 
   if let Err(err) = io_result {
     err.log_pretty();
-    panic!();
+    panic!(err);
   }
 
   // Generate the absolute path from the current set path
-  let abs_path = match utility::get_abs_path(&fs_struct.base_path) {
+  let absolute_path = match toolbox::get_absolute_path(&config_io.project_path) {
     Ok(p) => p,
     Err(e) => panic!(format!("{}{:?}", PATH_ERROR, e))
   };
@@ -53,7 +46,7 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
     Err(e) => panic!(e)
   };
 
-  let json_str = match builder::generate_project_conf(String::from(name), abs_path) {
+  let json_str = match builder::generate_project_conf(String::from(project_name), absolute_path) {
     Ok(content) => content,
     Err(e) => panic!(e)
   };
@@ -62,7 +55,7 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
     Ok(_) => logging::write(
       logging::LogType::Success,
       "Project successfully created",
-      Some(fs_struct.get_path_as_string())
+      Some(toolbox::get_path_as_string(&config_io.project_path))
     ),
     Err(e) => panic!(e)
   }

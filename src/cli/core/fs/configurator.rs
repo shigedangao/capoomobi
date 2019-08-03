@@ -22,12 +22,22 @@ pub mod configurator {
   /// Structure which contain a set of method allowing you
   /// to manipulate the config file it contain the absolute path
   pub struct ConfiguratorIO {
-    pub absolute_path: PathBuf
+    pub project_path: PathBuf
   }
 
   impl ConfiguratorIO {
+    /// Build Compose Folder
+    /// 
+    /// # Description
+    /// Build composer folder where the docker-compose file will be store
+    /// 
+    /// # Arguments
+    /// * `self` ConfiguratorIO struct
+    /// 
+    /// # Return
+    /// * `self` reference to ConfiguratorIO struct
     pub fn build_compose_folder(&self) -> Result<&Self, CliErr> {
-      let mut path = PathBuf::from(&self.absolute_path);
+      let mut path = PathBuf::from(&self.project_path);
       path.push(COMPOSE_FOLDER_PATH);
 
       match fs::create_dir_all(path) {
@@ -41,8 +51,18 @@ pub mod configurator {
       }
     }
 
+    /// Build Kube Folder
+    /// 
+    /// # Description
+    /// Build kube folder where the K8S folders & files will be store
+    /// 
+    /// # Arguments
+    /// * `self` ConfiguratorIO struct
+    /// 
+    /// # Return
+    /// * `self` reference to ConfiguratorIO struct
     pub fn build_kube_folder(&self) -> Result<&Self, CliErr> {
-      let mut path = PathBuf::from(&self.absolute_path);
+      let mut path = PathBuf::from(&self.project_path);
       path.push(KUBE_FOLDER_PATH);
 
       match fs::create_dir_all(path) {
@@ -56,10 +76,17 @@ pub mod configurator {
       }
     }
 
-    pub fn get_unmoved_path(&self) -> PathBuf {
-      PathBuf::from(&self.absolute_path)
-    }
-
+    /// New
+    /// 
+    /// # Description
+    /// New return a new structure instance of the ConfiguratorIO structure
+    /// 
+    /// # Arguments
+    /// * `project_name` slice of a string
+    /// * `folder_path`: String
+    /// 
+    /// # Return
+    /// Return a new ConfiguratorIO structure
     pub fn new(project_name: &str, folder_path: String) -> Self {
       let mut absolute_path = PathBuf::new();
 
@@ -73,7 +100,7 @@ pub mod configurator {
       
       // return the sturct
       ConfiguratorIO {
-        absolute_path: absolute_path
+        project_path: absolute_path
       }
     }
   }
