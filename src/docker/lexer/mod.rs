@@ -30,7 +30,7 @@ pub mod yaml_parser {
       Err(_) => return Err(ABS_PATH_ERROR)
     };
 
-    let content = toolbox::open_and_read_string_file(compose_file_path);
+    let content = toolbox::open_and_read_string_file(&compose_file_path);
     if let Ok(value) = content {
        return match parse_yaml_tree(value) {
          Ok(yaml_content) => Ok(yaml_content),

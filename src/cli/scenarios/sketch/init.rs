@@ -1,6 +1,5 @@
 use crate::cli::core::logger::logging;
-use crate::cli::configurator::configure;
-use crate::cli::configurator::builder::builder;
+use crate::cli::configurator::configure::configure;
 use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
 use crate::cli::core::fs::toolbox;
 use crate::errors::cli_error::ErrHelper;
@@ -41,24 +40,27 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
   };
 
   // Checking or creating if the config file exist
-  let configurator = match configure::exist_or_create() {
+  let capoo_configurator = match configure::bootstrap_capoo() {
     Ok(f) => f,
-    Err(e) => panic!(e)
+    Err(e) => {
+      e.log_pretty();
+      panic!();
+    }
   };
 
-  let json_str = match builder::generate_project_conf(String::from(project_name), absolute_path) {
-    Ok(content) => content,
-    Err(e) => panic!(e)
-  };
-
-  match configurator.write_json(json_str) {
-    Ok(_) => logging::write(
-      logging::LogType::Success,
-      "Project successfully created",
-      Some(toolbox::get_path_as_string(&config_io.project_path))
-    ),
-    Err(e) => panic!(e)
-  }
+  match capoo_configurator
+    .generate_project_conf(String::from(project_name), absolute_path)
+    .and_then(|res| capoo_configurator.write_json(res)) {
+      Ok(()) => logging::write(
+        logging::LogType::Success,
+        "Project successfully created",
+        Some(toolbox::get_path_as_string(&config_io.project_path))
+      ),
+      Err(err) => {
+        err.log_pretty();
+        panic!();
+      }
+    }
 }
 
 /// Retrieve options by idx

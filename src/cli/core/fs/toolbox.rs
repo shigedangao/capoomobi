@@ -31,7 +31,7 @@ pub fn get_home_dir() -> PathBuf {
 /// Result<PathBuf, io::Error>
 pub fn create_file(file_path: PathBuf) -> Result<PathBuf, std::io::Error> {
   match File::create(Path::new(&file_path)) {
-    Ok(f) => Ok(file_path),
+    Ok(_) => Ok(file_path),
     Err(e) => {
       return Err(e);
     }
@@ -60,8 +60,8 @@ pub fn file_exist(file_path: &PathBuf) -> Option<PathBuf> {
 /// 
 /// # Return
 /// Result<String>
-pub fn open_and_read_string_file(file_path: PathBuf) -> io::Result<String> {
-  let file = fs::read_to_string(Path::new(&file_path))?;
+pub fn open_and_read_string_file(file_path: &PathBuf) -> io::Result<String> {
+  let file = fs::read_to_string(Path::new(file_path))?;
   Ok(file)
 }
 
@@ -126,4 +126,20 @@ pub fn get_path_as_string(path: &PathBuf) -> String {
   };
 
   String::from(path_str)
+}
+
+/// Write Json Content
+/// 
+/// # Description
+/// Write json content to a file
+/// 
+/// # Arguments
+/// * `path` PathBuf
+/// * `json` String
+/// 
+/// # Return
+/// io::Result<()>
+pub fn write_json_content(path: &PathBuf, json: String) -> std::io::Result<()> {
+  fs::write(Path::new(&path), json.as_bytes())?;
+  Ok(())
 }

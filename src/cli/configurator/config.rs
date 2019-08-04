@@ -1,4 +1,5 @@
-use crate::cli::configurator::configure;
+use crate::cli::configurator::configure::configure;
+use crate::errors::cli_error::ErrHelper;
 
 /// Get Current Project Path
 /// 
@@ -8,10 +9,20 @@ use crate::cli::configurator::configure;
 /// # Return
 /// Option<String>
 pub fn get_current_project_path() -> Option<String> {
-  let capoos = configure::read_config_file();
-  if let Err(_) = capoos {
+  let capoo_configurator = match configure::bootstrap_capoo() {
+    Ok(configurator) => configurator,
+    Err(err) => {
+      err.log_pretty();
+      return None;
+    }
+  };
+
+  let capoos = capoo_configurator.get_content();
+  if let Err(err) = capoos {
+    err.log_pretty();
     return None;
   }
+
   let unwrapped_capoos = capoos.unwrap();
   let current_name = unwrapped_capoos.current;
   let project_path = unwrapped_capoos
@@ -24,5 +35,6 @@ pub fn get_current_project_path() -> Option<String> {
   if project_path.is_empty() {
     return None;
   }
+  
   Some(project_path)
 }
