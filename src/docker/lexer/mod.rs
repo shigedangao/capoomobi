@@ -7,13 +7,13 @@ pub mod compose;
  */
 pub mod yaml_parser {
   use std::path::PathBuf;
-  use crate::cli::core::fs::operations;
-  use crate::cli::core::fs::utility;
+  use crate::cli::core::fs::toolbox;
   use yaml_rust::{YamlLoader, yaml};
 
   // Error constant
   const UNABLE_READ_ERR: &str = "Unable to open the docker-compose.yaml file";
   const UNABLE_PARSE_ERR: &str = "Unable to parse the docker-compose.yaml for reason: ";
+  const ABS_PATH_ERROR: &str = "Unable to generate absolute path";
 
   /**
    * Parse
@@ -25,12 +25,12 @@ pub mod yaml_parser {
     paths.push(path);
     paths.push(file_name);
 
-    let compose_file_path = match utility::get_abs_path(&paths) {
+    let compose_file_path = match toolbox::get_absolute_path(&paths) {
       Ok(p) => p,
-      Err(_) => return Err(utility::ABS_PATH_ERROR)
+      Err(_) => return Err(ABS_PATH_ERROR)
     };
 
-    let content = operations::toolbox::open_get_str_content(compose_file_path);
+    let content = toolbox::open_and_read_string_file(&compose_file_path);
     if let Ok(value) = content {
        return match parse_yaml_tree(value) {
          Ok(yaml_content) => Ok(yaml_content),

@@ -1,4 +1,4 @@
-use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper, HelpScenarios};
+use crate::cli::scenarios::scenes::picker::{EnumHelper, HelpScenarios};
 use crate::cli::core::logger::logging::{HelpLogType, write_help};
 
 // Error constants
@@ -11,8 +11,8 @@ const EMPTY_OPTIONS_ERROR: &str = "Please select an option";
  * 
  * capoomobi help
  */
-pub fn launch(main_action: &str) {
-  let parsed_action = match HelpScenarios::from_str(main_action) {
+pub fn launch(main_action: &String) {
+  let parsed_action = match HelpScenarios::from_string(main_action) {
     Some(value) => value,
     None => panic!(format!("{}", EMPTY_OPTIONS_ERROR))
   };

@@ -2,10 +2,11 @@ mod cli;
 mod docker;
 mod errors;
 mod kubernetes;
+mod bootstrap;
 
 extern crate tokio;
-#[macro_use] extern crate handlebars;
+extern crate handlebars;
 
 fn main() {
-    cli::bootstrap();
+    bootstrap::manager::start();
 }
