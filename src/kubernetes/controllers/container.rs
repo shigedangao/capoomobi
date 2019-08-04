@@ -3,17 +3,17 @@
 /// Module use to create a K8S controller datastructure
 pub mod container {
   use std::collections::HashMap;
-  use std::collections::BTreeMap;
   use std::path::PathBuf;
   use serde::Serialize;
-  use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
   use crate::docker::lexer::compose::compose::{Service};
-  use crate::kubernetes::controllers::common::{KubeHelper};
-  use crate::cli::core::fs::operations::toolbox;
+  use crate::cli::configurator::config;
+  use crate::cli::core::fs::toolbox;
+  use crate::kubernetes::controllers::helper::{KubeEnumHelper};
 
   // Constant
   const CONTROLLER_FILENAME: &str = "controller.yaml";
   const SERVICE_FILENAME: &str = "service.yaml";
+  const KUBE_FOLDER: &str = "/kube";
 
 
   /// Controller Kind
@@ -28,7 +28,7 @@ pub mod container {
     DaemonSet
   }
 
-  impl EnumHelper<ControllerKind> for ControllerKind {
+  impl KubeEnumHelper<ControllerKind> for ControllerKind {
     fn from_str(controller: &str) -> Option<ControllerKind> {
       match controller {
         "deployment" => Some(ControllerKind::Deployment),
@@ -61,16 +61,6 @@ pub mod container {
     pub environement: Vec<String>,
   }
 
-  impl KubeHelper<&'static str, String> for KubeContainer {
-    fn get_tree_map(&self) -> BTreeMap<&'static str, String> {
-      let mut tree = BTreeMap::new();
-      tree.insert("name", String::from(&self.name));
-      tree.insert("image", String::from(&self.image));
-
-      return tree;
-    }
-  }
-
   /// Create Kube Struct
   /// 
   /// # Description
@@ -94,7 +84,7 @@ pub mod container {
       replica_count = replicas.parse::<u8>().unwrap_or(3);
     }
 
-    let base_path = toolbox::get_kube_path_for_service(&docker_service.name).unwrap_or(PathBuf::new());
+    let base_path = get_kube_path_for_service(&docker_service.name).unwrap_or(PathBuf::new());
     let mut controller_path = PathBuf::from(&base_path);
     controller_path.push(CONTROLLER_FILENAME);
 
@@ -116,5 +106,24 @@ pub mod container {
     };
 
     return kube_container;
+  }
+
+  /// Get Kube Path For Service
+  /// 
+  /// # Description
+  /// Retrieve the current setted project path and bind the kube folder
+  /// 
+  /// # Return
+  /// Optional PathBuf
+  fn get_kube_path_for_service(name: &String) -> Option<PathBuf> {
+    let project_path_opts = config::get_current_project_path();
+    if let None = project_path_opts {
+      return None;
+    }
+
+    let mut path_str = project_path_opts.unwrap();
+    path_str.push_str(KUBE_FOLDER);
+
+    Some(toolbox::concat_string_path(&path_str, &name))
   }
 }

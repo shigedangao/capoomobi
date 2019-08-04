@@ -1,13 +1,11 @@
-/**
- * Logger is a small decorator over println
- */
+/// Logging
+/// 
+/// # Description
+/// Logging module use to wrap println
 pub mod logging {
   use colored::*;
   
-  /**
-   * Log Type
-   *    Enum referencing the available log level
-   */
+  /// LogType enum
   pub enum LogType {
     Info,
     Error,
@@ -15,18 +13,23 @@ pub mod logging {
     Warning
   }
 
+  /// HelpLogType
+  /// 
+  /// # Description
+  /// Enum use by the `help` command
   pub enum HelpLogType {
     Cmd,
     Description,
     Example
   }
 
-  /**
-   * Log
-   *    Main entry point for logging a message
-   */
+  /// Log
+  /// 
+  /// # Arguments
+  /// * `level` LogType
+  /// * `message` slice of string
+  /// * `rest` Option<String>
   pub fn write(level: LogType, message: &str, rest: Option<String>) {
-
     match level {
       LogType::Info => println!("{}{}", "Info: ".blue().bold(), message),
       LogType::Error => println!("{}{}", "Error: ".red().bold(), message),
@@ -40,6 +43,10 @@ pub mod logging {
     }
   }
 
+  /// Write Help
+  /// 
+  /// # Description
+  /// Execute a println for each kind of HelpLog
   pub fn write_help(level: HelpLogType, message: &'static str) {
     match level {
       HelpLogType::Cmd => println!("{}{}", "\nNAME: \n\n".blue().bold(), message),

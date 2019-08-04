@@ -3,8 +3,8 @@
 /// Module use to create a K8S Service datastructure
 pub mod service {
   use serde::Serialize;
-  use crate::cli::scenarios::scenes::scenes_helper::{EnumHelper};
-  
+  use crate::kubernetes::controllers::helper::{KubeEnumHelper};
+
   const UNSUPPORT_CONTROLLER: &str = "Unsupport type of controller";
   const EMPTY_PORT: &str = "Ports value is empty";
 
@@ -19,7 +19,7 @@ pub mod service {
     NodePort
   }
 
-  impl EnumHelper<ServiceType> for ServiceType {
+  impl KubeEnumHelper<ServiceType> for ServiceType {
     fn from_str(service_type: &str) -> Option<ServiceType> {
       match service_type {
         "clusterip" => Some(ServiceType::ClusterIP),
