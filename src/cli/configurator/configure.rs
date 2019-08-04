@@ -104,6 +104,18 @@ pub mod configure {
       }
     }
 
+    /// Generate Project Conf
+    /// 
+    /// # Description
+    /// Generate a project configuration JSON representation
+    /// 
+    /// # Arguments
+    /// * `self` self
+    /// * `project_name` String
+    /// * `path` PathBuf
+    /// 
+    /// # Return
+    /// Option<String, CliErr>
     pub fn generate_project_conf(&self, project_name: String, path: PathBuf) -> Result<String, CliErr> {
       let contents_result = self.get_content();
 
@@ -122,9 +134,8 @@ pub mod configure {
     let mut conf_file_path = toolbox::get_home_dir();
     conf_file_path.push(CONFIG_FILE_PATH);
 
-    let exist = toolbox::file_exist(&conf_file_path);
-    if let Some(path) = exist {
-      return Ok(ConfigureCapoo::new(path));
+    if conf_file_path.exists() {
+      return Ok(ConfigureCapoo::new(conf_file_path));
     }
 
     match toolbox::create_file(conf_file_path) {

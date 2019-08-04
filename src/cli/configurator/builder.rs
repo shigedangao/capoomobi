@@ -68,7 +68,7 @@ pub mod builder {
 
     // Read the capoomobi.json file and parse the content
     // If the file is empty generate a Projects empty struct which will be populate
-    // by the new configuration
+    // by the new configuration    
     let mut project_in_config = match contents {
       Ok(projects) => projects,
       Err(_) => Projects {

@@ -54,7 +54,7 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
       Ok(()) => logging::write(
         logging::LogType::Success,
         "Project successfully created",
-        Some(toolbox::get_path_as_string(&config_io.project_path))
+        Some(toolbox::get_absolute_path_as_string(&config_io.project_path))
       ),
       Err(err) => {
         err.log_pretty();

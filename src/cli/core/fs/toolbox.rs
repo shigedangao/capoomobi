@@ -38,20 +38,6 @@ pub fn create_file(file_path: PathBuf) -> Result<PathBuf, std::io::Error> {
   }
 }
 
-/// File Exist
-/// 
-/// # Description
-/// Check if a file exist return the PathBuf if true
-/// 
-/// # Return
-/// PathBuf of the file
-pub fn file_exist(file_path: &PathBuf) -> Option<PathBuf> {
-  if Path::new(&file_path).exists() {
-    Some(file_path);
-  }
-
-  None
-}
 
 /// Open And Read String File
 /// 
@@ -61,7 +47,7 @@ pub fn file_exist(file_path: &PathBuf) -> Option<PathBuf> {
 /// # Return
 /// Result<String>
 pub fn open_and_read_string_file(file_path: &PathBuf) -> io::Result<String> {
-  let file = fs::read_to_string(Path::new(file_path))?;
+  let file = fs::read_to_string(file_path)?;
   Ok(file)
 }
 
@@ -109,7 +95,7 @@ pub fn get_absolute_path(path: &PathBuf) -> std::io::Result<PathBuf> {
   Ok(path)
 }
 
-/// Get Path As String
+/// Get Absolute Path As String
 /// 
 /// # Description
 /// Return a path as a string
@@ -119,13 +105,11 @@ pub fn get_absolute_path(path: &PathBuf) -> std::io::Result<PathBuf> {
 /// 
 /// # Return
 /// Return a string
-pub fn get_path_as_string(path: &PathBuf) -> String {
-  let path_str = match path.to_str() {
-    Some(p) => p,
-    None => ""
-  };
-
-  String::from(path_str)
+pub fn get_absolute_path_as_string(path: &PathBuf) -> String {
+  match get_absolute_path(path) {
+    Ok(p) => String::from(p.to_str().unwrap_or("")),
+    Err(_) => String::new()
+  }
 }
 
 /// Write Json Content
