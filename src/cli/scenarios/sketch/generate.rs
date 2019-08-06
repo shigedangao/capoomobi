@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use crate::docker::lexer;
-use crate::docker::lexer::compose;
+use crate::docker::{lexer::lexer, parser};
 use crate::cli::core::logger::logging;
 use crate::cli::core::input::input;
 use crate::kubernetes::{tree, io};
@@ -25,17 +24,19 @@ pub fn launch(sub_action: &str) {
     Some(String::from(sub_action))
   );
 
-  let yaml_content = match lexer::yaml_parser::parse(sub_action, COMPOSE_FILE_NAME) {
+  let yaml_content = match parser::yaml::parse(sub_action, COMPOSE_FILE_NAME) {
     Ok(content) => content,
     Err(e) => {
-      return logging::write(logging::LogType::Error, e, None);
+      e.log_pretty();
+      panic!();
     }
   };
 
-  let services = match compose::compose::get_docker_service_structure(yaml_content) {
-    Ok(vector) => vector,
-    Err(e) => {
-      return e.log_pretty()
+  let services = match lexer::get_docker_services(yaml_content) {
+    Some(vector) => vector,
+    None => {
+      //@TODO add error code to panic
+      panic!();
     }
   };
 
@@ -59,7 +60,7 @@ pub fn launch(sub_action: &str) {
 /// # Return
 /// HashMap of a hashmap containing answer. The hashmap is mapped like
 /// so: [service_foo => [{...}], service_bar => [{...}]]
-fn ask_services_details(services: &Vec<compose::compose::Service>) -> HashMap<String, HashMap<&'static str, String>> {
+fn ask_services_details(services: &Vec<lexer::Service>) -> HashMap<String, HashMap<&'static str, String>> {
   let mut preferences: HashMap<String, HashMap<&str, String>> = HashMap::new();
   for service in services.into_iter() {
     logging::write(
