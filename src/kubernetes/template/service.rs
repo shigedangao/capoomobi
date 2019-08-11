@@ -29,7 +29,7 @@ spec:
   - protocol: TCP
     port: {{ svc_port }}
     targetPort: {{ target_port }}
-      ";
+    {{ #if nodeport }}nodePort: {{ nodeport }} {{ /if }}";
 
       match handlebars.render_template(content, svc) {
         Ok(p) => Some(p),

@@ -73,7 +73,7 @@ pub mod writer {
     ok::<(), ()>(())
   }
 
-    /// Write Service
+  /// Write Service
   /// 
   /// # Description
   /// Write service yaml file
