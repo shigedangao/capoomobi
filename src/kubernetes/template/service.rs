@@ -11,18 +11,10 @@ pub mod service {
   use crate::kubernetes::template::common::{TemplateBuilder, handle_error};
 
   /// Structure use to implement the service template builder
-  pub struct ServiceTmplBuilder {
-    service: KubeService
-  }
+  pub struct ServiceTmplBuilder {}
 
   impl TemplateBuilder<KubeService, String> for ServiceTmplBuilder {
-    fn new(object: KubeService) -> ServiceTmplBuilder {
-      ServiceTmplBuilder {
-        service: object
-      }
-    }
-
-    fn template(&self) -> Option<String> {
+    fn render(&self, svc: &KubeService) -> Option<String> {
       let mut handlebars = Handlebars::new();
       handlebars.register_helper("lilmouse", Box::new(TemplateHelper));
 
@@ -39,7 +31,7 @@ spec:
     targetPort: {{ target_port }}
       ";
 
-      match handlebars.render_template(content, &self.service) {
+      match handlebars.render_template(content, svc) {
         Ok(p) => Some(p),
         Err(e) => {
           let renderer_error = e.as_render_error();

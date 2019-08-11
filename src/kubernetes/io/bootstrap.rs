@@ -1,8 +1,9 @@
-/**
- * Kube IO
- * 
- * IO is use to prepare folders & files for being write later on
- */
+/// Boostrap module
+/// 
+/// # Description
+/// Module use to preparing the following phases for create K8S yaml files
+/// - creating folders
+/// - creating empty yaml files
 pub mod bootstrap {
   use std::path::PathBuf;
   use std::error::Error;
@@ -14,11 +15,16 @@ pub mod bootstrap {
   const CREATE_KUBE_FOLDER_ERR: &str = "Unable to create kubernetes folder";
   const CREATE_KUBE_FILES_ERR: &str = "Unable to create kubernetes file";
 
-  /**
-   * Prepare Kube
-   * 
-   * Prepare the folder and the kubernetes files
-   */
+  /// Prepare Kube
+  /// 
+  /// # Description
+  /// Creating K8S services folders
+  /// 
+  /// # Arguments
+  /// * `kubes` Reference to Vec<Kube>
+  /// 
+  /// # Return
+  /// Result<(), CliErr>
   pub fn prepare_kube(kubes: &Vec<Kube>) -> Result<(), CliErr> {
     logging::write(
       logging::LogType::Info, 
@@ -27,20 +33,29 @@ pub mod bootstrap {
     );
     
     for kube in kubes.into_iter() {
-      create_kubernetes_folder(&kube.object.path);
-      create_file(&kube.object.controller_path, "controller");
-      create_file(&kube.object.service_path, "service");
+      let results = create_kubernetes_folder(&kube.object.path)
+        .and_then(|_| create_file(&kube.object.controller_path, "controller"))
+        .and_then(|_| create_file(&kube.object.service_path, "service"));
+
+      if results.is_err() {
+        return Err(results.err().unwrap());
+      }
     }
 
     Ok(())
   }
 
-  /**
-   * Create Kubernetes folder
-   * 
-   * Create kubernetes folders based on the saved project path and the parsed services
-   */
-  fn create_kubernetes_folder(path: &PathBuf) {
+  /// Create Kubernetes Folder
+  /// 
+  /// # Description
+  /// Create K8S folder
+  /// 
+  /// # Arguments
+  /// * `path` Reference to a PathBuf
+  /// 
+  /// # Return
+  /// Result<(), CliErr>
+  fn create_kubernetes_folder(path: &PathBuf) -> Result<(), CliErr> {
     match toolbox::create_folder_from_pathbuf(PathBuf::from(path)) {
       Ok(()) => {
         logging::write(
@@ -48,20 +63,33 @@ pub mod bootstrap {
           "Successfully creating folder",
           None
         );
+
+        Ok(())
       },
       Err(err) => {
-        CliErr::new(CREATE_KUBE_FOLDER_ERR, String::from(err.description()), ErrCode::IOError).log_pretty();
-        panic!(err);
+        Err(
+          CliErr::new(
+            CREATE_KUBE_FOLDER_ERR,
+            String::from(err.description()),
+            ErrCode::IOError
+          )
+        )
       }
     }
   }
 
-  /**
-   * Create Kubernetes Empty File
-   * 
-   * Create kubernetes file based on the path and the service name
-   */
-  fn create_file(path: &PathBuf, message: &str) {
+  /// Create File
+  /// 
+  /// # Description
+  /// Create empty yaml files
+  /// 
+  /// # Arguments
+  /// * `path` Reference to a PathBuf
+  /// * `message` file type as a slice of string
+  /// 
+  /// # Return
+  /// Result<(), CliErr>
+  fn create_file(path: &PathBuf, message: &str) -> Result<(), CliErr> {
     match toolbox::create_file(PathBuf::from(path)) {
       Ok(_) => {
         logging::write(
@@ -69,10 +97,17 @@ pub mod bootstrap {
           format!("Successfully initialize {} file", message).as_str(),
           None
         );
+
+        Ok(())
       },
       Err(err) => {
-        CliErr::new(CREATE_KUBE_FILES_ERR, String::from(err.description()), ErrCode::IOError).log_pretty();
-        panic!(err);
+        Err(
+          CliErr::new(
+            CREATE_KUBE_FILES_ERR,
+            String::from(err.description()),
+            ErrCode::IOError
+          )
+        )
       }
     }
   }

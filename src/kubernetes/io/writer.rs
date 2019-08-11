@@ -8,8 +8,10 @@
 pub mod writer {
   use std::fs;
   use std::path::PathBuf;
-  use futures::future::lazy;
+  use futures::future::{lazy, ok, err, FutureResult, Future};
   use crate::kubernetes::tree::tree::{Kube};
+  use crate::kubernetes::controllers::container::container::{KubeContainer};
+  use crate::kubernetes::controllers::service::service::{KubeService};
   use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
   use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
   use crate::kubernetes::template::common::TemplateBuilder;
@@ -24,36 +26,83 @@ pub mod writer {
   pub fn write_kubernetes_yaml(kubes: Vec<Kube>) {
     tokio::run(lazy(|| {
       for kube in kubes.into_iter() {
-        tokio::spawn(lazy(move || {
-          let ctrl_path = PathBuf::from(&kube.object.controller_path);
-          let svc_path = PathBuf::from(&kube.object.service_path);
+        let controller_path = PathBuf::from(&kube.object.controller_path);
+        let service_path = PathBuf::from(&kube.object.service_path);
 
-          // Controller
-          let controller = ControllerTmplBuilder::new(kube.object);
-          let controller_tmpl = controller.template();
-          if let Some(template) = controller_tmpl {
-            let res = write_yaml(ctrl_path, template);
-            if let Err(err) = res {
-              panic!(err);
-            }
-          }
-
-          // Service
-          let service = ServiceTmplBuilder::new(kube.service);
-          let service_tmpl = service.template();
-          if let Some(tmpl) = service_tmpl {
-            let res = write_yaml(svc_path, tmpl);
-            if let Err(err) = res {
-              panic!(err);
-            }
-          }
-
-          Ok(())
-        }));
+        tokio::spawn(
+          lazy(move || {
+            return write_controller(&kube.object, controller_path)
+              .and_then(move |_| write_service(&kube.service, service_path));
+          })
+        );
       }
 
       Ok(())
     }));
+  }
+  
+  /// Write Controller
+  /// 
+  /// # Description
+  /// Write controller yaml file
+  /// 
+  /// # Arguments
+  /// * `kube` Reference to a the KubeContainer
+  /// * `path` PathBuf
+  /// 
+  /// # Return
+  /// FutureResult<(), ()>
+  fn write_controller(kube: &KubeContainer, path: PathBuf) -> FutureResult<(), ()> {
+    let ctrl_path = PathBuf::from(path);
+
+    // write controller
+    let controller = ControllerTmplBuilder{};
+    let controller_tmpl = controller.render(kube);
+
+    let ctrl_writer_result = match controller_tmpl {
+      Some(t) => write_yaml(ctrl_path, t),
+      None => {
+        return err::<(), ()>(());
+      }
+    };
+
+    if let Err(e) = ctrl_writer_result {
+      panic!(e);
+    }
+
+    ok::<(), ()>(())
+  }
+
+    /// Write Service
+  /// 
+  /// # Description
+  /// Write service yaml file
+  /// 
+  /// # Arguments
+  /// * `svc` Reference to a the KubeService
+  /// * `path` PathBuf
+  /// 
+  /// # Return
+  /// FutureResult<(), ()>
+  fn write_service(svc: &KubeService, path: PathBuf) -> FutureResult<(), ()> {
+    let svc_path = PathBuf::from(path);
+
+    // write services
+    let service = ServiceTmplBuilder{};
+    let service_tmpl = service.render(svc);
+
+    let svc_writer_result = match service_tmpl {
+      Some(tmpl) => write_yaml(svc_path, tmpl),
+      None => {
+        return err::<(), ()>(());
+      }
+    };
+
+    if let Err(e) = svc_writer_result {
+      panic!(e);
+    }
+
+    ok::<(), ()>(())
   }
 
   /// Write Yaml
