@@ -7,7 +7,7 @@
 /// - Service
 pub mod tree {
   use std::collections::HashMap;
-  use crate::docker::lexer::compose::compose::{Service};
+  use crate::docker::lexer::lexer::{Service};
   use crate::kubernetes::controllers::container::container;
   use crate::kubernetes::controllers::service::service;
 
@@ -33,11 +33,10 @@ pub mod tree {
     let kube_containers: Vec<Kube> = docker_services
       .into_iter()
       .filter(|service| options.get(&service.name).is_some())
-      .map(|service| {
-        let option = options.get(&service.name).unwrap();
-        let svc_type = option.get("service").unwrap_or(&String::from("")).to_owned();
-        let kube_svc = service::create_kube_service(&service.name, &service.ports, &service.labels, &svc_type);
-        let kube_obj = container::create_kube_struct(service, option);
+      .map(|svc| {
+        let option = options.get(&svc.name).unwrap();
+        let kube_svc = service::create_kube_service(&svc, option);
+        let kube_obj = container::create_kube_struct(svc, option);
         
         return Kube {
           object: kube_obj,

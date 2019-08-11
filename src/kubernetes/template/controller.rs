@@ -11,19 +11,10 @@ pub mod controller {
   use crate::kubernetes::template::helper::helper::{TemplateHelper};
   use crate::kubernetes::template::common::{TemplateBuilder, handle_error};
 
-  /// Structure use to implement the controller template builder
-  pub struct ControllerTmplBuilder {
-    controller: KubeContainer
-  }
+  pub struct ControllerTmplBuilder {}
 
   impl TemplateBuilder<KubeContainer, String> for ControllerTmplBuilder {
-    fn new(object: KubeContainer) -> ControllerTmplBuilder {
-      ControllerTmplBuilder {
-        controller: object
-      }
-    }
-
-    fn template(&self) -> Option<String> {
+    fn render(&self, controller: &KubeContainer) -> Option<String> {
       let mut handlebars = Handlebars::new();
       // Handlebars helper
       handlebars.register_helper("lilmouse", Box::new(TemplateHelper));
@@ -49,7 +40,7 @@ spec:
         - containerPort: {{ lilmouse ports 9 }}
       ";
 
-      match handlebars.render_template(content, &self.controller) {
+      match handlebars.render_template(content, controller) {
         Ok(p) => Some(p),
         Err(e) => {
           let renderer_error = e.as_render_error();

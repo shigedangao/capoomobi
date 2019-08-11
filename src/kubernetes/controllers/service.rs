@@ -3,6 +3,8 @@
 /// Module use to create a K8S Service datastructure
 pub mod service {
   use serde::Serialize;
+  use std::collections::HashMap;
+  use crate::docker::lexer::lexer::Service;
   use crate::kubernetes::controllers::helper::{KubeEnumHelper};
 
   const UNSUPPORT_CONTROLLER: &str = "Unsupport type of controller";
@@ -39,7 +41,8 @@ pub mod service {
     svc_port: u16,
     target_port: u16,
     service_type: ServiceType,
-    labels: Vec<String>
+    labels: Vec<String>,
+    nodeport: u16
   }
 
   /// Create Kube Service
@@ -55,31 +58,36 @@ pub mod service {
   /// 
   /// # Return
   /// * `KubeService` return a KubeService object
-  pub fn create_kube_service(name: &String, docker_ports: &Vec<String>, labels: &Vec<String>, service_type_str: &String) -> KubeService {
-    let mut service_name = String::from(name);
+  pub fn create_kube_service(svc: &Service, option: &HashMap<&str, String>) -> KubeService {
+    let mut service_name = String::from(&svc.name);
     service_name.push_str("-svc");
 
-    let service_type = match ServiceType::from_str(service_type_str.to_lowercase().as_str()) {
+    let svc_type = option.get("service").unwrap_or(&String::new()).to_owned();
+    let service_type = match ServiceType::from_str(svc_type.to_lowercase().as_str()) {
       Some(svc) => svc,
       None => panic!(format!("{}", UNSUPPORT_CONTROLLER))
     };
 
-    if docker_ports.is_empty() {
+
+    if svc.ports.is_empty() {
       panic!(EMPTY_PORT);
     }
 
-    let mapped_ports: Vec<u16> = docker_ports[0]
+    let mapped_ports: Vec<u16> = svc.ports[0]
       .split(':')
       .into_iter()
       .map(|port| port.parse::<u16>().unwrap_or(0))
       .collect();
+
+    let nodeport = option.get("nodeport").unwrap_or(&String::new()).to_owned();
 
     let kube_service = KubeService {
       name: service_name,
       svc_port: mapped_ports[0],
       target_port: mapped_ports[1],
       service_type: service_type,
-      labels: labels.clone()
+      labels: svc.labels.clone(),
+      nodeport: nodeport.parse::<u16>().unwrap_or(0)
     };
 
     return kube_service

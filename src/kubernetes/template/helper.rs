@@ -3,14 +3,14 @@
 /// # Path
 /// kubernetes/template/path
 pub mod helper {
-  use handlebars::{Handlebars, HelperDef, RenderContext, Helper, Context, JsonRender, HelperResult, Output, RenderError};
+  use handlebars::{Handlebars, HelperDef, RenderContext, Helper, Context, HelperResult, Output};
   
   /// Handlebar helper struct
   #[derive(Clone, Copy)]
   pub struct TemplateHelper;
 
   impl HelperDef for TemplateHelper {
-    fn call<'reg: 'rc, 'rc>(&self, h: &Helper, _: &Handlebars, _: &Context, rc: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
+    fn call<'reg: 'rc, 'rc>(&self, h: &Helper, _: &Handlebars, _: &Context, _: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
       let array_param = h.param(0).unwrap();
       let indent_param = h.param(1).unwrap();
 

@@ -42,12 +42,13 @@ pub mod configurator {
 
       match fs::create_dir_all(path) {
         Ok(()) => Ok(&self),
-        Err(err) => {
-          println!("{:?}", err.description());
-          Err(
-            CliErr::new(COMPOSE_FOLDER_ERR, String::new(), ErrCode::IOError)
+        Err(err) => Err(
+          CliErr::new(
+            COMPOSE_FOLDER_ERR,
+            format!("{}", err.description()),
+            ErrCode::IOError
           )
-        }
+        )
       }
     }
 
@@ -68,9 +69,12 @@ pub mod configurator {
       match fs::create_dir_all(path) {
         Ok(()) => Ok(&self),
         Err(err) => {
-          println!("{:?}", err.description());
           Err(
-            CliErr::new(KUBE_FOLDER_ERR, String::new(), ErrCode::IOError)
+            CliErr::new(
+              KUBE_FOLDER_ERR,
+              format!("{}", err.description()),
+              ErrCode::IOError
+            )
           )
         }
       }
