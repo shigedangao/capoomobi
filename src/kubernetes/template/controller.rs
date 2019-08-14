@@ -8,7 +8,7 @@
 pub mod controller {
   use handlebars::Handlebars;
   use crate::kubernetes::controllers::container::container::{KubeContainer};
-  use crate::kubernetes::template::helper::helper::{TemplateHelper};
+  use crate::kubernetes::template::helper::helper::{VectorRawHelper, VectorContentHelper};
   use crate::kubernetes::template::common::{TemplateBuilder, handle_error};
 
   pub struct ControllerTmplBuilder {}
@@ -17,7 +17,8 @@ pub mod controller {
     fn render(&self, controller: &KubeContainer) -> Option<String> {
       let mut handlebars = Handlebars::new();
       // Handlebars helper
-      handlebars.register_helper("lilmouse", Box::new(TemplateHelper));
+      handlebars.register_helper("lilmouse", Box::new(VectorRawHelper));
+      handlebars.register_helper("veccontent", Box::new(VectorContentHelper));
 
       let content = "
 apiVersion: apps/v1
@@ -36,9 +37,10 @@ spec:
       containers:
       - name: {{ name }}
         image: {{ image }}
-        ports:
-        - containerPort: {{ lilmouse ports 9 }}
+        ports: {{ veccontent ports 9 }}
       ";
+
+      println!("value of controller {:?}", controller);
 
       match handlebars.render_template(content, controller) {
         Ok(p) => Some(p),

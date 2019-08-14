@@ -7,7 +7,7 @@
 pub mod service {
   use handlebars::Handlebars;
   use crate::kubernetes::controllers::service::service::{KubeService};
-  use crate::kubernetes::template::helper::helper::{TemplateHelper};
+  use crate::kubernetes::template::helper::helper::{VectorRawHelper};
   use crate::kubernetes::template::common::{TemplateBuilder, handle_error};
 
   /// Structure use to implement the service template builder
@@ -16,7 +16,7 @@ pub mod service {
   impl TemplateBuilder<KubeService, String> for ServiceTmplBuilder {
     fn render(&self, svc: &KubeService) -> Option<String> {
       let mut handlebars = Handlebars::new();
-      handlebars.register_helper("lilmouse", Box::new(TemplateHelper));
+      handlebars.register_helper("lilmouse", Box::new(VectorRawHelper));
 
       let content = "
 apiVersion: v1
