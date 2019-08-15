@@ -8,9 +8,13 @@
 pub mod controller {
   use handlebars::Handlebars;
   use crate::kubernetes::controllers::container::container::{KubeContainer};
-  use crate::kubernetes::template::helper::helper::{VectorRawHelper, VectorContentHelper};
+  use crate::kubernetes::template::helper::helper::{VectorRawHelper};
   use crate::kubernetes::template::common::{TemplateBuilder, handle_error};
 
+  /// Controller Tmpl Builder
+  /// 
+  /// # Description
+  /// Struct use to build the controller template
   pub struct ControllerTmplBuilder {}
 
   impl TemplateBuilder<KubeContainer, String> for ControllerTmplBuilder {
@@ -18,7 +22,6 @@ pub mod controller {
       let mut handlebars = Handlebars::new();
       // Handlebars helper
       handlebars.register_helper("lilmouse", Box::new(VectorRawHelper));
-      handlebars.register_helper("veccontent", Box::new(VectorContentHelper));
 
       let content = "
 apiVersion: apps/v1
@@ -37,14 +40,14 @@ spec:
       containers:
       - name: {{ name }}
         image: {{ image }}
-        ports: {{ veccontent ports 9 }}
-      ";
-
-      println!("value of controller {:?}", controller);
+        ports: {{ #each ports as |p| }}
+          - containerPort: {{p}}
+        {{ /each }}";
 
       match handlebars.render_template(content, controller) {
         Ok(p) => Some(p),
         Err(e) => {
+          println!("value of error {:?}", e);
           let renderer_error = e.as_render_error();
           handle_error(&renderer_error);
           None

@@ -25,6 +25,8 @@ metadata:
   name: {{ name }}
   labels: {{ lilmouse labels 2 }}
 spec:
+  type: {{ service_type }}
+  selector: {{ lilmouse labels 2 }}
   ports:
   - protocol: TCP
     port: {{ svc_port }}
