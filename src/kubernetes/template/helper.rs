@@ -1,7 +1,7 @@
 /// Helper
 /// 
 /// # Path
-/// kubernetes/template/path
+/// kubernetes/template
 pub mod helper {
   use handlebars::{Handlebars, HelperDef, RenderContext, RenderError ,Helper, Context, HelperResult, Output};
   
@@ -33,5 +33,52 @@ pub mod helper {
 
       Ok(())
     }
+  }
+}
+
+/// Common module
+/// 
+/// # Description
+/// Module which handle the trait use by the template
+/// 
+/// # Path
+/// kubernetes/template
+pub mod common {
+  use handlebars::{RenderError};
+  use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+
+  /// Use as an interface to create a common template builder method
+  pub trait TemplateBuilder<T, Y> {
+    /// Return a Kubernetes templated by Handlebars and datastrucutre
+    /// 
+    /// # Return
+    /// 
+    /// Option<Y>
+    fn render(&self, data: &T) -> Result<Y, CliErr>;
+  }
+
+  /// Handle Error
+  /// 
+  /// # Description
+  /// Method use to handle comment templating error
+  /// 
+  /// # Arguments
+  /// * `err` Option ptr of RenderError ptr
+  pub fn handle_error(err: &Option<&RenderError>) -> CliErr {
+    if let Some(details) = err {
+      let detail = &details.desc;
+
+      return CliErr::new(
+        "An error happened while rendering the template",
+        format!("{}", detail),
+        ErrCode::RendererError
+      );
+    }
+
+    CliErr::new(
+      "An error happened while rendering the template",
+      String::new(),
+      ErrCode::RendererError
+    )
   }
 }
