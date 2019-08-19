@@ -88,7 +88,6 @@ pub mod builder {
     project_in_config.current = project_name;
 
     let serialized_projects = serde_json::to_string(&project_in_config);
-
     if let Ok(content) = serialized_projects {
       return Ok(content);
     }

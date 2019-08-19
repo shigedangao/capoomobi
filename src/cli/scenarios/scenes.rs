@@ -16,7 +16,8 @@ pub mod picker {
   pub enum Scenarios {
     Init,
     Help,
-    Generate
+    Generate,
+    Switch
   }
 
   /// Helper Scenarios
@@ -29,7 +30,8 @@ pub mod picker {
     Generate,
     Project,
     Revert,
-    Verify
+    Verify,
+    Switch
   }
 
   impl EnumHelper<Scenarios> for Scenarios {
@@ -38,6 +40,7 @@ pub mod picker {
         "init" => Some(Scenarios::Init),
         "help" => Some(Scenarios::Help),
         "generate" => Some(Scenarios::Generate),
+        "switch" => Some(Scenarios::Switch),
         _ => None
       }
     }
@@ -50,6 +53,7 @@ pub mod picker {
         "generate" => Some(HelpScenarios::Generate),
         "project" => Some(HelpScenarios::Project),
         "revert" => Some(HelpScenarios::Revert),
+        "switch" => Some(HelpScenarios::Switch),
         "verify" => Some(HelpScenarios::Verify),
         _ => None
       }
