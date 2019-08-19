@@ -35,6 +35,7 @@ pub mod parser {
     if let Some(arg) = args {
       match Scenarios::from_string(&arg.main) {
         None => {
+          // @TODO change error to say that there are no param pass
           return Err(
             CliErr::new(UNKNOWN_SCENARIO_ERR, String::new(),ErrCode::NotFound)    
           )
@@ -61,7 +62,8 @@ pub mod parser {
     match scenario {
       Scenarios::Init => sketch::init::launch(sub_action, options),
       Scenarios::Help => sketch::help::launch(sub_action),
-      Scenarios::Generate => sketch::generate::launch(sub_action)
+      Scenarios::Generate => sketch::generate::launch(sub_action),
+      Scenarios::Switch => sketch::switch::launch(sub_action)
     }
   }
 
