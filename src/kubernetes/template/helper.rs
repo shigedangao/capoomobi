@@ -53,7 +53,7 @@ pub mod common {
     /// 
     /// # Return
     /// 
-    /// Option<Y>
+    /// Result<Y, CliErr>
     fn render(&self, data: &T) -> Result<Y, CliErr>;
   }
 
