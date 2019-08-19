@@ -16,16 +16,19 @@ pub mod service {
   #[derive(PartialEq)]
   #[derive(Debug)]
   #[derive(Serialize)]
+  #[serde(untagged)]
   pub enum ServiceType {
-    ClusterIP,
-    NodePort
+    ClusterIP(&'static str),
+    NodePort(&'static str),
+    LoadBalancer(&'static str)
   }
 
   impl KubeEnumHelper<ServiceType> for ServiceType {
     fn from_str(service_type: &str) -> Option<ServiceType> {
       match service_type {
-        "clusterip" => Some(ServiceType::ClusterIP),
-        "nodeport" => Some(ServiceType::NodePort),
+        "clusterip" => Some(ServiceType::ClusterIP("clusterIP")),
+        "nodeport" => Some(ServiceType::NodePort("nodePort")),
+        "loadbalancer" => Some(ServiceType::LoadBalancer("loadBalancer")),
         _ => None
       }
     }

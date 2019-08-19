@@ -9,12 +9,13 @@ pub mod writer {
   use std::fs;
   use std::path::PathBuf;
   use futures::future::{lazy, ok, err, FutureResult, Future};
+  use crate::errors::cli_error::{ErrHelper};
   use crate::kubernetes::tree::tree::{Kube};
   use crate::kubernetes::controllers::container::container::{KubeContainer};
   use crate::kubernetes::controllers::service::service::{KubeService};
   use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
   use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
-  use crate::kubernetes::template::common::TemplateBuilder;
+  use crate::kubernetes::template::helper::common::TemplateBuilder;
 
   /// Write Kubernetes Yaml
   /// 
@@ -60,8 +61,9 @@ pub mod writer {
     let controller_tmpl = controller.render(kube);
 
     let ctrl_writer_result = match controller_tmpl {
-      Some(t) => write_yaml(ctrl_path, t),
-      None => {
+      Ok(t) => write_yaml(ctrl_path, t),
+      Err(e) => {
+        e.log_pretty();
         return err::<(), ()>(());
       }
     };
@@ -92,8 +94,9 @@ pub mod writer {
     let service_tmpl = service.render(svc);
 
     let svc_writer_result = match service_tmpl {
-      Some(tmpl) => write_yaml(svc_path, tmpl),
-      None => {
+      Ok(tmpl) => write_yaml(svc_path, tmpl),
+      Err(e) => {
+        e.log_pretty();
         return err::<(), ()>(());
       }
     };

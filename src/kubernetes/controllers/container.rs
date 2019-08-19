@@ -3,6 +3,7 @@
 /// Module use to create a K8S controller datastructure
 pub mod container {
   use std::collections::HashMap;
+  use std::iter::Iterator;
   use std::path::PathBuf;
   use serde::Serialize;
   use crate::docker::lexer::lexer::{Service};
@@ -59,6 +60,7 @@ pub mod container {
     pub commands: Vec<String>,
     pub labels: Vec<String>,
     pub environement: Vec<String>,
+    pub ports: Vec<u16>
   }
 
   /// Create Kube Struct
@@ -74,9 +76,9 @@ pub mod container {
   /// * `KubeContainer` return the datastructure
   /// 
   pub fn create_kube_struct(docker_service: Service, option: &HashMap<&str, String>) -> KubeContainer {
-    let mut controller_kind: ControllerKind = ControllerKind::Deployment;
+    let mut ctrl: ControllerKind = ControllerKind::Deployment;
     if let Some(controller) = option.get("controller") {
-      controller_kind = ControllerKind::from_str(controller.to_lowercase().as_str()).unwrap();
+      ctrl = ControllerKind::from_str(controller.to_lowercase().as_str()).unwrap();
     }
 
     let mut replica_count: u8 = 3;
@@ -91,14 +93,17 @@ pub mod container {
     let mut service_path = PathBuf::from(&base_path);
     service_path.push(SERVICE_FILENAME);
 
+    let internal_ports = retrieve_container_port(docker_service.ports);
+
     let kube_container = KubeContainer {
-      controller_type: controller_kind,
+      controller_type: ctrl,
       name: docker_service.name,
       image: docker_service.image,
       replicas: replica_count,
       commands: docker_service.commands,
       labels: docker_service.labels,
       environement: docker_service.environment,
+      ports: internal_ports,
       // Paths
       path: base_path,
       controller_path: controller_path,
@@ -106,6 +111,36 @@ pub mod container {
     };
 
     return kube_container;
+  }
+
+  /// Retrieve Container Port
+  /// 
+  /// # Description
+  /// Retrieve internal docker container ports (never though that splitting a vector of string would be hard)
+  /// 
+  /// # Arguments
+  /// * `docker_ports` Vec<String> ports of a docker services
+  /// 
+  /// # Return
+  /// Vec<u16>
+  fn retrieve_container_port(docker_ports: Vec<String>) -> Vec<u16> {
+    let internal_port: Vec<u16> = docker_ports
+      .into_iter()
+      .map(|p| {
+        let port: String = p.split(':') 
+          .into_iter()
+          .enumerate()
+          .filter(|(idx, _)| idx > &(0 as usize))
+          .map(|(_, value)| String::from(value))
+          .last()
+          .unwrap_or(String::new());
+
+        return port;
+      })
+      .map(|port_string| port_string.parse::<u16>().unwrap_or(0))
+      .collect();
+  
+    return internal_port;
   }
 
   /// Get Kube Path For Service
