@@ -9,7 +9,7 @@ pub mod bootstrap {
   use std::error::Error;
   use crate::kubernetes::tree::tree::{Kube};
   use crate::cli::core::fs::toolbox;
-  use crate::cli::core::logger::logging;
+  use crate::cli::core::logger::logger::{log, LogType};
   use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
   const CREATE_KUBE_FOLDER_ERR: &str = "Unable to create kubernetes folder";
@@ -26,8 +26,8 @@ pub mod bootstrap {
   /// # Return
   /// Result<(), CliErr>
   pub fn prepare_kube(kubes: &Vec<Kube>) -> Result<(), CliErr> {
-    logging::write(
-      logging::LogType::Info, 
+    log(
+      LogType::Info, 
       "Creating kubernetes folders...",
       None
     );
@@ -58,8 +58,8 @@ pub mod bootstrap {
   fn create_kubernetes_folder(path: &PathBuf) -> Result<(), CliErr> {
     match toolbox::create_folder_from_pathbuf(PathBuf::from(path)) {
       Ok(()) => {
-        logging::write(
-          logging::LogType::Info,
+        log(
+          LogType::Info,
           "Successfully creating folder",
           None
         );
@@ -92,8 +92,8 @@ pub mod bootstrap {
   fn create_file(path: &PathBuf, message: &str) -> Result<(), CliErr> {
     match toolbox::create_file(PathBuf::from(path)) {
       Ok(_) => {
-        logging::write(
-          logging::LogType::Success,
+        log(
+          LogType::Success,
           format!("Successfully initialize {} file", message).as_str(),
           None
         );

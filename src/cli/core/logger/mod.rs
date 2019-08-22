@@ -1,8 +1,8 @@
-/// Logging
+/// Logger
 /// 
 /// # Description
 /// Logging module use to wrap println
-pub mod logging {
+pub mod logger {
   use colored::*;
   
   /// LogType enum
@@ -29,25 +29,26 @@ pub mod logging {
   /// * `level` LogType
   /// * `message` slice of string
   /// * `rest` Option<String>
-  pub fn write(level: LogType, message: &str, rest: Option<String>) {
-    match level {
-      LogType::Info => println!("{}{}", "Info: ".blue().bold(), message),
-      LogType::Error => println!("{}{}", "Error: ".red().bold(), message),
-      LogType::Success => println!("{}{}", "Success: ".green().bold(), message),
-      LogType::Warning => println!("{}{}", "Warning: ".yellow().bold(), message)
-    }
+  pub fn log(level: LogType, message: &str, rest: Option<String>) {
+    let colored_mess = match level {
+      LogType::Info => message.blue().bold(),
+      LogType::Error => message.red().bold(),
+      LogType::Success => message.green().bold(),
+      LogType::Warning => message.yellow().bold()
+    };
 
+    println!("{}", colored_mess);
     match rest {
-      Some(m) => println!("{}{:?}", "reason:".yellow(), m),
+      Some(m) => println!("{}{:?}", "result:".yellow(), m),
       None => ()
     }
   }
 
-  /// Write Help
+  /// Log Help
   /// 
   /// # Description
   /// Execute a println for each kind of HelpLog
-  pub fn write_help(level: HelpLogType, message: &'static str) {
+  pub fn log_help(level: HelpLogType, message: &'static str) {
     match level {
       HelpLogType::Cmd => println!("{}{}", "\nNAME: \n\n".blue().bold(), message),
       HelpLogType::Description => println!("{}{}", "\nDESCRIPTION: \n\n".blue().bold(), message),

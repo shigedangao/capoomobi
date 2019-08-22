@@ -1,4 +1,4 @@
-use crate::cli::core::logger::logging;
+use crate::cli::core::logger::logger::{log, LogType};
 use crate::cli::configurator::configure::configure;
 use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
 use crate::cli::core::fs::toolbox;
@@ -52,8 +52,8 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
   match capoo_configurator
     .generate_project_conf(String::from(project_name), absolute_path)
     .and_then(|res| capoo_configurator.write_json(res)) {
-      Ok(()) => logging::write(
-        logging::LogType::Success,
+      Ok(()) => log(
+        LogType::Success,
         "Project successfully created",
         Some(toolbox::get_absolute_path_as_string(&config_io.project_path))
       ),

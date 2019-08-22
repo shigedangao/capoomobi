@@ -1,7 +1,7 @@
 use serde_json;
 use crate::errors::cli_error::{ErrHelper};
 use crate::cli::configurator::configure::configure;
-use crate::cli::core::logger::logging::{write, LogType};
+use crate::cli::core::logger::logger::{log, LogType};
 use crate::cli::scenarios::sketch::helper;
 
 /// Project
@@ -45,7 +45,7 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
 fn show_current_project(configuration: configure::ConfigureCapoo) {
   match configuration.get_content() {
     Ok(p) => {
-      write(
+      log(
         LogType::Info,
         "the current project in use is:",
         Some(p.current)
@@ -66,9 +66,9 @@ fn list_project(configuration: configure::ConfigureCapoo) {
   match configuration.get_content() {
     Ok(projects) => {
       for p in projects.projects.into_iter() {
-        write(
+        log(
           LogType::Info,
-          p.name.as_str(),
+          format!("* {}", p.name.as_str()).as_str(),
           None
         );
       }
@@ -113,7 +113,7 @@ fn switch_project(configuration: configure::ConfigureCapoo ,project_name: String
   };
 
   match result {
-    Ok(()) => write(
+    Ok(()) => log(
       LogType::Success,
       "project has been change to: ",
       Some(project_name)
