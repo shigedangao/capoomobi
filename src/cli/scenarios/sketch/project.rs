@@ -1,7 +1,7 @@
 use serde_json;
 use crate::errors::cli_error::{ErrHelper};
-use crate::cli::configurator::configure;
-use crate::cli::core::logger::logging;
+use crate::cli::configurator::configure::configure;
+use crate::cli::core::logger::logging::{write, LogType};
 use crate::cli::scenarios::sketch::helper;
 
 /// Project
@@ -19,19 +19,7 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
     None => String::new()
   };
 
-  match main_action {
-    "current" => show_current_project(),
-    "switch" => switch_project(arg),
-    _ => show_current_project()
-  }
-}
-
-/// Show Current Project
-/// 
-/// # Description
-/// Show the current setted project
-fn show_current_project() {
-  let capoo_configurator = match configure::configure::bootstrap_capoo() {
+  let configuration = match configure::bootstrap_capoo() {
     Ok(conf) => conf,
     Err(err) => {
       err.log_pretty();
@@ -39,10 +27,26 @@ fn show_current_project() {
     }
   };
 
-  match capoo_configurator.get_content() {
+  match main_action {
+    "current" => show_current_project(configuration),
+    "switch" => switch_project(configuration, arg),
+    "list" => list_project(configuration),
+    _ => show_current_project(configuration)
+  }
+}
+
+/// Show Current Project
+/// 
+/// # Description
+/// Show the current setted project
+/// 
+/// # Arguments
+/// * `configuration` configure::ConfigureCapoo struct
+fn show_current_project(configuration: configure::ConfigureCapoo) {
+  match configuration.get_content() {
     Ok(p) => {
-      logging::write(
-        logging::LogType::Info,
+      write(
+        LogType::Info,
         "the current project in use is:",
         Some(p.current)
       );
@@ -51,23 +55,38 @@ fn show_current_project() {
   }
 }
 
+/// List Project
+/// 
+/// # Description
+/// list the known project
+/// 
+/// # Arguments
+/// * `configuration` configure::ConfigureCapoo struct
+fn list_project(configuration: configure::ConfigureCapoo) {
+  match configuration.get_content() {
+    Ok(projects) => {
+      for p in projects.projects.into_iter() {
+        write(
+          LogType::Info,
+          p.name.as_str(),
+          None
+        );
+      }
+    },
+    Err(err) => err.log_pretty()
+  }  
+}
+
 /// Switch Project
 /// 
 /// # Description
 /// Switch the project with the provided project name
 /// 
 /// # Arguments
+/// * `configuration` configure::ConfigureCapoo struct
 /// * `project_name` name of the project
-fn switch_project(project_name: String) {
-  let capoo_configurator = match configure::configure::bootstrap_capoo() {
-    Ok(conf) => conf,
-    Err(err) => {
-      err.log_pretty();
-      panic!();
-    }
-  };
-
-  let mut capoo_projects = match capoo_configurator.get_content() {
+fn switch_project(configuration: configure::ConfigureCapoo ,project_name: String) {
+  let mut capoo_projects = match configuration.get_content() {
     Ok(p) => p,
     Err(err) => {
       err.log_pretty();
@@ -89,13 +108,13 @@ fn switch_project(project_name: String) {
   let serialized_projects = serde_json::to_string(&capoo_projects);
 
   let result = match serialized_projects {
-    Ok(json) => capoo_configurator.write_json(json),
+    Ok(json) => configuration.write_json(json),
     Err(err) => panic!(err)
   };
 
   match result {
-    Ok(()) => logging::write(
-      logging::LogType::Success,
+    Ok(()) => write(
+      LogType::Success,
       "project has been change to: ",
       Some(project_name)
     ),
