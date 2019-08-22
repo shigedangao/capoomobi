@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 use crate::docker::{lexer::lexer, parser};
-use crate::cli::core::logger::logging;
+use crate::cli::core::logger::logger::{log, LogType};
 use crate::cli::core::input::input;
 use crate::kubernetes::{tree, io};
 use crate::errors::cli_error::ErrHelper;
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
+/// Message
+const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located on the path: ";
 
 /// Launch
 /// 
@@ -18,9 +20,9 @@ const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 /// # Arguments
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str) {
-  logging::write(
-    logging::LogType::Info,
-    "Preparing to parse the docker-compose.yml located on the path: ",
+  log(
+    LogType::Info,
+    PREPARE_PARSING,
     Some(String::from(sub_action))
   );
 
@@ -63,8 +65,8 @@ pub fn launch(sub_action: &str) {
 fn ask_services_details(services: &Vec<lexer::Service>) -> HashMap<String, HashMap<&'static str, String>> {
   let mut preferences: HashMap<String, HashMap<&str, String>> = HashMap::new();
   for service in services.into_iter() {
-    logging::write(
-      logging::LogType::Info,
+    log(
+      LogType::Info,
       format!("{}{}", "Preparing services for: ", service.name).as_str(),
       None
     );

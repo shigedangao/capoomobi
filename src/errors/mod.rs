@@ -1,18 +1,13 @@
-/**
- * Cli Error
- * 
- * Module use to handle custom CLI errors
- * This custom error help to easily debug issues with the CLI
- */
+/// CliErr module
+/// 
+/// # Description
+/// Module use for handling custom error
 pub mod cli_error {
   use std::fmt;
-  use crate::cli::core::logger::logging;
+  use crate::cli::core::logger::logger::{log, LogType};
 
-  /**
-   * Err Code
-   * 
-   * List of error code
-   */
+  /// ErrCode
+  /// List of enum field describing the type of error
   pub enum ErrCode {
     ParsingError,
     SerializeError,
@@ -22,32 +17,35 @@ pub mod cli_error {
     RendererError
   }
 
-  /**
-   * Error Helper trait
-   * 
-   * Define a set of common method to use the custom errors
-   */
+  /// Err Helper
+  /// 
+  /// # Description
+  /// Trait which implement a set of function for the error
   pub trait ErrHelper {
-    /**
-     * New
-     * 
-     * Return a new CliErr structure
-     */
+    /// New
+    /// 
+    /// # Description
+    /// Return a new CLiErr struct
+    /// 
+    /// # Arguments
+    /// * `message` slice of a static str
+    /// * `reason` String
+    /// * `codename` ErrCode enum value
+    /// 
+    /// # Return
+    /// CliErr struct
     fn new(message: &'static str, reason: String, codename: ErrCode) -> Self;
-    /**
-     * Log Pretty
-     * 
-     * Print the log in a pretty way in order to make it more readable
-     */
+    /// Log Pretty
+    /// 
+    /// # Description
+    /// Log the error in a pretty way
     fn log_pretty(&self); 
   }
   
-  /**
-   * Cli Err
-   * 
-   * Custom error handler use to better describe the errors
-   * triggered by the CLI
-   */
+  /// CliErr
+  /// 
+  /// # Description
+  /// structure use to handle information about the error
   pub struct CliErr {
     message: &'static str,
     reason: String,
@@ -72,8 +70,8 @@ pub mod cli_error {
     }
 
     fn log_pretty(&self) {
-      logging::write(
-        logging::LogType::Error,
+      log(
+        LogType::Error,
         self.message,
         Some(format!("error code: {} reason: {}", self.code, self.reason))
       );

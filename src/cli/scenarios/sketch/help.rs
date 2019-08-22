@@ -1,16 +1,16 @@
 use crate::cli::scenarios::scenes::picker::{EnumHelper, HelpScenarios};
-use crate::cli::core::logger::logging::{HelpLogType, write_help};
+use crate::cli::core::logger::logger::{HelpLogType, log_help};
 
-// Error constants
+/// Error constants
 const EMPTY_OPTIONS_ERROR: &str = "Please select an option";
 
-/**
- * Launch
- * 
- * Launch the scenario of the help command
- * 
- * capoomobi help
- */
+/// Launch
+/// 
+/// # Description
+/// Launch the help scenario
+/// 
+/// # Arguments
+/// * `main_action` Reference to a String
 pub fn launch(main_action: &String) {
   let parsed_action = match HelpScenarios::from_string(main_action) {
     Some(value) => value,
@@ -26,67 +26,62 @@ pub fn launch(main_action: &String) {
   }
 }
 
-/**
- * Describe Init
- * 
- * Describe the init command of the capoomobi
- */
+/// Describe Init
+/// 
+/// # Description
+/// Describe the `capoomobi init` command
 fn describe_init() {
-  write_help(HelpLogType::Cmd, "capoomobi init <args>");
-  write_help(
+  log_help(HelpLogType::Cmd, "capoomobi init <args>");
+  log_help(
     HelpLogType::Description,
     "Initialize and set a capoomobi project based on the provided name and path"
   );
-  write_help(HelpLogType::Example, "capoomobi init little_mouse ../cat");
+  log_help(HelpLogType::Example, "capoomobi init little_mouse ../cat");
 }
 
-/**
- * Describe Generate
- * 
- * Describe the generate command
- */
+/// Describe Generate
+/// 
+/// # Description
+/// Describe the `capoomobi generate` command
 fn describe_generate() {
-  write_help(HelpLogType::Cmd, "capoomobi generate <args>");
-  write_help(
+  log_help(HelpLogType::Cmd, "capoomobi generate <args>");
+  log_help(
     HelpLogType::Description,
     "Generate a set of Kubernetes files from your docker-compose.yml"
   );
-  write_help(HelpLogType::Example, "capoomobi generate");
+  log_help(HelpLogType::Example, "capoomobi generate");
 }
 
-/**
- * Describe Project
- * 
- * Describe the project command
- */
+/// Describe Project
+/// 
+/// # Description
+/// Describe the `capoomobi project` command
 fn describe_project() {
-  write_help(HelpLogType::Cmd, "capoomobi describe <args>");
-  write_help(
+  log_help(HelpLogType::Cmd, "capoomobi describe <args>");
+  log_help(
     HelpLogType::Description,
     "Describe a project based on it's name"
   );
-  write_help(HelpLogType::Example, "capoomobi describe jasmine");
+  log_help(HelpLogType::Example, "capoomobi describe jasmine");
 }
 
-/**
- * Describe Revert
- * 
- * Describe the revert command
- */
+/// Describe revert
+/// 
+/// # Description
+/// Describe the `capoomobi revert` command
 fn describe_revert() {
-  write_help(HelpLogType::Cmd, "capoomobi revert <args>");
-  write_help(
+  log_help(HelpLogType::Cmd, "capoomobi revert <args>");
+  log_help(
     HelpLogType::Description,
     "Revert the project to a previous version"
   );
-  write_help(HelpLogType::Example, "capoomobi revert 10 jasmine");
+  log_help(HelpLogType::Example, "capoomobi revert 10 jasmine");
 }
 
-/**
- * Describe Verify
- * 
- * Describe the verify command
- */
+/// Describe Verify
+/// 
+/// # Description
+/// Describe the `capoomobi verify` command
 fn describe_verify() {
-  write_help(HelpLogType::Cmd, "capoomobi verify <args>");
+  log_help(HelpLogType::Cmd, "capoomobi verify <args>");
 }

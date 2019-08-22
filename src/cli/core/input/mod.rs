@@ -3,7 +3,7 @@
 /// Module use to retrieve the input of the user
 pub mod input {
   use std::io;
-  use crate::cli::core::logger::logging;
+  use crate::cli::core::logger::logger::{log, LogType};
 
   /// Get User Input
   /// 
@@ -16,8 +16,8 @@ pub mod input {
   /// # Return
   /// string
   pub fn get_user_input(message: &str) -> String {
-    logging::write(
-      logging::LogType::Info,
+    log(
+      LogType::Info,
       message, 
       None
     );
