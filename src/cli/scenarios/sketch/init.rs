@@ -3,6 +3,7 @@ use crate::cli::configurator::configure::configure;
 use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
 use crate::cli::core::fs::toolbox;
 use crate::errors::cli_error::ErrHelper;
+use crate::cli::scenarios::sketch::helper;
 
 /// Error constant
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
@@ -18,7 +19,7 @@ const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
 /// * `project_name`: slice of string
 /// * `options`: reference to Vec of string
 pub fn launch(project_name: &str, options: &Vec<String>) {
-  let project_path = match retrieve_options_by_idx(options, 0) {
+  let project_path = match helper::retrieve_options_by_idx(options, 0) {
     Some(p) => p, 
     None => String::new()
   };
@@ -61,26 +62,4 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
         panic!();
       }
     }
-}
-
-/// Retrieve options by idx
-/// 
-/// # Description
-/// Retrieve an optional String by it's index
-/// 
-/// # Arguments
-/// * `vec` Reference to a vector of string
-/// * `idx` usize
-/// 
-/// # Return
-/// * `options` option of string
-fn retrieve_options_by_idx(vec: &Vec<String>, idx: usize) -> Option<String> {
-  if vec.is_empty() {
-    return None;
-  }
-
-  match vec.get(idx) {
-    Some(res) => Some(res.to_string()),
-    None => None
-  }
 }

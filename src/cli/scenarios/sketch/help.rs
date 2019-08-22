@@ -23,7 +23,6 @@ pub fn launch(main_action: &String) {
     HelpScenarios::Project => describe_project(),
     HelpScenarios::Revert => describe_revert(),
     HelpScenarios::Verify => describe_verify(),
-    HelpScenarios::Switch => describe_switch()
   }
 }
 
@@ -90,8 +89,4 @@ fn describe_revert() {
  */
 fn describe_verify() {
   write_help(HelpLogType::Cmd, "capoomobi verify <args>");
-}
-
-fn describe_switch() {
-  write_help(HelpLogType::Cmd, "capoomobi switch <args>");
 }

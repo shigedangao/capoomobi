@@ -63,7 +63,7 @@ pub mod parser {
       Scenarios::Init => sketch::init::launch(sub_action, options),
       Scenarios::Help => sketch::help::launch(sub_action),
       Scenarios::Generate => sketch::generate::launch(sub_action),
-      Scenarios::Switch => sketch::switch::launch(sub_action)
+      Scenarios::Project => sketch::project::launch(sub_action, options)
     }
   }
 
