@@ -56,7 +56,7 @@ pub mod bootstrap {
   /// # Return
   /// Result<(), CliErr>
   fn create_kubernetes_folder(path: &PathBuf) -> Result<(), CliErr> {
-    match toolbox::create_folder_from_pathbuf(PathBuf::from(path)) {
+    match toolbox::create_folder_from_pathbuf(path) {
       Ok(()) => {
         log(
           LogType::Info,

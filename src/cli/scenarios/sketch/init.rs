@@ -1,9 +1,8 @@
 use crate::cli::core::logger::logger::{log, LogType};
 use crate::cli::configurator::configure::configure;
-use crate::cli::core::fs::configurator::configurator::ConfiguratorIO;
-use crate::cli::core::fs::toolbox;
-use crate::errors::cli_error::ErrHelper;
+use crate::cli::core::fs::bootstrap::bootstrap::ProjectPath;
 use crate::cli::scenarios::sketch::helper;
+use crate::errors::cli_error::ErrHelper;
 
 /// Error constant
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
@@ -24,20 +23,12 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
     None => String::new()
   };
 
-  let config_io = ConfiguratorIO::new(project_name, project_path);
-  let io_result = config_io
-    .build_compose_folder()
-    .and_then(|res: &ConfiguratorIO| res.build_kube_folder());
-
-  if let Err(err) = io_result {
-    err.log_pretty();
-    panic!(err);
-  }
-
-  // Generate the absolute path from the current set path
-  let absolute_path = match toolbox::get_absolute_path(&config_io.project_path) {
-    Ok(p) => p,
-    Err(e) => panic!(format!("{}{:?}", PATH_ERROR, e))
+  let initializer = ProjectPath::new(&project_path);
+  let abs_path = match initializer.build_project_folder() {
+    Some(p) => p,
+    None => panic!(
+      format!("{}{}", PATH_ERROR, project_path)
+    )
   };
 
   // Checking or creating if the config file exist
@@ -45,21 +36,20 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
     Ok(f) => f,
     Err(e) => {
       e.log_pretty();
-      panic!();
+      return;
     }
   };
 
   match capoo_configurator
-    .generate_project_conf(String::from(project_name), absolute_path)
+    .generate_project_conf(String::from(project_name), abs_path)
     .and_then(|res| capoo_configurator.write_json(res)) {
       Ok(()) => log(
         LogType::Success,
         "Project successfully created",
-        Some(toolbox::get_absolute_path_as_string(&config_io.project_path))
+        Some(initializer.get_path_as_string())
       ),
       Err(err) => {
         err.log_pretty();
-        panic!();
       }
     }
 }
