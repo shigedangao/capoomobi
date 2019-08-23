@@ -14,8 +14,6 @@ pub mod container {
   /// Constant
   const CONTROLLER_FILENAME: &str = "controller.yaml";
   const SERVICE_FILENAME: &str = "service.yaml";
-  const KUBE_FOLDER: &str = "/kube";
-
 
   /// Controller Kind
   /// 
@@ -156,9 +154,7 @@ pub mod container {
       return None;
     }
 
-    let mut path_str = project_path_opts.unwrap();
-    path_str.push_str(KUBE_FOLDER);
-
+    let path_str = project_path_opts.unwrap();
     Some(toolbox::concat_string_path(&path_str, &name))
   }
 }

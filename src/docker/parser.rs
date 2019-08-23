@@ -46,18 +46,18 @@ pub mod yaml {
 
     let content = toolbox::open_and_read_string_file(&compose_file_path);
     if let Ok(value) = content {
-       return match parse_yaml_tree(value) {
-         Ok(yaml_content) => Ok(yaml_content),
-         Err(err) => {
-           return Err(
-             CliErr::new(
-               UNABLE_PARSE_ERR,
-               format!("{}", err.description()),
-               ErrCode::IOError
-             )
-           );
-         }
-       }
+      return match parse_yaml_tree(value) {
+        Ok(yaml_content) => Ok(yaml_content),
+        Err(err) => {
+          return Err(
+            CliErr::new(
+              UNABLE_PARSE_ERR,
+              format!("{}", err.description()),
+              ErrCode::IOError
+            )
+          );
+        }
+      }
     }
 
     Err(

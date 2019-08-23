@@ -58,7 +58,7 @@ pub fn open_and_read_string_file(file_path: &PathBuf) -> io::Result<String> {
 /// 
 /// # Return
 /// Result
-pub fn create_folder_from_pathbuf(path: PathBuf) -> io::Result<()> {
+pub fn create_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
   fs::create_dir_all(path)
 }
 
@@ -93,23 +93,6 @@ pub fn concat_string_path(base: &String, extra: &String) -> PathBuf {
 pub fn get_absolute_path(path: &PathBuf) -> std::io::Result<PathBuf> {
   let path = fs::canonicalize(path)?;
   Ok(path)
-}
-
-/// Get Absolute Path As String
-/// 
-/// # Description
-/// Return a path as a string
-/// 
-/// # Arguments
-/// * `path` PathBuf
-/// 
-/// # Return
-/// Return a string
-pub fn get_absolute_path_as_string(path: &PathBuf) -> String {
-  match get_absolute_path(path) {
-    Ok(p) => String::from(p.to_str().unwrap_or("")),
-    Err(_) => String::new()
-  }
 }
 
 /// Write Json Content
