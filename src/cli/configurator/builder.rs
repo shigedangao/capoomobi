@@ -128,7 +128,7 @@ pub mod builder {
     /// * `&self` Project struct reference
     /// * `name` String
     /// 
-    /// Return
+    /// # Return
     /// Option<(usize, String)>
     fn get_project_idx(&self, name: String) -> Option<(usize, String)> {
       let project = &(&self.projects)

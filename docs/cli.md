@@ -30,12 +30,6 @@ init <name> <path>: Create a folder with a name where the Kubernetes yaml file w
 
 So that we can switch from project to project w/o any headache
 
-## Verify command
-
-capoomobi verify <docker-compose.yaml path>
-
-Verify the validity of the docker-compose
-
 ## Project command
 
 capoomobi init <main> <args>
@@ -57,3 +51,9 @@ capoomobi project delete <project_name>
 capoomobi help <command>
 
 Will print the information of a command
+
+## Generate K8S configuration
+
+capoomobi generate <docker-compose.yaml path>
+
+This will generate a set of K8S files

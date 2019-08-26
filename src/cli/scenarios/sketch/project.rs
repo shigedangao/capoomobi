@@ -150,7 +150,6 @@ fn delete_project(configuration: ConfigureCapoo, project_name: String) {
   };
 
   let project_path = PathBuf::from(path);
-  println!("project path {:?}", project_path);  
   match toolbox::delete_folder_from_pathbuf(&project_path) {
     Ok(_) => {
       log(
@@ -160,7 +159,6 @@ fn delete_project(configuration: ConfigureCapoo, project_name: String) {
       )
     },
     Err(err) => {
-
       CliErr::new(
         DELETE_ERROR_MESSAGE,
         String::from(err.description()),
