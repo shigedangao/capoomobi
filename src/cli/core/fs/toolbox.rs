@@ -62,6 +62,20 @@ pub fn create_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
   fs::create_dir_all(path)
 }
 
+/// Delete Folder From Pathbug
+/// 
+/// # Description
+/// Delete a folder from a pathbuf reference
+/// 
+/// # Arguments
+/// * `path` Reference to a pathbuf
+/// 
+/// # Return
+/// io::Result
+pub fn delete_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
+  fs::remove_dir_all(path)
+}
+
 /// Concat String Path
 /// 
 /// # Description
