@@ -1,8 +1,14 @@
-use serde_json;
-use crate::errors::cli_error::{ErrHelper};
-use crate::cli::configurator::configure::configure;
+use std::path::PathBuf;
+use std::error::Error;
+use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+use crate::cli::configurator::configure::configure::{bootstrap_capoo, ConfigureCapoo};
 use crate::cli::core::logger::logger::{log, LogType};
 use crate::cli::scenarios::sketch::helper;
+use crate::cli::core::fs::toolbox;
+
+// Errors
+const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";
+const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
 
 /// Project
 /// 
@@ -19,7 +25,7 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
     None => String::new()
   };
 
-  let configuration = match configure::bootstrap_capoo() {
+  let configuration = match bootstrap_capoo() {
     Ok(conf) => conf,
     Err(err) => {
       err.log_pretty();
@@ -31,6 +37,7 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
     "current" => show_current_project(configuration),
     "switch" => switch_project(configuration, arg),
     "list" => list_project(configuration),
+    "delete" => delete_project(configuration, arg),
     _ => show_current_project(configuration)
   }
 }
@@ -41,8 +48,8 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
 /// Show the current setted project
 /// 
 /// # Arguments
-/// * `configuration` configure::ConfigureCapoo struct
-fn show_current_project(configuration: configure::ConfigureCapoo) {
+/// * `configuration` ConfigureCapoo struct
+fn show_current_project(configuration: ConfigureCapoo) {
   match configuration.get_content() {
     Ok(p) => {
       log(
@@ -61,8 +68,8 @@ fn show_current_project(configuration: configure::ConfigureCapoo) {
 /// list the known project
 /// 
 /// # Arguments
-/// * `configuration` configure::ConfigureCapoo struct
-fn list_project(configuration: configure::ConfigureCapoo) {
+/// * `configuration` ConfigureCapoo struct
+fn list_project(configuration: ConfigureCapoo) {
   match configuration.get_content() {
     Ok(projects) => {
       for p in projects.projects.into_iter() {
@@ -83,41 +90,80 @@ fn list_project(configuration: configure::ConfigureCapoo) {
 /// Switch the project with the provided project name
 /// 
 /// # Arguments
-/// * `configuration` configure::ConfigureCapoo struct
+/// * `configuration` ConfigureCapoo struct
 /// * `project_name` name of the project
-fn switch_project(configuration: configure::ConfigureCapoo ,project_name: String) {
+fn switch_project(configuration: ConfigureCapoo ,project_name: String) {
   let mut capoo_projects = match configuration.get_content() {
     Ok(p) => p,
     Err(err) => {
       err.log_pretty();
-      panic!();
+      return;
     }
   };
 
-  let clone_project = &capoo_projects.projects;
-  let has_project = clone_project
-    .into_iter()
-    .filter(|p| p.name == project_name)
-    .last();
-
-  if let None = has_project {
-    panic!(format!("Unable to find project name with the name of {:?}", project_name));
+  let (status, output) = capoo_projects.switch_project(&project_name);
+  if !status {
+    CliErr::new(
+      SWITCH_ERROR_MESSAGE,
+      output,
+      ErrCode::IOError
+    ).log_pretty();
+    return;
   }
 
-  capoo_projects.current = String::from(&project_name);
-  let serialized_projects = serde_json::to_string(&capoo_projects);
-
-  let result = match serialized_projects {
-    Ok(json) => configuration.write_json(json),
-    Err(err) => panic!(err)
-  };
-
-  match result {
+  match configuration.write_json(output) {
     Ok(()) => log(
       LogType::Success,
       "project has been change to: ",
       Some(project_name)
     ),
     Err(err) => err.log_pretty()
+  }
+}
+
+/// Delete Project
+/// 
+/// # Description
+/// Delete a project from the list of setted project
+fn delete_project(configuration: ConfigureCapoo, project_name: String) {
+  let mut capoo_projects = match configuration.get_content() {
+    Ok(p) => p,
+    Err(err) => {
+      err.log_pretty();
+      return;
+    }
+  };
+
+  let (status, output, path) = capoo_projects.delete_project_by_name(&project_name);
+  if !status {
+    CliErr::new(
+      DELETE_ERROR_MESSAGE,
+      output,
+      ErrCode::NotFound
+    ).log_pretty();
+    return;
+  }
+
+  match configuration.write_json(output) {
+    Ok(_) => (),
+    Err(err) => err.log_pretty()
+  };
+
+  let project_path = PathBuf::from(path);
+  match toolbox::delete_folder_from_pathbuf(&project_path) {
+    Ok(_) => {
+      log(
+        LogType::Success,
+        "Project has been deleted name: ",
+        Some(project_name)
+      )
+    },
+    Err(err) => {
+      CliErr::new(
+        DELETE_ERROR_MESSAGE,
+        String::from(err.description()),
+        ErrCode::IOError
+      ).log_pretty()
+    }
   }
 }

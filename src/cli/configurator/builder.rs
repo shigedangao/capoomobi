@@ -4,6 +4,7 @@
 /// Module use to manipulate the content of the .capoomobi.json
 pub mod builder {
   use std::path::PathBuf;
+  use std::error::Error;
   use serde::{Serialize, Deserialize};
   use serde_json;
   use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
@@ -114,5 +115,85 @@ pub mod builder {
   pub fn parse_string_to_struct(config_values: &String) -> std::io::Result<Projects> {
     let p: Projects = serde_json::from_str(&config_values)?;
     Ok(p)
+  }
+
+  // List of method for manipulating the Projects struct
+  impl Projects {
+    /// Get Project Idx
+    /// 
+    /// # Description
+    /// Get a project by name
+    /// 
+    /// # Arguments
+    /// * `&self` Project struct reference
+    /// * `name` String
+    /// 
+    /// # Return
+    /// Option<(usize, String)>
+    fn get_project_idx(&self, name: String) -> Option<(usize, String)> {
+      let project = &(&self.projects)
+        .into_iter()
+        .enumerate()
+        .filter(|p| p.1.name == name)
+        .last();
+      
+      if let Some(p) = project {
+        return Some((p.0, String::from(&p.1.path)));
+      }
+
+      None
+    }
+    /// Delete By Idx
+    /// 
+    /// # Description
+    /// Delete a project by giving the index
+    /// 
+    /// # Arguments
+    /// * `self` Projects struct
+    /// * `idx` usize
+    /// 
+    /// # Return
+    /// (bool, String, String) tupple
+    pub fn delete_project_by_name(&mut self, name: &String) -> (bool, String, String) {
+      let project_opts = &self.get_project_idx(String::from(name));
+      if let None = project_opts {
+        return (false, String::new(), String::new());
+      }
+
+      let project = project_opts.as_ref().unwrap();
+      &self.projects.remove(project.0);
+      match serde_json::to_string(&self) {
+        Ok(json) => (true, json, String::from(&project.1)),
+        Err(err) => (false, String::from(err.description()), String::new())
+      }
+    }
+
+    /// Switch Project
+    /// 
+    /// # Description
+    /// Switch the setted project to an other
+    /// 
+    /// # Arguments
+    /// * `self` Projets struct
+    /// * `name` String
+    /// 
+    /// # Return
+    /// (bool, String) tupple
+    pub fn switch_project(&mut self, name: &String) -> (bool, String) {
+      let has_project = &(&self.projects)
+        .into_iter()
+        .filter(|p| p.name == String::from(name))
+        .last();
+
+      if let None = has_project {
+        return (false, String::new());
+      }
+
+      self.current = String::from(name);
+      match serde_json::to_string(self) {
+        Ok(json) => (true, json),
+        Err(err) => (false, String::from(err.description()))
+      }
+    }
   }
 }

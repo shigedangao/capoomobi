@@ -30,32 +30,9 @@ init <name> <path>: Create a folder with a name where the Kubernetes yaml file w
 
 So that we can switch from project to project w/o any headache
 
-## Verify command
-
-capoomobi verify <docker-compose.yaml path>
-
-Verify the validity of the docker-compose
-
-## Generate command
-
-capoomobi generate <docker-compose.yaml path>
-
-Generate the Kubernetes files based on the docker-compose
-
-The CLI will ask the user several questions
-
-...Detecting 5 deployments
-...Ask for how many pods for each deployment
-
-## Revert command
-
-capoomobi revert <number>
-
-Revert & generate a set of kubernetes files based on a docker-compose<version number> file.
-
 ## Project command
 
-capoomobi project <main> <args>
+capoomobi init <main> <args>
 
 ### List project availables
 
@@ -74,3 +51,9 @@ capoomobi project delete <project_name>
 capoomobi help <command>
 
 Will print the information of a command
+
+## Generate K8S configuration
+
+capoomobi generate <docker-compose.yaml path>
+
+This will generate a set of K8S files
