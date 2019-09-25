@@ -8,5 +8,5 @@ extern crate tokio;
 extern crate handlebars;
 
 fn main() {
-    bootstrap::manager::start();
+  bootstrap::manager::start();
 }
