@@ -3,6 +3,7 @@ use crate::docker::{lexer::lexer, parser};
 use crate::cli::core::logger::logger::{log, LogType};
 use crate::cli::core::input::input;
 use crate::kubernetes::{tree, io};
+use crate::confiture::config::conf;
 use crate::errors::cli_error::ErrHelper;
 
 /// Constant referring to the compose file which need to be parse
@@ -42,6 +43,8 @@ pub fn launch(sub_action: &str) {
     }
   };
 
+  let confiture = conf::load_conf(String::new(), sub_action);
+  println!("value of confiture {:?}", confiture);
   let prefs = ask_services_details(&services);
   let kubes = tree::tree::get_kube_abstract_tree(services, prefs);
   match io::bootstrap::bootstrap::prepare_kube(&kubes) {

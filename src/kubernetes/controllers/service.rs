@@ -2,7 +2,7 @@
 /// 
 /// Module use to create a K8S Service datastructure
 pub mod service {
-  use serde::Serialize;
+  use serde::{Serialize, Deserialize};
   use std::collections::HashMap;
   use crate::docker::lexer::lexer::Service;
   use crate::kubernetes::controllers::helper::{KubeEnumHelper};
@@ -15,20 +15,20 @@ pub mod service {
   /// List supported K8S Service
   #[derive(PartialEq)]
   #[derive(Debug)]
-  #[derive(Serialize)]
-  #[serde(untagged)]
+  #[derive(Serialize, Deserialize)]
+  // #[serde(untagged)]
   pub enum ServiceType {
-    ClusterIP(&'static str),
-    NodePort(&'static str),
-    LoadBalancer(&'static str)
+    ClusterIP,
+    NodePort,
+    LoadBalancer
   }
 
   impl KubeEnumHelper<ServiceType> for ServiceType {
     fn from_str(service_type: &str) -> Option<ServiceType> {
       match service_type {
-        "clusterip" => Some(ServiceType::ClusterIP("clusterIP")),
-        "nodeport" => Some(ServiceType::NodePort("nodePort")),
-        "loadbalancer" => Some(ServiceType::LoadBalancer("loadBalancer")),
+        "clusterip" => Some(ServiceType::ClusterIP),
+        "nodeport" => Some(ServiceType::NodePort),
+        "loadbalancer" => Some(ServiceType::LoadBalancer),
         _ => None
       }
     }

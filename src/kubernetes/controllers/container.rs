@@ -5,7 +5,7 @@ pub mod container {
   use std::collections::HashMap;
   use std::iter::Iterator;
   use std::path::PathBuf;
-  use serde::Serialize;
+  use serde::{Serialize, Deserialize};
   use crate::docker::lexer::lexer::{Service};
   use crate::cli::configurator::config;
   use crate::cli::core::fs::toolbox;
@@ -19,7 +19,7 @@ pub mod container {
   /// 
   /// List type of supported K8S controller
   #[derive(Debug)]
-  #[derive(Serialize)]
+  #[derive(Serialize, Deserialize)]
   pub enum ControllerKind {
     Deployment,
     ReplicaSet,
