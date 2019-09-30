@@ -43,51 +43,17 @@ pub fn launch(sub_action: &str) {
     }
   };
 
-  let confiture = conf::load_conf(String::new(), sub_action);
-  println!("value of confiture {:?}", confiture);
-  let prefs = ask_services_details(&services);
-  let kubes = tree::tree::get_kube_abstract_tree(services, prefs);
-  match io::bootstrap::bootstrap::prepare_kube(&kubes) {
-    Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
-    Err(e) => panic!("error {:?}", e)
-  };
-}
+  let confiture_opts = conf::load_conf(String::new(), sub_action);
+  if let Some(conf) = confiture_opts {
+    let kubes = tree::tree::get_kube_abstract_tree(services, conf);
+    match io::bootstrap::bootstrap::prepare_kube(&kubes) {
+      Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
+      Err(e) => panic!("error {:?}", e)
+    };
 
-/// Ask Services Details
-/// 
-/// # Description
-/// Set of questions ask to the user in order to get more
-/// information on each docker services
-/// 
-/// # Arguments
-/// * `services` Reference to a Vector of a docker service
-/// 
-/// # Return
-/// HashMap of a hashmap containing answer. The hashmap is mapped like
-/// so: [service_foo => [{...}], service_bar => [{...}]]
-fn ask_services_details(services: &Vec<lexer::Service>) -> HashMap<String, HashMap<&'static str, String>> {
-  let mut preferences: HashMap<String, HashMap<&str, String>> = HashMap::new();
-  for service in services.into_iter() {
-    log(
-      LogType::Info,
-      format!("{}{}", "Preparing services for: ", service.name).as_str(),
-      None
-    );
-
-    let replicas = input::get_user_input("Enter number of wishes replicas (e.g: 5)");
-    let service_type = input::get_user_input("Enter service type (NodePort, ClusterIP)");
-    let nodeport = input::get_user_input("Enter NodePort number if needed (e.g: 30120) or (e.g: N) for no NodePort");
-    let controller = input::get_user_input("Enter controller type");
-
-    let mut prefs: HashMap<&str, String> = HashMap::new();
-    prefs.insert("replicas", replicas);
-    prefs.insert("service", service_type);
-    prefs.insert("nodeport", nodeport);
-    prefs.insert("controller", controller);
-
-    let name = service.name.to_string();
-    preferences.insert(name, prefs);
+    return;
   }
 
-  return preferences;
+  // @TODO put error here or something...
+  panic!()
 }

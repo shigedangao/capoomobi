@@ -11,6 +11,7 @@ services:
     labels:
       - "hey little mouse"
       - "hey big cat"
+      - "dors bien petite souris"
   # mysql:
   #   # replicas: 5
   #   image: mysql:5:7

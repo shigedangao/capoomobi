@@ -2,14 +2,13 @@
 /// 
 /// Module use to create a K8S controller datastructure
 pub mod container {
-  use std::collections::HashMap;
   use std::iter::Iterator;
   use std::path::PathBuf;
   use serde::{Serialize, Deserialize};
   use crate::docker::lexer::lexer::{Service};
   use crate::cli::configurator::config;
   use crate::cli::core::fs::toolbox;
-  use crate::kubernetes::controllers::helper::{KubeEnumHelper};
+  use crate::confiture::config::conf::{ConfigDeployment};
 
   /// Constant
   const CONTROLLER_FILENAME: &str = "controller.yaml";
@@ -18,25 +17,12 @@ pub mod container {
   /// Controller Kind
   /// 
   /// List type of supported K8S controller
-  #[derive(Debug)]
-  #[derive(Serialize, Deserialize)]
+  #[derive(Serialize, Deserialize, Clone, Debug)]
   pub enum ControllerKind {
     Deployment,
     ReplicaSet,
     StatefulSet,
     DaemonSet
-  }
-
-  impl KubeEnumHelper<ControllerKind> for ControllerKind {
-    fn from_str(controller: &str) -> Option<ControllerKind> {
-      match controller {
-        "deployment" => Some(ControllerKind::Deployment),
-        "replicaset" => Some(ControllerKind::ReplicaSet),
-        "statefulset" => Some(ControllerKind::StatefulSet),
-        "daemonset" => Some(ControllerKind::DaemonSet),
-        _ => Some(ControllerKind::Deployment)
-      }
-    }
   }
   
   /// KubeContainer
@@ -61,7 +47,7 @@ pub mod container {
     pub ports: Vec<u16>
   }
 
-  /// Create Kube Struct
+  /// Create Kube Container
   /// 
   /// # Description
   /// Create K8S data structure
@@ -73,17 +59,7 @@ pub mod container {
   /// # Return
   /// * `KubeContainer` return the datastructure
   /// 
-  pub fn create_kube_struct(docker_service: Service, option: &HashMap<&str, String>) -> KubeContainer {
-    let mut ctrl: ControllerKind = ControllerKind::Deployment;
-    if let Some(controller) = option.get("controller") {
-      ctrl = ControllerKind::from_str(controller.to_lowercase().as_str()).unwrap();
-    }
-
-    let mut replica_count: u8 = 3;
-    if let Some(replicas) = option.get("replicas") {
-      replica_count = replicas.parse::<u8>().unwrap_or(3);
-    }
-
+  pub fn create_kube_container(docker_service: Service, option: ConfigDeployment) -> KubeContainer {
     let base_path = get_kube_path_for_service(&docker_service.name).unwrap_or(PathBuf::new());
     let mut controller_path = PathBuf::from(&base_path);
     controller_path.push(CONTROLLER_FILENAME);
@@ -94,10 +70,10 @@ pub mod container {
     let internal_ports = retrieve_container_port(docker_service.ports);
 
     let kube_container = KubeContainer {
-      controller_type: ctrl,
+      controller_type: option.controller,
       name: docker_service.name,
       image: docker_service.image,
-      replicas: replica_count,
+      replicas: option.replicas,
       commands: docker_service.commands,
       labels: docker_service.labels,
       environement: docker_service.environment,

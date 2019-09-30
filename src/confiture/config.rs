@@ -4,33 +4,37 @@
 /// Module use to retrieve the configuration of the docker-compose K8S bindings
 pub mod conf {
   use std::path::PathBuf;
+  use std::error::Error;
+  use std::collections::HashMap;
   use serde::{Deserialize};
   use serde_json;
   use crate::cli::core::fs::toolbox::{get_absolute_path, open_and_read_string_file};
+  use crate::cli::core::logger::logger;
   use crate::kubernetes::controllers::container::container::ControllerKind;
   use crate::kubernetes::controllers::service::service::ServiceType;
 
+  /// Constant
   const CONFITURE_FILE_NAME: &str = "./confiture.json";
 
   /// Config Deployment structure
-  #[derive(Deserialize, Debug)]
-  struct ConfigDeployment {
-    replicas: u8,
-    controller: ControllerKind
+  #[derive(Deserialize, Debug, Clone)]
+  pub struct ConfigDeployment {
+    pub replicas: u8,
+    pub controller: ControllerKind
   }
 
   /// Config Service structure
-  #[derive(Deserialize, Debug)]
-  struct ConfigService {
-    kind: ServiceType,
-    nodeport: u64
+  #[derive(Deserialize, Debug, Clone)]
+  pub struct ConfigService {
+    pub kind: ServiceType,
+    pub nodeport: u16
   }
   
   /// Config structure
-  #[derive(Deserialize, Debug)]
-  struct Config {
-    deployment: ConfigDeployment,
-    service: ConfigService,
+  #[derive(Deserialize, Debug, Clone)]
+  pub struct Config {
+    pub deployment: ConfigDeployment,
+    pub service: ConfigService,
     name: String
   }
 
@@ -57,8 +61,7 @@ pub mod conf {
 
       return match get_absolute_path(&o_path) {
         Ok(p) => p,
-        Err(err) => {
-          print!("encule {:?}", err);
+        Err(_) => {
           return PathBuf::new();
         }
       }
@@ -67,33 +70,66 @@ pub mod conf {
     PathBuf::from(path)
   }
 
+  /// Get Hashmap From Confiture
+  /// 
+  /// # Description
+  /// Get a hashmap from the confiture struct
+  /// 
+  /// # Arguments
+  /// * `conf` Confiture struct
+  /// 
+  /// # Return
+  /// HashMap<String, Config>
+  fn get_hashmap_from_confiture(conf: Confiture) -> HashMap<String, Config> {
+    let mut map = HashMap::new();
+    for c in conf.confitures {
+      map.insert(String::from(&c.name), c);
+    }
+
+    map
+  }
+
   /// Load Conf
   /// 
   /// # Description
   /// Load the configuration file and retrieve it's contents
   /// 
+  /// # Param
+  /// * `path` String
+  /// * `target_folder` &str
+  /// 
   /// # Return
-  /// Confiture structure
-  pub fn load_conf(path: String, target_folder: &str) -> Option<Confiture> {
+  /// HashMap<String, Config>
+  pub fn load_conf(path: String, target_folder: &str) -> Option<HashMap<String, Config>> {
     let p = retrieve_file_path(path, target_folder);
 
-    println!("value of path {:?}", p);
     let content = match open_and_read_string_file(&p) {
       Ok(c) => c,
       Err(err) => {
+        logger::log(
+          logger::LogType::Warning,
+          err.description(),
+          None
+        );
+
         return None;
       }
     };
 
-    // @TODO handle error
     let confiture: Confiture = match serde_json::from_str(&content) {
       Ok(c) => c,
       Err(err) => {
-        println!("fils de tchoin {:?}", err);
+        logger::log(
+          logger::LogType::Warning,
+          err.description(),
+          None
+        );
+
         return None;
       }
     };
 
-    Some(confiture)
+    let map = get_hashmap_from_confiture(confiture);
+    Some(map)
   }
 }
