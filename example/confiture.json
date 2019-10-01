@@ -1,0 +1,26 @@
+{
+  "confitures": [
+    {
+      "name": "web",
+      "deployment": {
+        "replicas": 8,
+        "controller": "Deployment"
+      },
+      "service": {
+        "kind": "NodePort",
+        "nodeport": 30301
+      }
+    },
+    {
+      "name": "front",
+      "deployment": {
+        "replicas": 10,
+        "controller": "Deployment"
+      },
+      "service": {
+        "kind": "NodePort",
+        "nodeport": 30302
+      }
+    }
+  ]
+}

@@ -2,36 +2,22 @@
 /// 
 /// Module use to create a K8S Service datastructure
 pub mod service {
-  use serde::Serialize;
-  use std::collections::HashMap;
+  use serde::{Serialize, Deserialize};
   use crate::docker::lexer::lexer::Service;
-  use crate::kubernetes::controllers::helper::{KubeEnumHelper};
+  use crate::confiture::config::conf::{ConfigService};
 
-  const UNSUPPORT_CONTROLLER: &str = "Unsupport type of controller";
+  /// Constant
   const EMPTY_PORT: &str = "Ports value is empty";
 
   /// Service Type
   /// 
   /// List supported K8S Service
-  #[derive(PartialEq)]
-  #[derive(Debug)]
-  #[derive(Serialize)]
-  #[serde(untagged)]
+  #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+  // #[serde(untagged)]
   pub enum ServiceType {
-    ClusterIP(&'static str),
-    NodePort(&'static str),
-    LoadBalancer(&'static str)
-  }
-
-  impl KubeEnumHelper<ServiceType> for ServiceType {
-    fn from_str(service_type: &str) -> Option<ServiceType> {
-      match service_type {
-        "clusterip" => Some(ServiceType::ClusterIP("clusterIP")),
-        "nodeport" => Some(ServiceType::NodePort("nodePort")),
-        "loadbalancer" => Some(ServiceType::LoadBalancer("loadBalancer")),
-        _ => None
-      }
-    }
+    ClusterIP,
+    NodePort,
+    LoadBalancer
   }
 
   /// Kube Service
@@ -54,24 +40,14 @@ pub mod service {
   /// Create a kubernetes service
   /// 
   /// # Arguments
-  /// * `name` - Pointer which reference to a String
-  /// * `docker_ports` - Pointer which reference to a List of String
-  /// * `labels` - Pointer which refrence to a List of String
-  /// * `service_type_str` - Pointer which reference to a String
+  /// * `svc` - Service reference
+  /// * `option` Config reference
   /// 
   /// # Return
   /// * `KubeService` return a KubeService object
-  pub fn create_kube_service(svc: &Service, option: &HashMap<&str, String>) -> KubeService {
+  pub fn create_kube_service(svc: &Service, option: ConfigService) -> KubeService {
     let mut service_name = String::from(&svc.name);
     service_name.push_str("-svc");
-
-    let svc_type = option.get("service").unwrap_or(&String::new()).to_owned();
-    let service_type = match ServiceType::from_str(svc_type.to_lowercase().as_str()) {
-      Some(svc) => svc,
-      None => panic!(format!("{}", UNSUPPORT_CONTROLLER))
-    };
-
-
     if svc.ports.is_empty() {
       panic!(EMPTY_PORT);
     }
@@ -82,15 +58,13 @@ pub mod service {
       .map(|port| port.parse::<u16>().unwrap_or(0))
       .collect();
 
-    let nodeport = option.get("nodeport").unwrap_or(&String::new()).to_owned();
-
     let kube_service = KubeService {
       name: service_name,
       svc_port: mapped_ports[0],
       target_port: mapped_ports[1],
-      service_type: service_type,
+      service_type: option.kind,
       labels: svc.labels.clone(),
-      nodeport: nodeport.parse::<u16>().unwrap_or(0)
+      nodeport: option.nodeport
     };
 
     return kube_service
