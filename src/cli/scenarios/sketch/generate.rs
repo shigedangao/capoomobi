@@ -1,15 +1,16 @@
-use std::collections::HashMap;
 use crate::docker::{lexer::lexer, parser};
 use crate::cli::core::logger::logger::{log, LogType};
-use crate::cli::core::input::input;
 use crate::kubernetes::{tree, io};
 use crate::confiture::config::conf;
-use crate::errors::cli_error::ErrHelper;
+use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 /// Message
 const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located on the path: ";
+/// Errors
+const ERROR_GET_DOCKER_SERVICE_LIST: &str = "Unable to retrieve list of services in the docker-compose";
+const ERROR_GET_CONFITURE: &str = "Unable to parse the confiture.json file as it's empty";
 
 /// Launch
 /// 
@@ -31,15 +32,20 @@ pub fn launch(sub_action: &str) {
     Ok(content) => content,
     Err(e) => {
       e.log_pretty();
-      panic!();
+      return;
     }
   };
 
   let services = match lexer::get_docker_services(yaml_content) {
     Some(vector) => vector,
     None => {
-      //@TODO add error code to panic
-      panic!();
+      CliErr::new(
+        ERROR_GET_DOCKER_SERVICE_LIST,
+        String::new(),
+        ErrCode::ParsingError
+      ).log_pretty();
+
+      return;
     }
   };
 
@@ -48,12 +54,15 @@ pub fn launch(sub_action: &str) {
     let kubes = tree::tree::get_kube_abstract_tree(services, conf);
     match io::bootstrap::bootstrap::prepare_kube(&kubes) {
       Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
-      Err(e) => panic!("error {:?}", e)
+      Err(e) => e.log_pretty()
     };
 
     return;
   }
 
-  // @TODO put error here or something...
-  panic!()
+  CliErr::new(
+    ERROR_GET_CONFITURE,
+    String::new(),
+    ErrCode::MissingFieldError
+  ).log_pretty();
 }

@@ -26,11 +26,11 @@ services:
   #     - "little_mouse"
   #     - "little_cat"
   #   command: "sh ./help.sh"
-  # front:
-  #   image: node:12.4.0-stretch
-  #   ports:
-  #     - 8000:8000
-  #   command:
-  #     - "npm install"
-  #     - "npm run build"
-  #     - "npm run start"
+  front:
+    image: node:12.4.0-stretch
+    ports:
+      - 8000:8000
+    command:
+      - "npm install"
+      - "npm run build"
+      - "npm run start"

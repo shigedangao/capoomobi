@@ -4,11 +4,9 @@
 pub mod service {
   use serde::{Serialize, Deserialize};
   use crate::docker::lexer::lexer::Service;
-  use crate::kubernetes::controllers::helper::{KubeEnumHelper};
   use crate::confiture::config::conf::{ConfigService};
 
   /// Constant
-  const UNSUPPORT_CONTROLLER: &str = "Unsupport type of controller";
   const EMPTY_PORT: &str = "Ports value is empty";
 
   /// Service Type
