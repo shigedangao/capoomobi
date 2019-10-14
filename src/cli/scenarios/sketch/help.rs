@@ -18,7 +18,7 @@ pub fn launch(main_action: &String) {
         HelpScenarios::Init => describe_init(),
         HelpScenarios::Generate => describe_generate(),
         HelpScenarios::Project => describe_project(),
-        HelpScenarios::Revert => describe_revert(),
+        HelpScenarios::Output => describe_output(),
         HelpScenarios::Verify => describe_verify(),
     }
 }
@@ -71,17 +71,17 @@ fn describe_project() {
     log_help(HelpLogType::Example, "capoomobi projet <action> little_pretty_mouse");
 }
 
-/// Describe revert
+/// Describe Output
 /// 
 /// # Description
-/// Describe the `capoomobi revert` command
-fn describe_revert() {
-    log_help(HelpLogType::Cmd, "capoomobi revert <args>");
+/// Describe the `capoomobi output` command
+fn describe_output() {
+    log_help(HelpLogType::Cmd, "capoomobi output <args>");
     log_help(
         HelpLogType::Description,
-        "Revert the project to a previous version"
+        "Output the Yaml file which will be output to the yaml file"
     );
-    log_help(HelpLogType::Example, "capoomobi revert 10 little_pretty_mouse");
+    log_help(HelpLogType::Example, "capoomobi output /workspae/my-docker-project");
 }
 
 /// Describe Verify

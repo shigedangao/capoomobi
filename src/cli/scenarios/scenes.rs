@@ -29,7 +29,7 @@ pub mod picker {
         Init,
         Generate,
         Project,
-        Revert,
+        Output,
         Verify
     }
 
@@ -50,8 +50,8 @@ pub mod picker {
             match action.as_str() {
                 "init" => Some(HelpScenarios::Init),
                 "generate" => Some(HelpScenarios::Generate),
+                "output" => Some(HelpScenarios::Output),
                 "project" => Some(HelpScenarios::Project),
-                "revert" => Some(HelpScenarios::Revert),
                 "verify" => Some(HelpScenarios::Verify),
                 _ => None
             }
