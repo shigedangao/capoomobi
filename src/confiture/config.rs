@@ -3,133 +3,133 @@
 /// # Description
 /// Module use to retrieve the configuration of the docker-compose K8S bindings
 pub mod conf {
-  use std::path::PathBuf;
-  use std::error::Error;
-  use std::collections::HashMap;
-  use serde::{Deserialize};
-  use serde_json;
-  use crate::cli::core::fs::toolbox::{get_absolute_path, open_and_read_string_file};
-  use crate::cli::core::logger::logger;
-  use crate::kubernetes::controllers::container::container::ControllerKind;
-  use crate::kubernetes::controllers::service::service::ServiceType;
+    use std::path::PathBuf;
+    use std::error::Error;
+    use std::collections::HashMap;
+    use serde::{Deserialize};
+    use serde_json;
+    use crate::cli::core::fs::toolbox::{get_absolute_path, open_and_read_string_file};
+    use crate::cli::core::logger::logger;
+    use crate::kubernetes::controllers::container::container::ControllerKind;
+    use crate::kubernetes::controllers::service::service::ServiceType;
 
-  /// Constant
-  const CONFITURE_FILE_NAME: &str = "./confiture.json";
+    /// Constant
+    const CONFITURE_FILE_NAME: &str = "./confiture.json";
 
-  /// Config Deployment structure
-  #[derive(Deserialize, Debug, Clone)]
-  pub struct ConfigDeployment {
-    pub replicas: u8,
-    pub controller: ControllerKind
-  }
+    /// Config Deployment structure
+    #[derive(Deserialize, Debug, Clone)]
+    pub struct ConfigDeployment {
+        pub replicas: u8,
+        pub controller: ControllerKind
+    }
 
-  /// Config Service structure
-  #[derive(Deserialize, Debug, Clone)]
-  pub struct ConfigService {
-    pub kind: ServiceType,
-    pub nodeport: u16
-  }
-  
-  /// Config structure
-  #[derive(Deserialize, Debug, Clone)]
-  pub struct Config {
-    pub deployment: ConfigDeployment,
-    pub service: ConfigService,
-    name: String
-  }
+    /// Config Service structure
+    #[derive(Deserialize, Debug, Clone)]
+    pub struct ConfigService {
+        pub kind: ServiceType,
+        pub nodeport: u16
+    }
 
-  /// Confiture
-  #[derive(Deserialize, Debug)]
-  pub struct Confiture {
-    confitures: Vec<Config>
-  }
+    /// Config structure
+    #[derive(Deserialize, Debug, Clone)]
+    pub struct Config {
+        pub deployment: ConfigDeployment,
+        pub service: ConfigService,
+        name: String
+    }
 
-  /// Retrieve File Path
-  /// 
-  /// # Description
-  /// Retrieve the file path in the PathBuf format
-  /// 
-  /// # Arguments
-  /// * `path` String
-  /// 
-  /// # Return
-  /// PathBuf
-  fn retrieve_file_path(path: String, folder: &str) -> PathBuf {
-    if path.is_empty() {
-      let mut o_path = PathBuf::from(String::from(folder));
-      o_path.push(CONFITURE_FILE_NAME);
+    /// Confiture
+    #[derive(Deserialize, Debug)]
+    pub struct Confiture {
+        confitures: Vec<Config>
+    }
 
-      return match get_absolute_path(&o_path) {
-        Ok(p) => p,
-        Err(_) => {
-          return PathBuf::new();
+    /// Retrieve File Path
+    /// 
+    /// # Description
+    /// Retrieve the file path in the PathBuf format
+    /// 
+    /// # Arguments
+    /// * `path` String
+    /// 
+    /// # Return
+    /// PathBuf
+    fn retrieve_file_path(path: String, folder: &str) -> PathBuf {
+        if path.is_empty() {
+            let mut o_path = PathBuf::from(String::from(folder));
+            o_path.push(CONFITURE_FILE_NAME);
+
+            return match get_absolute_path(&o_path) {
+                Ok(p) => p,
+                Err(_) => {
+                    return PathBuf::new();
+                }
+            }
         }
-      }
+
+        PathBuf::from(path)
     }
 
-    PathBuf::from(path)
-  }
+    /// Get Hashmap From Confiture
+    /// 
+    /// # Description
+    /// Get a hashmap from the confiture struct
+    /// 
+    /// # Arguments
+    /// * `conf` Confiture struct
+    /// 
+    /// # Return
+    /// HashMap<String, Config>
+    fn get_hashmap_from_confiture(conf: Confiture) -> HashMap<String, Config> {
+        let mut map = HashMap::new();
+        for c in conf.confitures {
+            map.insert(String::from(&c.name), c);
+        }
 
-  /// Get Hashmap From Confiture
-  /// 
-  /// # Description
-  /// Get a hashmap from the confiture struct
-  /// 
-  /// # Arguments
-  /// * `conf` Confiture struct
-  /// 
-  /// # Return
-  /// HashMap<String, Config>
-  fn get_hashmap_from_confiture(conf: Confiture) -> HashMap<String, Config> {
-    let mut map = HashMap::new();
-    for c in conf.confitures {
-      map.insert(String::from(&c.name), c);
+        map
     }
 
-    map
-  }
+    /// Load Conf
+    /// 
+    /// # Description
+    /// Load the configuration file and retrieve it's contents
+    /// 
+    /// # Param
+    /// * `path` String
+    /// * `target_folder` &str
+    /// 
+    /// # Return
+    /// HashMap<String, Config>
+    pub fn load_conf(path: String, target_folder: &str) -> Option<HashMap<String, Config>> {
+        let p = retrieve_file_path(path, target_folder);
 
-  /// Load Conf
-  /// 
-  /// # Description
-  /// Load the configuration file and retrieve it's contents
-  /// 
-  /// # Param
-  /// * `path` String
-  /// * `target_folder` &str
-  /// 
-  /// # Return
-  /// HashMap<String, Config>
-  pub fn load_conf(path: String, target_folder: &str) -> Option<HashMap<String, Config>> {
-    let p = retrieve_file_path(path, target_folder);
+        let content = match open_and_read_string_file(&p) {
+            Ok(c) => c,
+            Err(err) => {
+                logger::log(
+                    logger::LogType::Warning,
+                    err.description(),
+                    None
+                );
 
-    let content = match open_and_read_string_file(&p) {
-      Ok(c) => c,
-      Err(err) => {
-        logger::log(
-          logger::LogType::Warning,
-          err.description(),
-          None
-        );
+                return None;
+            }
+        };
 
-        return None;
-      }
-    };
+        let confiture: Confiture = match serde_json::from_str(&content) {
+            Ok(c) => c,
+            Err(err) => {
+                logger::log(
+                    logger::LogType::Warning,
+                    err.description(),
+                    None
+                );
 
-    let confiture: Confiture = match serde_json::from_str(&content) {
-      Ok(c) => c,
-      Err(err) => {
-        logger::log(
-          logger::LogType::Warning,
-          err.description(),
-          None
-        );
+            return None;
+            }
+        };
 
-        return None;
-      }
-    };
-
-    let map = get_hashmap_from_confiture(confiture);
-    Some(map)
-  }
+        let map = get_hashmap_from_confiture(confiture);
+        Some(map)
+    }
 }

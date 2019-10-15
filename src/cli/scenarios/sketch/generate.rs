@@ -22,47 +22,47 @@ const ERROR_GET_CONFITURE: &str = "Unable to parse the confiture.json file as it
 /// # Arguments
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str) {
-  log(
-    LogType::Info,
-    PREPARE_PARSING,
-    Some(String::from(sub_action))
-  );
+    log(
+        LogType::Info,
+        PREPARE_PARSING,
+        Some(String::from(sub_action))
+    );
 
-  let yaml_content = match parser::yaml::parse(sub_action, COMPOSE_FILE_NAME) {
-    Ok(content) => content,
-    Err(e) => {
-      e.log_pretty();
-      return;
-    }
-  };
-
-  let services = match lexer::get_docker_services(yaml_content) {
-    Some(vector) => vector,
-    None => {
-      CliErr::new(
-        ERROR_GET_DOCKER_SERVICE_LIST,
-        String::new(),
-        ErrCode::ParsingError
-      ).log_pretty();
-
-      return;
-    }
-  };
-
-  let confiture_opts = conf::load_conf(String::new(), sub_action);
-  if let Some(conf) = confiture_opts {
-    let kubes = tree::tree::get_kube_abstract_tree(services, conf);
-    match io::bootstrap::bootstrap::prepare_kube(&kubes) {
-      Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
-      Err(e) => e.log_pretty()
+    let yaml_content = match parser::yaml::parse(sub_action, COMPOSE_FILE_NAME) {
+        Ok(content) => content,
+        Err(e) => {
+            e.log_pretty();
+            return;
+        }
     };
 
-    return;
-  }
+    let services = match lexer::get_docker_services(yaml_content) {
+        Some(vector) => vector,
+        None => {
+            CliErr::new(
+                ERROR_GET_DOCKER_SERVICE_LIST,
+                String::new(),
+                ErrCode::ParsingError
+            ).log_pretty();
 
-  CliErr::new(
-    ERROR_GET_CONFITURE,
-    String::new(),
-    ErrCode::MissingFieldError
-  ).log_pretty();
+        return;
+        }
+    };
+
+    let confiture_opts = conf::load_conf(String::new(), sub_action);
+    if let Some(conf) = confiture_opts {
+        let kubes = tree::tree::get_kube_abstract_tree(services, conf);
+        match io::bootstrap::bootstrap::prepare_kube(&kubes) {
+            Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
+            Err(e) => e.log_pretty()
+        };
+
+        return;
+    }
+
+    CliErr::new(
+        ERROR_GET_CONFITURE,
+        String::new(),
+        ErrCode::MissingFieldError
+    ).log_pretty();
 }
