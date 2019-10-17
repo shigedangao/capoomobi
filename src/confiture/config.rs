@@ -27,6 +27,7 @@ pub mod conf {
     #[derive(Deserialize, Debug, Clone)]
     pub struct ConfigService {
         pub kind: ServiceType,
+        #[serde(default)]
         pub nodeport: u16
     }
 

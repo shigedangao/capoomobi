@@ -3,12 +3,22 @@
     {
       "name": "web",
       "deployment": {
-        "replicas": 8,
+        "replicas": 10,
         "controller": "Deployment"
       },
       "service": {
         "kind": "NodePort",
-        "nodeport": 30301
+        "nodeport": 30302
+      }
+    },
+    {
+      "name": "mysql",
+      "deployment": {
+        "replicas": 10,
+        "controller": "StatefulSet"
+      },
+      "service": {
+        "kind": "ClusterIP"
       }
     },
     {

@@ -13,7 +13,6 @@ pub mod service {
     /// 
     /// List supported K8S Service
     #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
-    // #[serde(untagged)]
     pub enum ServiceType {
         ClusterIP,
         NodePort,
