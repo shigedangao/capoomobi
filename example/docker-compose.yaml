@@ -12,20 +12,20 @@ services:
       - "hey little mouse"
       - "hey big cat"
       - "dors bien petite souris"
-  # mysql:
-  #   # replicas: 5
-  #   image: mysql:5:7
-  #   ports:
-  #     - 3306:3306
-  #   environment:
-  #     - "MYSQL_ROOT_PASSWORD=capoomobi"
-  #     - "MYSQL_DATABASE=capoomobi"
-  #     - "MYSQL_USER=little_mouse"
-  #     - "MYSQL_PASSWORD=big_cat"
-  #   labels:
-  #     - "little_mouse"
-  #     - "little_cat"
-  #   command: "sh ./help.sh"
+  mysql:
+    # replicas: 5
+    image: mysql:5:7
+    ports:
+      - 3306:3306
+    environment:
+      - "MYSQL_ROOT_PASSWORD=capoomobi"
+      - "MYSQL_DATABASE=capoomobi"
+      - "MYSQL_USER=little_mouse"
+      - "MYSQL_PASSWORD=big_cat"
+    labels:
+      - "little_mouse"
+      - "little_cat"
+    command: "sh ./help.sh"
   front:
     image: node:12.4.0-stretch
     ports:
