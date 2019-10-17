@@ -10,6 +10,7 @@ pub mod controller {
     use crate::kubernetes::controllers::container::container::{KubeContainer};
     use crate::kubernetes::template::helper::helper::{VectorRawHelper};
     use crate::kubernetes::template::helper::common::{TemplateBuilder, handle_error};
+    use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
     use crate::errors::cli_error::{CliErr};
 
     /// Controller Tmpl Builder
@@ -25,28 +26,14 @@ pub mod controller {
             handlebars.register_helper("lilmouse", Box::new(VectorRawHelper));
             
             // Should I put this in an external file ?
-            let content = "
-apiVersion: apps/v1
-kind: {{ controller_type }}
-metadata:
-  name: {{ name }}
-  labels: {{ lilmouse labels 2 }}
-spec:
-  replicas: {{ replicas }}
-  selector:
-    matchLabels: {{ lilmouse labels 6 }}
-  template:
-    metadata:
-      labels: {{ lilmouse labels 7 }}
-    spec:
-      containers:
-      - name: {{ name }}
-        image: {{ image }}
-        ports: {{ #each ports as |p| }}
-          - containerPort: {{p}}
-        {{ /each }}";
+            let content = match retrieve_asset_content(K8SAssetType::Controller) {
+              Ok(c) => c,
+              Err(err) => {
+                return Err(err);
+              }
+            };
 
-            match handlebars.render_template(content, controller) {
+            match handlebars.render_template(content.as_str(), controller) {
                 Ok(p) => Ok(p),
                 Err(e) => {
                     let renderer_error = e.as_render_error();

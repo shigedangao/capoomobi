@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: {{ controller_type }}
+metadata:
+  name: {{ name }}
+  labels: {{ lilmouse labels 2 }}
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels: {{ lilmouse labels 6 }}
+  template:
+    metadata:
+      labels: {{ lilmouse labels 7 }}
+    spec:
+      containers:
+      - name: {{ name }}
+        image: {{ image }}
+        ports: {{ #each ports as |p| }}
+          - containerPort: {{p}}
+        {{ /each }}
