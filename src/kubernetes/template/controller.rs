@@ -27,10 +27,10 @@ pub mod controller {
             
             // Should I put this in an external file ?
             let content = match retrieve_asset_content(K8SAssetType::Controller) {
-              Ok(c) => c,
-              Err(err) => {
-                return Err(err);
-              }
+                Ok(c) => c,
+                Err(err) => {
+                    return Err(err);
+                }
             };
 
             match handlebars.render_template(content.as_str(), controller) {

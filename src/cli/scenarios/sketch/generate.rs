@@ -1,6 +1,7 @@
 use crate::docker::{lexer::lexer, parser};
 use crate::cli::core::logger::logger::{log, LogType};
-use crate::kubernetes::{tree, io};
+use crate::kubernetes::tree;
+use crate::kubernetes::io::{bootstrap, writer, display};
 use crate::confiture::config::conf;
 use crate::cli::scenarios::sketch::helper;
 use crate::cli::scenarios::scenes::picker::EnumHelper;
@@ -71,9 +72,17 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
     let confiture_opts = conf::load_conf(String::new(), sub_action);
     if let Some(conf) = confiture_opts {
         let kubes = tree::tree::get_kube_abstract_tree(services, conf);
-        let opts = retrieve_cmd_options(options);
-        match io::bootstrap::bootstrap::prepare_kube(&kubes) {
-            Ok(()) => io::writer::writer::write_kubernetes_yaml(kubes),
+        let cmd_opt = retrieve_cmd_options(options);
+
+        // For the moment only one option is support as such we're not checking the value of the cmd
+        if let Some(_) = cmd_opt {
+            display::compile_kubernetes_yaml(kubes);
+            return;
+        }
+
+
+        match bootstrap::bootstrap::prepare_kube(&kubes) {
+            Ok(()) => writer::writer::write_kubernetes_yaml(kubes),
             Err(e) => e.log_pretty()
         };
 
