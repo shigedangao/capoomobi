@@ -27,13 +27,13 @@ pub mod writer {
     pub fn write_kubernetes_yaml(kubes: Vec<Kube>) {
         tokio::run(lazy(|| {
             for kube in kubes.into_iter() {
-                let controller_path = PathBuf::from(&kube.object.controller_path);
-                let service_path = PathBuf::from(&kube.object.service_path);
+                let ctrl_path = PathBuf::from(&kube.object.controller_path);
+                let svc_path = PathBuf::from(&kube.object.service_path);
 
                 tokio::spawn(
                     lazy(move || {
-                        return write_controller(&kube.object, controller_path)
-                            .and_then(move |_| write_service(&kube.service, service_path));
+                        return write_controller(&kube.object, ctrl_path)
+                            .and_then(move |_| write_service(&kube.service, svc_path));
                     })
                 );
             }
@@ -58,9 +58,9 @@ pub mod writer {
 
         // write controller
         let controller = ControllerTmplBuilder{};
-        let controller_tmpl = controller.render(kube);
+        let tmpl = controller.render(kube);
 
-        let ctrl_writer_result = match controller_tmpl {
+        let res = match tmpl {
             Ok(t) => write_yaml(ctrl_path, t),
             Err(e) => {
                 e.log_pretty();
@@ -68,7 +68,7 @@ pub mod writer {
             }
         };
 
-        if let Err(e) = ctrl_writer_result {
+        if let Err(e) = res {
             panic!(e);
         }
 
@@ -91,17 +91,17 @@ pub mod writer {
 
         // write services
         let service = ServiceTmplBuilder{};
-        let service_tmpl = service.render(svc);
+        let tmpl = service.render(svc);
 
-        let svc_writer_result = match service_tmpl {
-            Ok(tmpl) => write_yaml(svc_path, tmpl),
+        let res = match tmpl {
+            Ok(t) => write_yaml(svc_path, t),
             Err(e) => {
                 e.log_pretty();
                 return err::<(), ()>(());
             }
         };
 
-        if let Err(e) = svc_writer_result {
+        if let Err(e) = res {
             panic!(e);
         }
 

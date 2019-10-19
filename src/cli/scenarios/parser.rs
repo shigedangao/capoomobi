@@ -62,7 +62,7 @@ pub mod parser {
     match scenario {
       Scenarios::Init => sketch::init::launch(sub_action, options),
       Scenarios::Help => sketch::help::launch(sub_action),
-      Scenarios::Generate => sketch::generate::launch(sub_action),
+      Scenarios::Generate => sketch::generate::launch(sub_action, options),
       Scenarios::Project => sketch::project::launch(sub_action, options)
     }
   }
