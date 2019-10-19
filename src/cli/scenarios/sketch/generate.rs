@@ -26,7 +26,7 @@ enum GenerateOptions {
 impl EnumHelper<GenerateOptions> for GenerateOptions {
     fn from_string(action: &String) -> Option<GenerateOptions> {
         match action.to_lowercase().as_str() {
-            "print" => Some(GenerateOptions::Print),
+            "--print" => Some(GenerateOptions::Print),
             _ => None
         }
     }
