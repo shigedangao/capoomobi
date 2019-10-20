@@ -1,4 +1,4 @@
-use crate::cli::configurator::configure::configure;
+use crate::cli::configurator::configure;
 use crate::errors::cli_error::ErrHelper;
 
 /// Get Current Project Path

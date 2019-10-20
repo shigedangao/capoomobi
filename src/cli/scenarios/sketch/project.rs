@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::error::Error;
 use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
-use crate::cli::configurator::configure::configure::{bootstrap_capoo, ConfigureCapoo};
+use crate::cli::configurator::configure::{bootstrap_capoo, ConfigureCapoo};
 use crate::cli::core::logger::{log, LogType};
 use crate::cli::scenarios::sketch::helper;
 use crate::cli::core::fs::toolbox;

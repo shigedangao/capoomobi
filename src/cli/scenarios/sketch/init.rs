@@ -1,6 +1,6 @@
 use crate::cli::core::logger::{log, LogType};
-use crate::cli::configurator::configure::configure;
-use crate::cli::core::fs::bootstrap::bootstrap::ProjectPath;
+use crate::cli::configurator::configure;
+use crate::cli::core::fs::bootstrap::ProjectPath;
 use crate::cli::scenarios::sketch::helper;
 use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
