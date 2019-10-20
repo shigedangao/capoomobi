@@ -9,9 +9,9 @@ pub mod conf {
     use serde::{Deserialize};
     use serde_json;
     use crate::cli::core::fs::toolbox::{get_absolute_path, open_and_read_string_file};
-    use crate::cli::core::logger::logger;
-    use crate::kubernetes::controllers::container::container::ControllerKind;
-    use crate::kubernetes::controllers::service::service::ServiceType;
+    use crate::cli::core::logger::{log, LogType};
+    use crate::kubernetes::controllers::container::ControllerKind;
+    use crate::kubernetes::controllers::service::ServiceType;
 
     /// Constant
     const CONFITURE_FILE_NAME: &str = "./confiture.json";
@@ -107,12 +107,7 @@ pub mod conf {
         let content = match open_and_read_string_file(&p) {
             Ok(c) => c,
             Err(err) => {
-                logger::log(
-                    logger::LogType::Warning,
-                    err.description(),
-                    None
-                );
-
+                log(LogType::Warning, err.description(), None);
                 return None;
             }
         };
@@ -120,11 +115,7 @@ pub mod conf {
         let confiture: Confiture = match serde_json::from_str(&content) {
             Ok(c) => c,
             Err(err) => {
-                logger::log(
-                    logger::LogType::Warning,
-                    err.description(),
-                    None
-                );
+                log(LogType::Warning, err.description(), None);
 
             return None;
             }

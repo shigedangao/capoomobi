@@ -4,7 +4,7 @@
 /// Module use for handling custom error
 pub mod cli_error {
     use std::fmt;
-    use crate::cli::core::logger::logger::{log, LogType};
+    use crate::cli::core::logger::{log, LogType};
 
     /// ErrCode
     /// List of enum field describing the type of error

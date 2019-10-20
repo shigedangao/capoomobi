@@ -32,9 +32,7 @@ pub fn get_home_dir() -> PathBuf {
 pub fn create_file(file_path: PathBuf) -> Result<PathBuf, std::io::Error> {
   match File::create(Path::new(&file_path)) {
     Ok(_) => Ok(file_path),
-    Err(e) => {
-      return Err(e);
-    }
+    Err(e) => Err(e)
   }
 }
 

@@ -7,9 +7,9 @@
 /// - Service
 pub mod tree {
     use std::collections::HashMap;
-    use crate::docker::lexer::lexer::{Service};
-    use crate::kubernetes::controllers::container::container;
-    use crate::kubernetes::controllers::service::service;
+    use crate::docker::lexer::{Service};
+    use crate::kubernetes::controllers::container;
+    use crate::kubernetes::controllers::service;
     use crate::confiture::config::conf::{Config};
 
     /// Structure wrapping the Controller & the Service

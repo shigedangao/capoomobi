@@ -1,6 +1,6 @@
-use crate::cli::core::logger::logger::{log, LogType};
-use crate::cli::configurator::configure::configure;
-use crate::cli::core::fs::bootstrap::bootstrap::ProjectPath;
+use crate::cli::core::logger::{log, LogType};
+use crate::cli::configurator::configure;
+use crate::cli::core::fs::bootstrap::ProjectPath;
 use crate::cli::scenarios::sketch::helper;
 use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
 
@@ -53,8 +53,6 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
                 "Project successfully created",
                 Some(initializer.get_path_as_string())
             ),
-            Err(err) => {
-                err.log_pretty();
-            }
+            Err(err) => err.log_pretty()
         }
 }

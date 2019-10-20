@@ -6,8 +6,8 @@
 /// Module use to create a template of a Kubernetes service
 pub mod service {
     use handlebars::Handlebars;
-    use crate::kubernetes::controllers::service::service::{KubeService};
-    use crate::kubernetes::template::helper::helper::{VectorRawHelper};
+    use crate::kubernetes::controllers::service::{KubeService};
+    use crate::kubernetes::template::helper::interface::{VectorRawHelper};
     use crate::kubernetes::template::helper::common::{TemplateBuilder, handle_error};
     use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
     use crate::errors::cli_error::{CliErr};

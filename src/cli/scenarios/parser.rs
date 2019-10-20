@@ -35,7 +35,6 @@ pub mod parser {
     if let Some(arg) = args {
       match Scenarios::from_string(&arg.main) {
         None => {
-          // @TODO change error to say that there are no param pass
           return Err(
             CliErr::new(UNKNOWN_SCENARIO_ERR, String::new(),ErrCode::NotFound)    
           )
@@ -77,8 +76,8 @@ pub mod parser {
   fn retrieve_args() -> Option<Arguments> {
     let actions: Vec<String> = env::args()
       .enumerate()
-      .filter(|tuple| tuple.0 < DEFAULT_ACTION_SIZE)
-      .map(|tuple| tuple.1)
+      .filter(|t| t.0 < DEFAULT_ACTION_SIZE)
+      .map(|t| t.1)
       .collect();
 
     if actions.len() < DEFAULT_ACTION_SIZE {
@@ -87,8 +86,8 @@ pub mod parser {
 
     let arguments: Vec<String> = env::args()
       .enumerate()
-      .filter(|tuple| tuple.0 >= DEFAULT_ACTION_SIZE)
-      .map(|tuple| tuple.1)
+      .filter(|t| t.0 >= DEFAULT_ACTION_SIZE)
+      .map(|t| t.1)
       .collect();
     
     // retrieve the actions
