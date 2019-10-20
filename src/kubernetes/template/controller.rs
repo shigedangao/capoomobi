@@ -7,8 +7,8 @@
 /// Module use to template a K8S controller
 pub mod controller {
     use handlebars::Handlebars;
-    use crate::kubernetes::controllers::container::container::{KubeContainer};
-    use crate::kubernetes::template::helper::helper::{VectorRawHelper};
+    use crate::kubernetes::controllers::container::{KubeContainer};
+    use crate::kubernetes::template::helper::interface::{VectorRawHelper};
     use crate::kubernetes::template::helper::common::{TemplateBuilder, handle_error};
     use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
     use crate::errors::cli_error::{CliErr};

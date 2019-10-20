@@ -140,15 +140,13 @@ pub mod configure {
 
         match toolbox::create_file(conf_file_path) {
             Ok(p) => Ok(ConfigureCapoo::new(p)),
-            Err(err) => {
-                return Err(
-                    CliErr::new(
-                        CONFIG_GENERATE_ERROR,
-                        format!("{}", err.description()),
-                        ErrCode::IOError
-                    )
-                );
-            }
+            Err(err) => Err(
+                CliErr::new(
+                    CONFIG_GENERATE_ERROR,
+                    format!("{}", err.description()),
+                    ErrCode::IOError
+                )
+            )
         }
     }
 }

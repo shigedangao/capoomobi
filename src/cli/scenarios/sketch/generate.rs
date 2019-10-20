@@ -1,5 +1,5 @@
-use crate::docker::{lexer::lexer, parser};
-use crate::cli::core::logger::logger::{log, LogType};
+use crate::docker::{lexer, parser};
+use crate::cli::core::logger::{log, LogType};
 use crate::kubernetes::tree;
 use crate::kubernetes::io::{bootstrap, writer, display};
 use crate::confiture::config::conf;
@@ -48,7 +48,7 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
         Some(String::from(sub_action))
     );
 
-    let yaml_content = match parser::yaml::parse(sub_action, COMPOSE_FILE_NAME) {
+    let yaml_content = match parser::parse(sub_action, COMPOSE_FILE_NAME) {
         Ok(content) => content,
         Err(e) => {
             e.log_pretty();

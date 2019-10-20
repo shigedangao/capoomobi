@@ -2,7 +2,7 @@
 /// 
 /// # Path
 /// kubernetes/template
-pub mod helper {
+pub mod interface {
     use handlebars::{Handlebars, HelperDef, RenderContext, RenderError ,Helper, Context, HelperResult, Output};
 
     /// Handlebar helper struct
