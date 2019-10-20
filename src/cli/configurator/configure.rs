@@ -5,7 +5,7 @@
 use std::path::{PathBuf};
 use std::error::Error;
 use crate::cli::core::fs::toolbox;
-use crate::cli::configurator::builder::builder;
+use crate::cli::configurator::builder;
 use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
 
 /// Constant defining the paths available
