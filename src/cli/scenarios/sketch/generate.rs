@@ -5,7 +5,7 @@ use crate::kubernetes::io::{bootstrap, writer, display};
 use crate::confiture::config::conf;
 use crate::cli::scenarios::sketch::helper;
 use crate::cli::scenarios::scenes::picker::EnumHelper;
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
+use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
@@ -62,7 +62,7 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
             CliErr::new(
                 ERROR_GET_DOCKER_SERVICE_LIST,
                 String::new(),
-                ErrCode::ParsingError
+                ErrMessage::ParsingError
             ).log_pretty();
 
             return;
@@ -92,7 +92,7 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
     CliErr::new(
         ERROR_GET_CONFITURE,
         String::new(),
-        ErrCode::MissingFieldError
+        ErrMessage::MissingFieldError
     ).log_pretty();
 }
 

@@ -4,11 +4,20 @@
 /// Module use for handling custom error
 pub mod cli_error {
     use std::fmt;
-    use crate::cli::core::logger::{log, LogType};
+    use std::error::Error;
+    use crate::cli::core::logger::{log_error, LogType};
 
-    /// ErrCode
+    // Constants errors
+    const MISSING_FIELD_ERROR: &str = "Unable to find a field. Please provide the missing field";
+    const PARSING_ERROR: &str = "Error while parsing a content";
+    const SERIALIZE_ERROR: &str = "Error while serializing a resources";
+    const NOT_FOUND_ERROR: &str = "Resources not found";
+    const UNEXPECTED_ERROR: &str = "An unexpected error happened";
+
+    /// ErrMessage
     /// List of enum field describing the type of error
-    pub enum ErrCode {
+    #[derive(Debug)]
+    pub enum ErrMessage {
         ParsingError,
         SerializeError,
         MissingFieldError,
@@ -30,11 +39,11 @@ pub mod cli_error {
         /// # Arguments
         /// * `message` slice of a static str
         /// * `reason` String
-        /// * `codename` ErrCode enum value
+        /// * `codename` ErrMessage enum value
         /// 
         /// # Return
         /// CliErr struct
-        fn new(message: &'static str, reason: String, codename: ErrCode) -> Self;
+        fn new(message: &'static str, reason: String, codename: ErrMessage) -> Self;
         /// Log Pretty
         /// 
         /// # Description
@@ -49,32 +58,39 @@ pub mod cli_error {
     pub struct CliErr {
         message: &'static str,
         reason: String,
-        code: u8
+        code_msg: &'static str
     }
 
     impl ErrHelper for CliErr {
-        fn new(message: &'static str, reason: String, codename: ErrCode) -> CliErr {
-            let code = match codename {
-                ErrCode::MissingFieldError => 44,
-                ErrCode::ParsingError => 50,
-                ErrCode::SerializeError => 42,
-                ErrCode::NotFound => 44,
-                _ => 44
+        fn new(message: &'static str, reason: String, codename: ErrMessage) -> CliErr {
+            let msg = match codename {
+                ErrMessage::MissingFieldError => MISSING_FIELD_ERROR,
+                ErrMessage::ParsingError => PARSING_ERROR,
+                ErrMessage::SerializeError => SERIALIZE_ERROR,
+                ErrMessage::NotFound => NOT_FOUND_ERROR,
+                _ => UNEXPECTED_ERROR
             };
 
             CliErr {
                 message: message,
                 reason: reason,
-                code: code
+                code_msg: msg
             }
         }
 
         fn log_pretty(&self) {
-            log(
+            log_error(
                 LogType::Error,
                 self.message,
-                Some(format!("error code: {} reason: {}", self.code, self.reason))
+                self.code_msg,
+                Some(self.reason.clone())
             );
+        }
+    }
+
+    impl Error for CliErr {
+        fn description(&self) -> &str {
+            &self.message
         }
     }
 
@@ -85,7 +101,7 @@ pub mod cli_error {
                 "message: {} reason: {} code: {}",
                 self.message,
                 self.reason,
-                self.code
+                self.code_msg
             )
         }
     }
@@ -97,7 +113,7 @@ pub mod cli_error {
                 "message: {} reason: {} code: {}",
                 self.message,
                 self.reason,
-                self.code
+                self.code_msg
             )
         }
     }

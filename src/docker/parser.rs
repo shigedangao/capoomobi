@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use std::error::Error;
 use yaml_rust::{YamlLoader, yaml};
 use crate::cli::core::fs::toolbox;
-use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 
 /// Error constant
 const UNABLE_READ_ERR: &str = "Unable to open the docker-compose.yaml file";
@@ -37,7 +37,7 @@ pub fn parse(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
                 CliErr::new(
                     ABS_PATH_ERROR,
                     format!("{}", err.description()),
-                    ErrCode::IOError
+                    ErrMessage::IOError
                 )
             );
         }
@@ -52,7 +52,7 @@ pub fn parse(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
                     CliErr::new(
                         UNABLE_PARSE_ERR,
                         format!("{}", err.description()),
-                        ErrCode::IOError
+                        ErrMessage::IOError
                     )
                 );
             }
@@ -60,7 +60,7 @@ pub fn parse(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
     }
 
         Err(
-            CliErr::new(UNABLE_READ_ERR, String::from(""), ErrCode::IOError)
+            CliErr::new(UNABLE_READ_ERR, String::from(""), ErrMessage::IOError)
         )
     }
 

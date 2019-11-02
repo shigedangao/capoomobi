@@ -1,6 +1,6 @@
 use std::str;
 use rust_embed::{RustEmbed};
-use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 
 const GET_ERROR: &str = "Unable to get the requested file";
 const PARSE_ERROR: &str = "Something went wrong while parsing the content of a template file";
@@ -33,7 +33,7 @@ impl K8SAssetType {
 /// * `k` K8SAssetType enum
 /// 
 /// # Return
-/// Option<String>
+/// Result<String, CliErr>
 pub fn retrieve_asset_content(k: K8SAssetType) -> Result<String, CliErr> {
     let filename = K8SAssetType::value(k);
     let result = match K8SAsset::get(filename) {
@@ -43,7 +43,7 @@ pub fn retrieve_asset_content(k: K8SAssetType) -> Result<String, CliErr> {
                 CliErr::new(
                     GET_ERROR,
                     String::new(),
-                    ErrCode::NotFound
+                    ErrMessage::NotFound
                 )
             );
         }
@@ -55,7 +55,7 @@ pub fn retrieve_asset_content(k: K8SAssetType) -> Result<String, CliErr> {
             CliErr::new(
                 PARSE_ERROR,
                 String::new(),
-                ErrCode::ParsingError
+                ErrMessage::ParsingError
             )
         )
     }

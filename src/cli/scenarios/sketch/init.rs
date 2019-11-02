@@ -2,7 +2,7 @@ use crate::cli::core::logger::{log, LogType};
 use crate::cli::configurator::configure;
 use crate::cli::core::fs::bootstrap::ProjectPath;
 use crate::cli::scenarios::sketch::helper;
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
+use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
 /// Error constant
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
@@ -30,7 +30,7 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
             CliErr::new(
                 PATH_ERROR,
                 project_path,
-                ErrCode::NotFound
+                ErrMessage::NotFound
             ).log_pretty();
             return;
         }

@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 use std::error::Error;
-use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 use crate::cli::configurator::configure::{bootstrap_capoo, ConfigureCapoo};
 use crate::cli::core::logger::{log, LogType};
 use crate::cli::scenarios::sketch::helper;
@@ -106,7 +106,7 @@ fn switch_project(configuration: ConfigureCapoo ,project_name: String) {
         CliErr::new(
             SWITCH_ERROR_MESSAGE,
             output,
-            ErrCode::IOError
+            ErrMessage::IOError
         ).log_pretty();
         return;
     }
@@ -139,7 +139,7 @@ fn delete_project(configuration: ConfigureCapoo, project_name: String) {
         CliErr::new(
             DELETE_ERROR_MESSAGE,
             output,
-            ErrCode::NotFound
+            ErrMessage::NotFound
         ).log_pretty();
         return;
     }
@@ -162,7 +162,7 @@ fn delete_project(configuration: ConfigureCapoo, project_name: String) {
             CliErr::new(
                 DELETE_ERROR_MESSAGE,
                 String::from(err.description()),
-                ErrCode::IOError
+                ErrMessage::IOError
             ).log_pretty()
         }
     }

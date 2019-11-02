@@ -19,6 +19,21 @@ pub enum HelpLogType {
     Action
 }
 
+/// Log Error
+/// 
+/// # Description
+/// Decorator around the log method in order to display the error code properly
+/// 
+/// # Arguments
+/// * `level` LogType
+/// * `message` slice of string
+/// * `code` ErrMessage
+/// * `rest` Option<String>
+pub fn log_error(level: LogType, message: &str, code: &str, rest: Option<String>) {
+    log(level, message, rest);
+    println!("{} {}", "Error message:".yellow().bold(), code);
+}
+
 /// Log
 /// 
 /// # Arguments
@@ -27,15 +42,15 @@ pub enum HelpLogType {
 /// * `rest` Option<String>
 pub fn log(level: LogType, message: &str, rest: Option<String>) {
     let colored_mess = match level {
-        LogType::Info => message.blue().bold(),
-        LogType::Error => message.red().bold(),
-        LogType::Success => message.green().bold(),
-        LogType::Warning => message.yellow().bold()
+        LogType::Info => format!("{}: {}", "Info".blue().bold(), message.blue()),
+        LogType::Error => format!("{}: {}", "Error".red().bold(), message.red()),
+        LogType::Success => format!("{}: {}", "Success".green().bold(), message.green()),
+        LogType::Warning => format!("{}: {}", "Warning".yellow().bold(), message.yellow())
     };
 
     println!("{}", colored_mess);
     match rest {
-        Some(m) => println!("{}{:?}", "result:".yellow(), m),
+        Some(m) => println!("{} {}", "Reason:".yellow().bold(), m),
         None => ()
     }
 }
