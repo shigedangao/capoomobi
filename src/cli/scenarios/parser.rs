@@ -37,7 +37,7 @@ pub mod parser {
                 return Err(
                     CliErr::new(
                         UNKNOWN_SCENARIO_ERR,
-                        format!("{} {}", "command not supported", cmd),
+                        format!("{} {:?}", "command not supported", cmd),
                         ErrMessage::NotFound
                     ) 
                 )
@@ -51,7 +51,7 @@ pub mod parser {
                 Err(
                     CliErr::new(
                         UNKNOWN_ACTION_ERR,
-                        format!("{}{}", "Command: ", cmd),
+                        format!("{}{:?}", "Command: ", cmd),
                         ErrMessage::MissingFieldError
                     )
                 )
