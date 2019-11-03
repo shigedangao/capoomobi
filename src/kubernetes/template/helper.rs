@@ -45,7 +45,7 @@ pub mod interface {
 /// kubernetes/template
 pub mod common {
     use handlebars::{RenderError};
-    use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+    use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 
     /// Use as an interface to create a common template builder method
     pub trait TemplateBuilder<T, Y> {
@@ -71,14 +71,14 @@ pub mod common {
             return CliErr::new(
                 "An error happened while rendering the template",
                 format!("{}", detail),
-                ErrCode::RendererError
+                ErrMessage::RendererError
             );
         }
 
         CliErr::new(
             "An error happened while rendering the template",
             String::new(),
-            ErrCode::RendererError
+            ErrMessage::RendererError
         )
     }
 }

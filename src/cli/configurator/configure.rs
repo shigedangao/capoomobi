@@ -6,7 +6,7 @@ use std::path::{PathBuf};
 use std::error::Error;
 use crate::cli::core::fs::toolbox;
 use crate::cli::configurator::builder;
-use crate::errors::cli_error::{CliErr, ErrCode, ErrHelper};
+use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 
 /// Constant defining the paths available
 const CONFIG_FILE_PATH: &str = ".capoomobi.json";
@@ -57,7 +57,7 @@ impl ConfigureCapoo {
                 CliErr::new(
                     FILE_NOT_PARSABLE_ERROR,
                     format!("{}", err.description()),  
-                    ErrCode::ParsingError
+                    ErrMessage::ParsingError
                 )
             );
         }
@@ -70,7 +70,7 @@ impl ConfigureCapoo {
                     CliErr::new(
                         DECODE_ERROR,
                         format!("{}", err.description()),
-                        ErrCode::ParsingError
+                        ErrMessage::ParsingError
                     )
                 )
             }
@@ -97,7 +97,7 @@ impl ConfigureCapoo {
                 CliErr::new(
                     WRITE_JSON_ERROR,
                     format!("{}", err.description()),
-                    ErrCode::IOError
+                    ErrMessage::IOError
                 )
             )
         }
@@ -143,7 +143,7 @@ pub fn bootstrap_capoo() -> Result<ConfigureCapoo, CliErr> {
             CliErr::new(
                 CONFIG_GENERATE_ERROR,
                 format!("{}", err.description()),
-                ErrCode::IOError
+                ErrMessage::IOError
             )
         )
     }

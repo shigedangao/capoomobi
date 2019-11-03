@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::error::Error;
 use serde::{Serialize, Deserialize};
 use serde_json;
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrCode};
+use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
 // Errors
 const PATH_GENERATE_ERROR: &str = "Error while generating absolute path";
@@ -61,7 +61,7 @@ pub fn populate_project_conf(project_name: String, path: PathBuf, contents: Resu
             CliErr::new(
                 PATH_GENERATE_ERROR,
                 String::from(PATH_GENERATE_REASON),
-                ErrCode::ParsingError
+                ErrMessage::ParsingError
             )
         );
     }
@@ -96,7 +96,7 @@ pub fn populate_project_conf(project_name: String, path: PathBuf, contents: Resu
         CliErr::new(
             PROJECT_GENERATE_ERROR,
             String::from(PROJECT_GENERATE_REASON),
-            ErrCode::SerializeError
+            ErrMessage::SerializeError
         )
     )
 }
