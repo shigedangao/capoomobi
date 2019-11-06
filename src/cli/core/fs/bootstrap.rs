@@ -18,16 +18,19 @@ impl ProjectPath {
     /// 
     /// # Arguments
     /// * `input` the input string value input by the user capoomobi init <name> <project_path>
+    /// * `project_name` &str project name
     /// 
     /// # Return
     /// ProjectPath struct
-    pub fn new(input: &String) -> Self {
+    pub fn new(input: &String, project_name: &str) -> Self {
         let mut absolute_path = PathBuf::new();
         if input.is_empty() {
             absolute_path.push("./");
         } else {
             absolute_path.push(input);
         }
+
+        absolute_path.push(project_name);
 
         ProjectPath {
             path: absolute_path

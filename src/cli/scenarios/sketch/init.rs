@@ -23,7 +23,7 @@ pub fn launch(project_name: &str, options: &Vec<String>) {
         None => String::new()
     };
 
-    let initializer = ProjectPath::new(&project_path);
+    let initializer = ProjectPath::new(&project_path, &project_name);
     let abs_path = match initializer.build_project_folder() {
         Some(p) => p,
         None => {

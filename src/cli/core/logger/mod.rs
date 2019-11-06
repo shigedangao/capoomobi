@@ -31,7 +31,7 @@ pub enum HelpLogType {
 /// * `rest` Option<String>
 pub fn log_error(level: LogType, message: &str, code: &str, rest: Option<String>) {
     log(level, message, rest);
-    println!("{} {}", "Error message:".yellow().bold(), code);
+    println!("{} {}", "Error message:".yellow().bold().underline(), code);
 }
 
 /// Log
@@ -50,7 +50,7 @@ pub fn log(level: LogType, message: &str, rest: Option<String>) {
 
     println!("{}", colored_mess);
     match rest {
-        Some(m) => println!("{} {}", "Reason:".yellow().bold(), m),
+        Some(m) => println!("{} {}", "Details:".yellow().bold(), m),
         None => ()
     }
 }
