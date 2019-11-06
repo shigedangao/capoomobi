@@ -29,8 +29,7 @@ pub mod picker {
         Init,
         Generate,
         Project,
-        Output,
-        Verify
+        Global
     }
 
     impl EnumHelper<Scenarios> for Scenarios {
@@ -50,10 +49,8 @@ pub mod picker {
             match action.as_str() {
                 "init" => Some(HelpScenarios::Init),
                 "generate" => Some(HelpScenarios::Generate),
-                "output" => Some(HelpScenarios::Output),
                 "project" => Some(HelpScenarios::Project),
-                "verify" => Some(HelpScenarios::Verify),
-                _ => None
+                _ => Some(HelpScenarios::Global)
             }
         }
     }

@@ -59,7 +59,11 @@ pub fn log(level: LogType, message: &str, rest: Option<String>) {
 /// 
 /// # Description
 /// Execute a println for each kind of HelpLog
-pub fn log_help(level: HelpLogType, message: &'static str) {
+/// 
+/// # Arguments
+/// * `level` HelpLogType
+/// * `message` String
+pub fn log_help(level: HelpLogType, message: String) {
     match level {
         HelpLogType::Cmd => println!("{}{}", "\nName: \n\n".blue().bold(), message),
         HelpLogType::Description => println!("{}{}", "\nDescription: \n\n".blue().bold(), message),
