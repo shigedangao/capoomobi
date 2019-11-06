@@ -37,15 +37,28 @@ pub mod parser {
                 return Err(
                     CliErr::new(
                         UNKNOWN_SCENARIO_ERR,
-                        format!("{} {:?}", "command not supported", cmd),
+                        format!(
+                            "{} {:?} {}",
+                            "command not supported",
+                            cmd,
+                            "Check the `help` command in order to understand how to use the CLI"
+                        ),
                         ErrMessage::NotFound
-                    ) 
+                    )
                 )
             },
             Some(res) => {
                 if let Some(arg) = args {
                     trigger_scenario(res, &arg.secondary, &arg.options);
                     return Ok(());
+                } else {
+                    match res {
+                        Scenarios::Help => {
+                            trigger_scenario(res, &String::new() , &vec![]);
+                            return Ok(());
+                        },
+                        _ => {}
+                    };
                 }
                 
                 Err(
@@ -94,7 +107,7 @@ pub mod parser {
 
         let main = match actions.get(1) {
             Some(m) => String::from(m),
-            None => String::new()
+            None => String::from("help")
         };
 
         if actions.len() < DEFAULT_ACTION_SIZE {

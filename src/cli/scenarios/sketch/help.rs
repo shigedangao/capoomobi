@@ -18,8 +18,7 @@ pub fn launch(main_action: &String) {
         HelpScenarios::Init => describe_init(),
         HelpScenarios::Generate => describe_generate(),
         HelpScenarios::Project => describe_project(),
-        HelpScenarios::Output => describe_output(),
-        HelpScenarios::Verify => describe_verify(),
+        HelpScenarios::Global => describe_cli()
     }
 }
 
@@ -28,12 +27,12 @@ pub fn launch(main_action: &String) {
 /// # Description
 /// Describe the `capoomobi init` command
 fn describe_init() {
-    log_help(HelpLogType::Cmd, "capoomobi init <args>");
+    log_help(HelpLogType::Cmd, "capoomobi init <args>".to_string());
     log_help(
         HelpLogType::Description,
-        "Initialize and set a capoomobi project based on the provided name and path"
+        "Initialize and set a capoomobi project based on the provided name and path".to_string()
     );
-    log_help(HelpLogType::Example, "capoomobi init little_mouse ../cat");
+    log_help(HelpLogType::Example, "capoomobi init little_mouse ../cat".to_string());
 }
 
 /// Describe Generate
@@ -41,12 +40,12 @@ fn describe_init() {
 /// # Description
 /// Describe the `capoomobi generate` command
 fn describe_generate() {
-    log_help(HelpLogType::Cmd, "capoomobi generate <args>");
+    log_help(HelpLogType::Cmd, "capoomobi generate <args>".to_string());
     log_help(
         HelpLogType::Description,
-        "Generate K8S files which describes your docker-compose.yaml file"
+        "Generate K8S files which describes your docker-compose.yaml file".to_string()
     );
-    log_help(HelpLogType::Example, "capoomobi generate /workspace/my-docker-project");
+    log_help(HelpLogType::Example, "capoomobi generate /workspace/my-docker-project".to_string());
 }
 
 /// Describe Project
@@ -54,40 +53,37 @@ fn describe_generate() {
 /// # Description
 /// Describe the `capoomobi project` command
 fn describe_project() {
-    log_help(HelpLogType::Cmd, "capoomobi project <action> <project_name>");
+    log_help(HelpLogType::Cmd, "capoomobi project <action> <project_name>".to_string());
     log_help(
         HelpLogType::Description,
-        "Project command allow you to do action on a project"
+        "Project command allow you to do action on a project".to_string()
     );
     log_help(
         HelpLogType::Action,
-        "
-        - current: Show the current project in use
-        - list: List the projects that is using capoomobi
-        - switch: Switch the project to an other one
-        - delete: Delete a project
-        "
+        format!(
+            "{}\n{}\n{}\n{}\n",
+            "- current: Show the current project in use",
+            "- list: List the projects that is using capoomobi",
+            "- switch: Switch the project to an other one",
+            "- delete: Delete a project"
+        )
     );
-    log_help(HelpLogType::Example, "capoomobi projet <action> little_pretty_mouse");
+    log_help(HelpLogType::Example, "capoomobi projet <action> little_pretty_mouse".to_string());
 }
 
-/// Describe Output
+/// Decribe Cli
 /// 
 /// # Description
-/// Describe the `capoomobi output` command
-fn describe_output() {
-    log_help(HelpLogType::Cmd, "capoomobi output <args>");
+/// Describe the basis function of the CLI
+fn describe_cli() {
+    log_help(HelpLogType::Cmd, "capoomobi <command> <...args>".to_string());
     log_help(
         HelpLogType::Description,
-        "Output the Yaml file which will be output to the yaml file"
+        format!(
+            "{}\n{}\n{}\n",
+            "- init: Create a new project",
+            "- generate: Create K8S yaml resources based on the docker-compose.yaml file",
+            "- project: Allow you to manipulate each project such as list, delete"
+        )
     );
-    log_help(HelpLogType::Example, "capoomobi output /workspae/my-docker-project");
-}
-
-/// Describe Verify
-/// 
-/// # Description
-/// Describe the `capoomobi verify` command
-fn describe_verify() {
-    log_help(HelpLogType::Cmd, "capoomobi verify <args>");
 }
