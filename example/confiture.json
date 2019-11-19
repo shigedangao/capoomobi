@@ -32,5 +32,18 @@
         "nodeport": 30302
       }
     }
-  ]
+  ],
+  "ingress": {
+    "ip": "",
+    "services": [
+      {
+        "name": "web",
+        "path": "/web"
+      },
+      {
+        "name": "front",
+        "path": "/front"
+      }
+    ]
+  }
 }

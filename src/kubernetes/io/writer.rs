@@ -10,7 +10,7 @@ pub mod writer {
     use std::path::PathBuf;
     use futures::future::{lazy, ok, err, FutureResult, Future};
     use crate::errors::cli_error::{ErrHelper};
-    use crate::kubernetes::tree::tree::{Kube};
+    use crate::kubernetes::tree::{Kube};
     use crate::kubernetes::controllers::container::{KubeContainer};
     use crate::kubernetes::controllers::service::{KubeService};
     use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};

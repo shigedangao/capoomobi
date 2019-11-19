@@ -3,9 +3,8 @@ use crate::cli::core::logger::{log, LogType};
 use crate::kubernetes::tree;
 use crate::kubernetes::io::{bootstrap, writer, display};
 use crate::confiture::config::conf;
-use crate::cli::scenarios::sketch::helper;
-use crate::cli::scenarios::scenes::picker::EnumHelper;
 use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use super::args;
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
@@ -14,23 +13,6 @@ const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located
 /// Errors
 const ERROR_GET_DOCKER_SERVICE_LIST: &str = "Unable to retrieve list of services in the docker-compose";
 const ERROR_GET_CONFITURE: &str = "Unable to parse the confiture.json file as it's empty";
-
-/// Generate Options
-/// 
-/// # Description
-/// Supported command options
-enum GenerateOptions {
-    Print
-}
-
-impl EnumHelper<GenerateOptions> for GenerateOptions {
-    fn from_string(action: &String) -> Option<GenerateOptions> {
-        match action.to_lowercase().as_str() {
-            "--print" => Some(GenerateOptions::Print),
-            _ => None
-        }
-    }
-}
 
 /// Launch
 /// 
@@ -42,11 +24,7 @@ impl EnumHelper<GenerateOptions> for GenerateOptions {
 /// # Arguments
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str, options: &Vec<String>) {
-    log(
-        LogType::Info,
-        PREPARE_PARSING,
-        Some(String::from(sub_action))
-    );
+    log(LogType::Info, PREPARE_PARSING, Some(String::from(sub_action)));
 
     let yaml_content = match parser::parse(sub_action, COMPOSE_FILE_NAME) {
         Ok(content) => content,
@@ -71,15 +49,14 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
 
     let confiture_opts = conf::load_conf(String::new(), sub_action);
     if let Some(conf) = confiture_opts {
-        let kubes = tree::tree::get_kube_abstract_tree(services, conf);
-        let cmd_opt = retrieve_cmd_options(options);
+        let kubes = tree::get_kube_abstract_tree(services, conf);
+        let cmd_opt = args::retrieve_cmd_options(options);
 
         // For the moment only one option is support as such we're not checking the value of the cmd
-        if let Some(_) = cmd_opt {
-            display::compile_kubernetes_yaml(kubes);
+        if let Some(cmd) = cmd_opt {
+            execute_with_options(cmd, kubes);
             return;
         }
-
 
         match bootstrap::bootstrap::prepare_kube(&kubes) {
             Ok(()) => writer::writer::write_kubernetes_yaml(kubes),
@@ -96,13 +73,19 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
     ).log_pretty();
 }
 
-/// Retrieve Cmd Options
+/// Execute With Options
 /// 
-fn retrieve_cmd_options(options: &Vec<String>) -> Option<GenerateOptions> {
-    let opt = match helper::retrieve_options_by_idx(options, 0) {
-        Some(p) => p,
-        None => String::new()
-    };
+/// # Description
+/// Execute a scenario depending of the given options
+/// 
+/// # Arguments
+/// * `options` args::GenerateOptions
+fn execute_with_options(options: args::GenerateOptions, kubes: Vec<tree::Kube>) {
+    match options {
+        args::GenerateOptions::Print => display::compile_kubernetes_yaml(kubes),
+        args::GenerateOptions::Ingress => {
 
-    GenerateOptions::from_string(&opt)
+        },
+
+    }
 }

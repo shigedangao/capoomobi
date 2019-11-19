@@ -12,14 +12,16 @@ struct K8SAsset;
 /// K8SAssetType
 pub enum K8SAssetType {
     Controller,
-    Service
+    Service,
+    Ingress
 }
 
 impl K8SAssetType {
     fn value(self) -> &'static str {
         match self {
             K8SAssetType::Controller => "controller_tmpl.yaml",
-            K8SAssetType::Service => "service_tmpl.yaml"
+            K8SAssetType::Service => "service_tmpl.yaml",
+            K8SAssetType::Ingress => "ingress_tmpl.yaml"
         }
     }
 }

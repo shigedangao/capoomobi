@@ -39,10 +39,25 @@ pub mod conf {
         name: String
     }
 
+    /// Ingress Service
+    #[derive(Deserialize, Debug)]
+    pub struct IngressService {
+        pub name: String,
+        pub path: String
+    }
+
+    /// Ingress
+    #[derive(Deserialize, Debug)]
+    pub struct Ingress {
+        pub ip: String,
+        pub services: Vec<IngressService>
+    }
+
     /// Confiture
     #[derive(Deserialize, Debug)]
     pub struct Confiture {
-        confitures: Vec<Config>
+        confitures: Vec<Config>,
+        ingress: Option<Ingress>
     }
 
     /// Retrieve File Path
@@ -103,7 +118,6 @@ pub mod conf {
     /// HashMap<String, Config>
     pub fn load_conf(path: String, target_folder: &str) -> Option<HashMap<String, Config>> {
         let p = retrieve_file_path(path, target_folder);
-
         let content = match open_and_read_string_file(&p) {
             Ok(c) => c,
             Err(err) => {
@@ -116,8 +130,7 @@ pub mod conf {
             Ok(c) => c,
             Err(err) => {
                 log(LogType::Warning, err.description(), None);
-
-            return None;
+                return None;
             }
         };
 

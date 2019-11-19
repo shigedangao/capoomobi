@@ -1,5 +1,5 @@
 use futures::future::{lazy};
-use crate::kubernetes::tree::tree::{Kube};
+use crate::kubernetes::tree::{Kube};
 use crate::kubernetes::controllers::container::{KubeContainer};
 use crate::kubernetes::controllers::service::{KubeService};
 use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};

@@ -7,7 +7,7 @@
 pub mod bootstrap {
     use std::path::PathBuf;
     use std::error::Error;
-    use crate::kubernetes::tree::tree::{Kube};
+    use crate::kubernetes::tree::{Kube};
     use crate::cli::core::fs::toolbox;
     use crate::cli::core::logger::{log, LogType};
     use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
