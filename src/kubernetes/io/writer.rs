@@ -10,6 +10,7 @@ pub mod writer {
     use std::path::PathBuf;
     use futures::future::{lazy, ok, err, FutureResult, Future};
     use crate::errors::cli_error::{ErrHelper};
+    use crate::assets::loader::{K8SAssetType};
     use crate::kubernetes::tree::{Kube};
     use crate::kubernetes::controllers::container::{KubeContainer};
     use crate::kubernetes::controllers::service::{KubeService};
@@ -58,7 +59,7 @@ pub mod writer {
 
         // write controller
         let controller = ControllerTmplBuilder{};
-        let tmpl = controller.render(kube);
+        let tmpl = controller.render(kube, K8SAssetType::Controller);
 
         let res = match tmpl {
             Ok(t) => write_yaml(ctrl_path, t),
@@ -91,7 +92,7 @@ pub mod writer {
 
         // write services
         let service = ServiceTmplBuilder{};
-        let tmpl = service.render(svc);
+        let tmpl = service.render(svc, K8SAssetType::Service);
 
         let res = match tmpl {
             Ok(t) => write_yaml(svc_path, t),

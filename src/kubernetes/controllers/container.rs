@@ -1,5 +1,6 @@
 /// Container
 /// 
+/// @TODO refactor
 /// Module use to create a K8S controller datastructure
 use std::iter::Iterator;
 use std::path::PathBuf;
@@ -52,11 +53,11 @@ pub struct KubeContainer {
 /// Create K8S data structure
 /// 
 /// # Arguments
-/// * `docker_service` - Service structure
-/// * `option` - Pointer reference to a HashMap<slice str, String>
+/// * `docker_service` - Service
+/// * `option` - ConfigDeployment
 /// 
 /// # Return
-/// * `KubeContainer` return the datastructure
+/// * `KubeContainer`
 /// 
 pub fn create_kube_container(docker_service: Service, option: ConfigDeployment) -> KubeContainer {
     let base_path = get_kube_path_for_service(&docker_service.name).unwrap_or(PathBuf::new());

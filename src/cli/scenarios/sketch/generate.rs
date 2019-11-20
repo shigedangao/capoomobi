@@ -58,12 +58,10 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
             return;
         }
 
-        match bootstrap::bootstrap::prepare_kube(&kubes) {
+        return match bootstrap::bootstrap::prepare_kube(&kubes) {
             Ok(()) => writer::writer::write_kubernetes_yaml(kubes),
             Err(e) => e.log_pretty()
         };
-
-        return;
     }
 
     CliErr::new(
@@ -84,7 +82,7 @@ fn execute_with_options(options: args::GenerateOptions, kubes: Vec<tree::Kube>) 
     match options {
         args::GenerateOptions::Print => display::compile_kubernetes_yaml(kubes),
         args::GenerateOptions::Ingress => {
-
+            
         },
 
     }
