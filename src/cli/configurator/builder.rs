@@ -9,9 +9,9 @@ use serde_json;
 use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
 // Errors
-const PATH_GENERATE_ERROR: &str = "Error while generating absolute path";
-const PATH_GENERATE_REASON: &str = "An error occured while converting the path";
-const PROJECT_GENERATE_ERROR: &str = "Unable to generate new config for capoomobi.json";
+const PATH_GENERATE_ERROR: &str     = "Error while generating absolute path";
+const PATH_GENERATE_REASON: &str    = "An error occured while converting the path";
+const PROJECT_GENERATE_ERROR: &str  = "Unable to generate new config for capoomobi.json";
 const PROJECT_GENERATE_REASON: &str = "An error occured while serializing the project";
 
 /// Structure refering to a project
@@ -29,6 +29,7 @@ pub struct Projects {
 }
 
 /// Generate Project Conf
+/// @TODO to remove
 /// 
 /// # Description
 /// Populate the project configuration
@@ -50,43 +51,7 @@ pub struct Projects {
 /// 
 /// # Return
 /// Result<String, CliErr>
-pub fn populate_project_conf(project_name: String, path: PathBuf, contents: Result<Projects, CliErr>) -> Result<String, CliErr> {
-    let str_path = match path.to_str() {
-        Some(p) => p,
-        None => ""
-    };
-
-    if str_path.is_empty() {
-        return Err(
-            CliErr::new(
-                PATH_GENERATE_ERROR,
-                String::from(PATH_GENERATE_REASON),
-                ErrMessage::ParsingError
-            )
-        );
-    }
-
-    // Read the capoomobi.json file and parse the content
-    // If the file is empty generate a Projects empty struct which will be populate
-    // by the new configuration    
-    let mut project_in_config = match contents {
-        Ok(projects) => projects,
-        Err(_) => Projects {
-            projects: Vec::new(),
-            current: String::from("")
-        }
-    };
-
-    let project = Project {
-        name: project_name.clone(),
-        path: str_path.to_owned()
-    };
-
-    // push new project
-    project_in_config.projects.push(project);
-    // set new project as the one to use
-    project_in_config.current = project_name;
-
+pub fn populate_project_conf(pname: String, path: PathBuf) -> Result<String, CliErr> {
     let serialized_projects = serde_json::to_string(&project_in_config);
     if let Ok(content) = serialized_projects {
         return Ok(content);
@@ -118,6 +83,35 @@ pub fn parse_string_to_struct(config_values: &String) -> std::io::Result<Project
 
 // List of method for manipulating the Projects struct
 impl Projects {
+    /// Add
+    /// 
+    /// # Description
+    /// Add a new project to the projects structure
+    /// 
+    /// # Arguments
+    /// * `self` Projects
+    /// * `pname` String
+    /// * `path` PathBuf
+    /// 
+    /// # Return
+    /// Result<Self, CliErr>
+    fn add(self, pname: String, path: PathBuf) -> Result<Self, CliErr> {
+        let pstr = path.to_str().unwrap_or("");
+        if pstr.is_empty() {
+            Err(CliErr::new(PATH_GENERATE_ERROR, PATH_GENERATE_REASON, ErrMessage::ParsingError));
+        }
+
+        let new_project = Project {
+            name: pname,
+            path: String::from(pstr)
+        };
+
+        self.projects.push(new_project);
+        self.current = pname;
+
+        Ok(self)
+    }
+
     /// Get Project Idx
     /// 
     /// # Description

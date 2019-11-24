@@ -24,6 +24,6 @@ pub struct IngressBackend {
 
 impl KubeIngress {
     fn new(nodes: BTreeMap<String, String>) {
-
+        
     }
 }

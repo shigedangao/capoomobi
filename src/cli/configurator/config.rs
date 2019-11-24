@@ -9,18 +9,16 @@ use crate::errors::cli_error::ErrHelper;
 /// # Return
 /// Option<String>
 pub fn get_current_project_path() -> Option<String> {
-    let capoo_configurator = match configure::bootstrap_capoo() {
-        Ok(configurator) => configurator,
-        Err(err) => {
-            err.log_pretty();
-            return None;
-        }
-    };
+    let config_opt = configure::exist();
+    if let None = config_opt {
+        None;
+    }
 
-    let capoos = capoo_configurator.get_content();
+    let config = config_opt.unwrap();
+    let capoos = config.get_content();
     if let Err(err) = capoos {
         err.log_pretty();
-        return None;
+        None;
     }
 
     let unwrapped_capoos = capoos.unwrap();
@@ -33,7 +31,7 @@ pub fn get_current_project_path() -> Option<String> {
         .fold(String::new(), |_, value| value);
 
     if project_path.is_empty() {
-        return None;
+        None;
     }
     
     Some(project_path)

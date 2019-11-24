@@ -5,9 +5,9 @@
 use std::iter::Iterator;
 use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
-use crate::docker::lexer::{Service};
+use crate::docker::parser::{Service};
 use crate::cli::configurator::config;
-use crate::cli::core::fs::toolbox;
+use crate::core::fs::toolbox;
 use crate::confiture::config::conf::{ConfigDeployment};
 
 /// Constant
@@ -31,7 +31,7 @@ pub enum ControllerKind {
 /// Structure which define the representation of a K8S controller definition
 #[derive(Debug)]
 #[derive(Serialize)]
-pub struct KubeContainer {
+pub struct KubeController {
     pub controller_type: ControllerKind,
     pub name: String,
     pub image: String,
@@ -46,6 +46,24 @@ pub struct KubeContainer {
     pub environement: Vec<String>,
     pub ports: Vec<u16>
 }
+
+impl KubeController {
+    /// New
+    /// 
+    /// # Description
+    /// Create a new KubeController
+    /// 
+    /// # Arguments
+    /// * `dk` Docker service struct
+    /// * `option` ConfigDeployment
+    /// 
+    /// # Return
+    /// KubeController
+    fn new(dk: &Service, option: ConfigDeployment) -> KubeController {
+        
+    }
+}
+
 
 /// Create Kube Container
 /// 

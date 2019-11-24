@@ -8,8 +8,8 @@ pub mod conf {
     use std::collections::HashMap;
     use serde::{Deserialize};
     use serde_json;
-    use crate::cli::core::fs::toolbox::{get_absolute_path, open_and_read_string_file};
-    use crate::cli::core::logger::{log, LogType};
+    use crate::core::fs::toolbox::{get_absolute_path, open_and_read_string_file};
+    use crate::core::logger::{log, LogType};
     use crate::kubernetes::controllers::container::ControllerKind;
     use crate::kubernetes::controllers::service::ServiceType;
 

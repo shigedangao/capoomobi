@@ -1,3 +1,4 @@
+mod core;
 mod cli;
 mod docker;
 mod errors;

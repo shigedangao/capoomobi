@@ -5,7 +5,7 @@
 pub mod cli_error {
     use std::fmt;
     use std::error::Error;
-    use crate::cli::core::logger::{log_error, LogType};
+    use crate::core::logger::{log_error, LogType};
 
     // Constants errors
     const MISSING_FIELD_ERROR: &str = "Unable to find a field. Please provide the missing field";
@@ -38,12 +38,12 @@ pub mod cli_error {
         /// 
         /// # Arguments
         /// * `message` slice of a static str
-        /// * `reason` String
+        /// * `reason` &str
         /// * `codename` ErrMessage enum value
         /// 
         /// # Return
         /// CliErr struct
-        fn new(message: &'static str, reason: String, codename: ErrMessage) -> Self;
+        fn new(message: &str, reason: &str, codename: ErrMessage) -> Self;
         /// Log Pretty
         /// 
         /// # Description
@@ -56,13 +56,13 @@ pub mod cli_error {
     /// # Description
     /// structure use to handle information about the error
     pub struct CliErr {
-        message: &'static str,
+        message: String,
         reason: String,
-        code_msg: &'static str
+        code_msg: String
     }
 
     impl ErrHelper for CliErr {
-        fn new(message: &'static str, reason: String, codename: ErrMessage) -> CliErr {
+        fn new(message: &str, reason: &str, codename: ErrMessage) -> CliErr {
             let msg = match codename {
                 ErrMessage::MissingFieldError => MISSING_FIELD_ERROR,
                 ErrMessage::ParsingError => PARSING_ERROR,
@@ -72,17 +72,17 @@ pub mod cli_error {
             };
 
             CliErr {
-                message: message,
-                reason: reason,
-                code_msg: msg
+                message: String::from(message),
+                reason: String::from(reason),
+                code_msg: String::from(msg)
             }
         }
 
         fn log_pretty(&self) {
             log_error(
                 LogType::Error,
-                self.message,
-                self.code_msg,
+                self.message.as_str(),
+                self.code_msg.as_str(),
                 Some(self.reason.clone())
             );
         }

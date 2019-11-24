@@ -2,9 +2,9 @@ use std::path::PathBuf;
 use std::error::Error;
 use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 use crate::cli::configurator::configure::{bootstrap_capoo, ConfigureCapoo};
-use crate::cli::core::logger::{log, LogType};
+use crate::core::logger::{log, LogType};
 use crate::cli::scenarios::sketch::helper;
-use crate::cli::core::fs::toolbox;
+use crate::core::fs::toolbox;
 
 // Errors
 const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";

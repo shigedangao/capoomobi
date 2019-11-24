@@ -1,5 +1,5 @@
-use crate::docker::{lexer, parser};
-use crate::cli::core::logger::{log, LogType};
+use crate::docker::{loader, parser};
+use crate::core::logger::{log, LogType};
 use crate::kubernetes::tree;
 use crate::kubernetes::io::{bootstrap, writer, display};
 use crate::confiture::config::conf;
@@ -26,7 +26,7 @@ const ERROR_GET_CONFITURE: &str = "Unable to parse the confiture.json file as it
 pub fn launch(sub_action: &str, options: &Vec<String>) {
     log(LogType::Info, PREPARE_PARSING, Some(String::from(sub_action)));
 
-    let yaml_content = match parser::parse(sub_action, COMPOSE_FILE_NAME) {
+    let yaml_content = match loader::load(sub_action, COMPOSE_FILE_NAME) {
         Ok(content) => content,
         Err(e) => {
             e.log_pretty();
@@ -34,15 +34,10 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
         }
     };
 
-    let services = match lexer::get_docker_services(yaml_content) {
+    let services = match parser::get_docker_services(yaml_content) {
         Some(vector) => vector,
         None => {
-            CliErr::new(
-                ERROR_GET_DOCKER_SERVICE_LIST,
-                String::new(),
-                ErrMessage::ParsingError
-            ).log_pretty();
-
+            CliErr::new(ERROR_GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
             return;
         }
     };
@@ -64,11 +59,7 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
         };
     }
 
-    CliErr::new(
-        ERROR_GET_CONFITURE,
-        String::new(),
-        ErrMessage::MissingFieldError
-    ).log_pretty();
+    CliErr::new(ERROR_GET_CONFITURE, "", ErrMessage::MissingFieldError).log_pretty();
 }
 
 /// Execute With Options
