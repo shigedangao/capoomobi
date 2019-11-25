@@ -1,5 +1,5 @@
-use crate::cli::configurator::configure;
-use crate::errors::cli_error::ErrHelper;
+use super::configure;
+use crate::core::errors::cli_error::ErrHelper;
 
 /// Get Current Project Path
 /// 

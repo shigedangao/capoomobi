@@ -5,8 +5,9 @@
 use std::path::{PathBuf};
 use std::error::Error;
 use crate::core::fs::toolbox;
-use crate::cli::configurator::builder;
-use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+use super::builder;
+
 
 /// Constant defining the paths available
 const CONFIG_FILE_PATH: &str = ".capoomobi.json";

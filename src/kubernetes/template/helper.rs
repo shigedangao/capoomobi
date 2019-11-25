@@ -51,7 +51,7 @@ pub mod common {
     use serde::{Serialize};
     use super::utils;
     use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
-    use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+    use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 
     /// Use as an interface to create a common template builder method
     pub trait TemplateBuilder<T> {

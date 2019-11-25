@@ -1,13 +1,13 @@
 use std::error::Error;
-use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
-use crate::cli::configurator::configure::{exist, CapooConfig};
+use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+use crate::core::errors::message::cli::{DELETE_PROJECT};
+use crate::core::configurator::configure::{exist, CapooConfig};
 use crate::core::logger::{log, LogType};
 use crate::cli::scenarios::sketch::helper;
 use crate::core::fs::toolbox;
 use crate::core::serde_utils::{SerdeUtil};
 
 // Errors
-const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";
 
 /// Project
 /// 
@@ -28,9 +28,9 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
     if let Some(conf) = configuration {
         match main_action {
             "current" => show_current_project(conf),
-            "switch" => switch_project(conf, arg),
-            "list" => list_project(conf),
-            "delete" => delete_project(conf, arg),
+            "switch"  => switch_project(conf, arg),
+            "list"    => list_project(conf),
+            "delete"  => delete_project(conf, arg),
             _ => show_current_project(conf)
         }   
     }
@@ -98,7 +98,7 @@ fn switch_project(conf: CapooConfig ,pname: String) {
     match new_projects
         .serialize()
         .and_then(|res| conf.write_json_file(res)) {
-            Ok(()) => log(LogType::Success, "project has been change to: ",Some(pname)),
+            Ok(()) => log(LogType::Success, "project has been change to: ", Some(pname)),
             Err(err) => err.log_pretty()
         };
 }
@@ -132,6 +132,6 @@ fn delete_project(conf: CapooConfig, pname: String) {
 
     match toolbox::delete_folder_from_pathbuf(&projects.1) {
         Ok(_) => log(LogType::Success, "Project has been deleted name: ", Some(pname)),
-        Err(err) => CliErr::new(DELETE_ERROR_MESSAGE, err.description(), ErrMessage::IOError).log_pretty()
+        Err(err) => CliErr::new(DELETE_PROJECT, err.description(), ErrMessage::IOError).log_pretty()
     }
 }

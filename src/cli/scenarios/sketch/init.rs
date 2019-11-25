@@ -1,12 +1,10 @@
 use crate::core::logger::{log, LogType};
-use crate::cli::configurator::configure;
+use crate::core::configurator::configure;
 use crate::core::fs::config::ConfigHelper;
-use crate::cli::configurator::builder::{Projects};
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::configurator::builder::{Projects};
+use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::errors::message::cli::RETRIEVE_PATH;
 use crate::core::serde_utils::SerdeUtil;
-
-/// Error constant
-const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
 
 /// Message
 const PROJECT_CREATED: &str = "Project successfully create";
@@ -53,7 +51,7 @@ fn execute(project_name: &str, cmd_args: &Vec<String>, conf: configure::CapooCon
 
     let build_opt = conf_helper.build_project_folder();
     if let None = build_opt {
-        CliErr::new(PATH_ERROR, path, ErrMessage::NotFound).log_pretty();
+        CliErr::new(RETRIEVE_PATH, path, ErrMessage::NotFound).log_pretty();
         return;
     }
     

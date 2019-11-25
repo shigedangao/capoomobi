@@ -16,7 +16,7 @@
 use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use serde_json;
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::serde_utils::{SerdeUtil};
 
 // Errors

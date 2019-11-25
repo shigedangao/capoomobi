@@ -10,7 +10,7 @@ pub mod bootstrap {
     use crate::kubernetes::tree::{Kube};
     use crate::core::fs::toolbox;
     use crate::core::logger::{log, LogType};
-    use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+    use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
     const CREATE_KUBE_FOLDER_ERR: &str = "Unable to create kubernetes folder";
     const CREATE_KUBE_FILES_ERR: &str = "Unable to create kubernetes file";

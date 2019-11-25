@@ -3,8 +3,8 @@
 /// # Description
 /// Module use to trigger the CLI
 pub mod manager {
-    use crate::cli::scenarios::parser::parser;
-    use crate::errors::cli_error::{ErrHelper};
+    use crate::cli::scenarios::parser;
+    use crate::core::errors::cli_error::{ErrHelper};
 
     /// Start
     /// 

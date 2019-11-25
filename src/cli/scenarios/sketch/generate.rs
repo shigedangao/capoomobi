@@ -1,18 +1,19 @@
+use super::args;
 use crate::docker::{loader, parser};
 use crate::core::logger::{log, LogType};
 use crate::kubernetes::tree;
 use crate::kubernetes::io::{bootstrap, writer, display};
-use crate::confiture::config::conf;
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
-use super::args;
+use crate::confiture::config;
+use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::errors::message::cli::{
+    GET_DOCKER_SERVICE_LIST,
+    GET_CONFITURE
+};
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 /// Message
 const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located on the path: ";
-/// Errors
-const ERROR_GET_DOCKER_SERVICE_LIST: &str = "Unable to retrieve list of services in the docker-compose";
-const ERROR_GET_CONFITURE: &str = "Unable to parse the confiture.json file as it's empty";
 
 /// Launch
 /// 
@@ -37,12 +38,12 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
     let services = match parser::get_docker_services(yaml_content) {
         Some(vector) => vector,
         None => {
-            CliErr::new(ERROR_GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
+            CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
             return;
         }
     };
 
-    let confiture_opts = conf::load_conf(String::new(), sub_action);
+    let confiture_opts = config::load_conf(String::new(), sub_action);
     if let Some(conf) = confiture_opts {
         let kubes = tree::get_kube_abstract_tree(services, conf);
         let cmd_opt = args::retrieve_cmd_options(options);
@@ -59,7 +60,7 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
         };
     }
 
-    CliErr::new(ERROR_GET_CONFITURE, "", ErrMessage::MissingFieldError).log_pretty();
+    CliErr::new(GET_CONFITURE, "", ErrMessage::MissingFieldError).log_pretty();
 }
 
 /// Execute With Options

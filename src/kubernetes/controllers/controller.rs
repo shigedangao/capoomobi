@@ -6,7 +6,7 @@ use std::iter::Iterator;
 use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use crate::docker::parser::{Service};
-use crate::cli::configurator::config;
+use crate::core::configurator::config;
 use crate::core::fs::toolbox;
 use crate::confiture::config::conf::{ConfigDeployment};
 

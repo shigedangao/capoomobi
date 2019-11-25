@@ -1,6 +1,6 @@
 use std::error::Error;
 use serde::{Serialize, Deserialize};
-use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use super::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
 // Error message constant
 const SERIALIZE_ERROR: &str = "Unable to serialize the data type";

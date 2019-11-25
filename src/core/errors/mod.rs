@@ -1,3 +1,5 @@
+pub mod message;
+
 /// CliErr module
 /// 
 /// # Description
