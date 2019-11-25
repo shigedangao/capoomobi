@@ -3,9 +3,13 @@ use crate::cli::configurator::configure;
 use crate::core::fs::config::ConfigHelper;
 use crate::cli::configurator::builder::{Projects};
 use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::serde_utils::SerdeUtil;
 
 /// Error constant
 const PATH_ERROR: &str = "Unable to retrieve absolute path {:?}";
+
+/// Message
+const PROJECT_CREATED: &str = "Project successfully create";
 
 /// Launch
 /// 
@@ -64,13 +68,11 @@ fn execute(project_name: &str, cmd_args: &Vec<String>, conf: configure::CapooCon
         }
     };
 
-    content_builder.populate_project_conf(String::from(project_name), build_path)
-    .and_then(|res| conf.write_json(res)) {
-        Ok(()) => log(
-            LogType::Success,
-            "Project successfully created",
-            Some(conf_helper.get_path_as_string())
-        ),
-        Err(err) => err.log_pretty()
-    }
+    match content_builder
+        .add(String::from(project_name), build_path)
+        .and_then(|res| res.serialize())
+        .and_then(|res| conf.write_json_file(res)) {
+            Ok(_) => log(LogType::Success, PROJECT_CREATED, Some(conf_helper.get_path_as_string())),
+            Err(e) => e.log_pretty()
+        }
 }

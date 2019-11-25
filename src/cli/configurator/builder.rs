@@ -2,17 +2,31 @@
 /// 
 /// # Description
 /// Module use to manipulate the content of the .capoomobi.json
+/// 
+/// # Info
+/// The .capoomobi.json has the following file format
+/// "projects": [
+///   {
+///     "name": <project_name>,
+///     "path": <project_path>  
+///   },
+///   {...},
+/// ],
+/// "current": <project_name>
 use std::path::PathBuf;
-use std::error::Error;
 use serde::{Serialize, Deserialize};
 use serde_json;
 use crate::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::serde_utils::{SerdeUtil};
 
 // Errors
 const PATH_GENERATE_ERROR: &str     = "Error while generating absolute path";
 const PATH_GENERATE_REASON: &str    = "An error occured while converting the path";
 const PROJECT_GENERATE_ERROR: &str  = "Unable to generate new config for capoomobi.json";
 const PROJECT_GENERATE_REASON: &str = "An error occured while serializing the project";
+const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";
+const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
+
 
 /// Structure refering to a project
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,44 +40,6 @@ pub struct Project {
 pub struct Projects {
     pub projects: Vec<Project>,
     pub current: String,
-}
-
-/// Generate Project Conf
-/// @TODO to remove
-/// 
-/// # Description
-/// Populate the project configuration
-/// 
-/// # Info
-/// The .capoomobi.json has the following file format
-/// "projects": [
-///   {
-///     "name": <project_name>,
-///     "path": <project_path>  
-///   },
-///   {...},
-/// ],
-/// "current": <project_name>
-/// 
-/// # Arguments
-/// * `project_name` String
-/// * `path` PathBuf
-/// 
-/// # Return
-/// Result<String, CliErr>
-pub fn populate_project_conf(pname: String, path: PathBuf) -> Result<String, CliErr> {
-    let serialized_projects = serde_json::to_string(&project_in_config);
-    if let Ok(content) = serialized_projects {
-        return Ok(content);
-    }
-
-    Err(
-        CliErr::new(
-            PROJECT_GENERATE_ERROR,
-            String::from(PROJECT_GENERATE_REASON),
-            ErrMessage::SerializeError
-        )
-    )
 }
 
 /// Parse String to Struct
@@ -95,7 +71,7 @@ impl Projects {
     /// 
     /// # Return
     /// Result<Self, CliErr>
-    fn add(self, pname: String, path: PathBuf) -> Result<Self, CliErr> {
+    pub fn add(self, pname: String, path: PathBuf) -> Result<Self, CliErr> {
         let pstr = path.to_str().unwrap_or("");
         if pstr.is_empty() {
             Err(CliErr::new(PATH_GENERATE_ERROR, PATH_GENERATE_REASON, ErrMessage::ParsingError));
@@ -136,6 +112,7 @@ impl Projects {
 
         None
     }
+
     /// Delete By Idx
     /// 
     /// # Description
@@ -146,19 +123,17 @@ impl Projects {
     /// * `idx` usize
     /// 
     /// # Return
-    /// (bool, String, String) tupple
-    pub fn delete_project_by_name(&mut self, name: &String) -> (bool, String, String) {
-        let project_opts = &self.get_project_idx(String::from(name));
-        if let None = project_opts {
-            return (false, String::new(), String::new());
+    /// Result<(&Self, PathBuf)>
+    pub fn delete_project_by_name(&mut self, name: String) -> Result<(&Self, PathBuf), CliErr> {
+        let project_opt = &self.get_project_idx(String::from(name));
+        if let None = project_opt {
+            Err(CliErr::new(DELETE_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
 
-        let project = project_opts.as_ref().unwrap();
+        let project = project_opt.unwrap();
         &self.projects.remove(project.0);
-        match serde_json::to_string(&self) {
-            Ok(json) => (true, json, String::from(&project.1)),
-            Err(err) => (false, String::from(err.description()), String::new())
-        }
+
+        Ok((self, PathBuf::from(project.1)))
     }
 
     /// Switch Project
@@ -171,21 +146,20 @@ impl Projects {
     /// * `name` String
     /// 
     /// # Return
-    /// (bool, String) tupple
-    pub fn switch_project(&mut self, name: &String) -> (bool, String) {
-        let has_project = &(&self.projects)
+    /// Result<&Self, CliErr>
+    pub fn switch_project(&mut self, name: &String) -> Result<&Self, CliErr> {
+        let project = &self.projects
             .into_iter()
             .filter(|p| p.name == String::from(name))
             .last();
 
-        if let None = has_project {
-            return (false, String::new());
+        if let None = project {
+            Err(CliErr::new(SWITCH_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
 
         self.current = String::from(name);
-        match serde_json::to_string(self) {
-            Ok(json) => (true, json),
-            Err(err) => (false, String::from(err.description()))
-        }
+        Ok(self)
     }
 }
+
+impl SerdeUtil for Projects {}

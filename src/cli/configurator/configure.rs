@@ -71,7 +71,7 @@ impl CapooConfig {
         Ok(projects)
     }
 
-    /// Write Json
+    /// Write Json File
     /// 
     /// # DescConfigureCapooription
     /// Decorator of the write_json_content of the toolbox
@@ -82,7 +82,7 @@ impl CapooConfig {
     /// 
     /// # Return
     /// Result<(), CliErr>
-    pub fn write_json(&self, json: String) -> Result<(), CliErr> {
+    pub fn write_json_file(&self, json: String) -> Result<(), CliErr> {
         match toolbox::write_json_content(&self.path, json) {
             Ok(_) => Ok(()),
             Err(err) => Err(
