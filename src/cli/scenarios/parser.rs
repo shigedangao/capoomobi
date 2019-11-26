@@ -41,12 +41,12 @@ pub fn parse() -> Result<(), CliErr> {
         Some(res) => {
             if let Some(arg) = args {
                 trigger_scenario(res, &arg.secondary, &arg.options);
-                Ok(());
+                return Ok(());
             }
 
             if args.is_none() {
                 trigger_scenario(Scenarios::Help, &String::new() , &vec![]);
-                Ok(());
+                return Ok(());
             }
             
             Err(CliErr::new(UNKNOWN_ACTION, format!("{}{:?}", "Command: ", cmd).as_str(), ErrMessage::MissingFieldError))

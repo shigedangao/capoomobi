@@ -47,7 +47,7 @@ impl ConfigHelper {
     pub fn build_project_folder(&self) -> Option<PathBuf> {
         let res = toolbox::create_folder_from_pathbuf(&self.path);
         if let Err(_) = res {
-            None;
+            return None;
         }
 
         match toolbox::get_absolute_path(&self.path) {

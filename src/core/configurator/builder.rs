@@ -74,7 +74,7 @@ impl Projects {
     pub fn add(self, pname: String, path: PathBuf) -> Result<Self, CliErr> {
         let pstr = path.to_str().unwrap_or("");
         if pstr.is_empty() {
-            Err(CliErr::new(PATH_GENERATE_ERROR, PATH_GENERATE_REASON, ErrMessage::ParsingError));
+            return Err(CliErr::new(PATH_GENERATE_ERROR, PATH_GENERATE_REASON, ErrMessage::ParsingError));
         }
 
         let new_project = Project {
@@ -127,7 +127,7 @@ impl Projects {
     pub fn delete_project_by_name(&mut self, name: String) -> Result<(&Self, PathBuf), CliErr> {
         let project_opt = &self.get_project_idx(String::from(name));
         if let None = project_opt {
-            Err(CliErr::new(DELETE_ERROR_MESSAGE, "", ErrMessage::NotFound));
+            return Err(CliErr::new(DELETE_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
 
         let project = project_opt.unwrap();
@@ -154,7 +154,7 @@ impl Projects {
             .last();
 
         if let None = project {
-            Err(CliErr::new(SWITCH_ERROR_MESSAGE, "", ErrMessage::NotFound));
+            return Err(CliErr::new(SWITCH_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
 
         self.current = String::from(name);

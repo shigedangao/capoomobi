@@ -57,7 +57,7 @@ impl KubeService {
         svc_name.push_str(SVC_SUFFIX);
 
         if dk.ports.is_empty() {
-            None;
+            return None;
         }
 
         let mapped_ports: Vec<u16> = dk.ports[0]

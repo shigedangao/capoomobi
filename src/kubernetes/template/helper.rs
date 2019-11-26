@@ -55,7 +55,7 @@ pub mod common {
     use crate::core::errors::message::template::RENDERING;
 
     /// Use as an interface to create a common template builder method
-    pub trait TemplateBuilder<T> {
+    pub trait TemplateBuilder {
         /// Render
         /// 
         /// # Description
@@ -68,13 +68,13 @@ pub mod common {
         /// 
         /// # Return
         /// Result<Y, CliErr>
-        fn render(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
+        fn render<T>(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
             let mut handlebars = Handlebars::new();
             handlebars.register_helper("lilmouse", Box::new(utils::VectorRawHelper));
 
             let content_opt = retrieve_asset_content(kind);
             if let Err(e) = content_opt {
-                Err(e);
+                return Err(e);
             }
 
             let content = content_opt.unwrap();

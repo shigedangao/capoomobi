@@ -46,7 +46,7 @@ pub fn get_kube_abstract_tree(dk_vec: Vec<DockerService>, options: HashMap<Strin
             let kube_ctrl = KubeController::new(&dk, &option.deployment, &base_path);
 
             if kube_svc.is_none() {
-                None;
+                return None;
             }
 
             Some(

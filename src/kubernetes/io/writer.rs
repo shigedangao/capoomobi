@@ -9,14 +9,13 @@ pub mod writer {
     use std::fs;
     use std::path::PathBuf;
     use futures::future::{lazy, ok, err, FutureResult, Future};
+    use serde::{Serialize};
     use crate::core::errors::cli_error::{ErrHelper};
     use crate::assets::loader::{K8SAssetType};
     use crate::kubernetes::tree::{Kube};
-    use crate::kubernetes::controllers::controller::{KubeController};
-    use crate::kubernetes::controllers::service::{KubeService};
     use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
     use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
-    use crate::kubernetes::template::helper::common::TemplateBuilder;
+    use crate::kubernetes::template::helper::common::{TemplateBuilder};
 
     /// Write Kubernetes Yaml
     /// 
@@ -30,8 +29,23 @@ pub mod writer {
             for kube in kubes.into_iter() {
                 tokio::spawn(
                     lazy(move || {
-                        return write_controller(&kube.ctrl, kube.ctrl.path)
-                            .and_then(move |_| write_service(&kube.svc, kube.svc.path));
+                        let ctrl_renderer = ControllerTmplBuilder{};
+                        let svc_renderer  = ServiceTmplBuilder{};
+
+                        let ctrl_path = PathBuf::from(&kube.ctrl.path);
+                        let svc_path = PathBuf::from(&kube.svc.path);
+
+                        match write_kube_cmp(ctrl_renderer, &kube.ctrl, K8SAssetType::Controller, ctrl_path) {
+                            Ok(Ok(()), _) => Ok(()),
+                            Err((e, _)) => Err(e)
+                        };
+
+                        let svc_res = write_kube_cmp(svc_renderer, &kube.svc, K8SAssetType::Service, svc_path);
+
+
+                        ok::<(), ()>(())
+                        //return write_controller(&kube.ctrl, kube.ctrl.path)
+                        //    .and_then(move |_| write_service(&kube.svc, kube.svc.path));
                     })
                 );
             }
@@ -40,68 +54,34 @@ pub mod writer {
         }));
     }
 
-    /// Write Controller
+    /// Write Kube Cmp
     /// 
     /// # Description
-    /// Write controller yaml file
+    /// Write kubernetes components (controller, service)
     /// 
     /// # Arguments
-    /// * `kube` Reference to a the KubeContainer
+    /// * `tmpl` impl TemplateBuilder
+    /// * `cmp` T: Serialize
+    /// * `k8s_type` K8SAssetType
     /// * `path` PathBuf
     /// 
     /// # Return
     /// FutureResult<(), ()>
-    fn write_controller(kube: &KubeController, path: PathBuf) -> FutureResult<(), ()> {
-        // write controller
-        let controller = ControllerTmplBuilder{};
-        let tmpl = controller.render(kube, K8SAssetType::Controller);
+    fn write_kube_cmp<T: Serialize>(tmpl: impl TemplateBuilder, cmp: &T, k8s_type: K8SAssetType, path: PathBuf) -> FutureResult<(), ()> {
+       let render_res = tmpl.render(cmp, k8s_type);
+       if let Err(e) = render_res {
+           e.log_pretty();
+           return err::<(), ()>(());
+       }
 
-        let res = match tmpl {
-            Ok(t) => write_yaml(path, t),
-            Err(e) => {
-                e.log_pretty();
-                return err::<(), ()>(());
-            }
-        };
+       let tmpl_str = render_res.unwrap();
+       let write_res = write_yaml(path, tmpl_str);
 
-        if let Err(e) = res {
-            panic!(e);
-        }
+       if let Err(e) = write_res {
+           return err::<(), ()>(());
+       }
 
-        ok::<(), ()>(())
-    }
-
-    /// Write Service
-    /// 
-    /// # Description
-    /// Write service yaml file
-    /// 
-    /// # Arguments
-    /// * `svc` Reference to a the KubeService
-    /// * `path` PathBuf
-    /// 
-    /// # Return
-    /// FutureResult<(), ()>
-    fn write_service(svc: &KubeService, path: PathBuf) -> FutureResult<(), ()> {
-        let svc_path = PathBuf::from(path);
-
-        // write services
-        let service = ServiceTmplBuilder{};
-        let tmpl = service.render(svc, K8SAssetType::Service);
-
-        let res = match tmpl {
-            Ok(t) => write_yaml(svc_path, t),
-            Err(e) => {
-                e.log_pretty();
-                return err::<(), ()>(());
-            }
-        };
-
-        if let Err(e) = res {
-            panic!(e);
-        }
-
-        ok::<(), ()>(())
+       ok::<(), ()>(())
     }
 
     /// Write Yaml

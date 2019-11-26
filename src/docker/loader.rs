@@ -31,12 +31,12 @@ pub fn load(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
 
     let docker_compose_path = toolbox::get_absolute_path(&paths);
     if let Err(e) = docker_compose_path {
-        Err(CliErr::new(ABS_PATH_ERROR, e.description(), ErrMessage::IOError));
+        return Err(CliErr::new(ABS_PATH_ERROR, e.description(), ErrMessage::IOError));
     }
 
     let content = toolbox::open_file(&docker_compose_path.unwrap());
     if let Err(err) = content {
-        Err(CliErr::new(UNABLE_READ_ERR, err.description(), ErrMessage::IOError));
+        return Err(CliErr::new(UNABLE_READ_ERR, err.description(), ErrMessage::IOError));
     }
 
     match parse_yaml_tree(content.unwrap()) {
