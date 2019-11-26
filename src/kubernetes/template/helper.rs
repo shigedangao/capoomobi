@@ -52,6 +52,7 @@ pub mod common {
     use super::utils;
     use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
     use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+    use crate::core::errors::message::template::RENDERING;
 
     /// Use as an interface to create a common template builder method
     pub trait TemplateBuilder<T> {
@@ -71,13 +72,12 @@ pub mod common {
             let mut handlebars = Handlebars::new();
             handlebars.register_helper("lilmouse", Box::new(utils::VectorRawHelper));
 
-            let content = match retrieve_asset_content(kind) {
-                Ok(c) => c,
-                Err(err) => {
-                    return Err(err);
-                }
-            };
+            let content_opt = retrieve_asset_content(kind);
+            if let Err(e) = content_opt {
+                Err(e);
+            }
 
+            let content = content_opt.unwrap();
             match handlebars.render_template(content.as_str(), data) {
                 Ok(p) => Ok(p),
                 Err(e) => {
@@ -98,17 +98,9 @@ pub mod common {
     pub fn handle_error(err: &Option<&RenderError>) -> CliErr {
         if let Some(details) = err {
             let detail = &details.desc;
-            return CliErr::new(
-                "An error happened while rendering the template",
-                format!("{}", detail),
-                ErrMessage::RendererError
-            );
+            return CliErr::new(RENDERING, detail.as_str(), ErrMessage::RendererError);
         }
 
-        CliErr::new(
-            "An error happened while rendering the template",
-            String::new(),
-            ErrMessage::RendererError
-        )
+        CliErr::new(RENDERING, "", ErrMessage::RendererError)
     }
 }

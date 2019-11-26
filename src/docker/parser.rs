@@ -10,7 +10,7 @@ const UNKNOWN_SERVICE_NAME: &str = "unknown";
 /// Service represent a service in the compose file
 /// e.g services.portainer
 #[derive(Debug)]
-pub struct Service {
+pub struct DockerService {
     pub name: String,
     pub image: String,
     pub commands: Vec<String>,
@@ -54,7 +54,7 @@ fn get_supported_attributes(field: FieldType) -> Vec<&'static str> {
 /// 
 /// # Return
 /// Option of vector services
-pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<Service>> {
+pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<DockerService>> {
     if content.is_empty() {
         return None;
     }
@@ -67,7 +67,7 @@ pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<Service>> {
 
     let raw_hash = raw_services.into_hash();
     if let Some(hashes) = raw_hash {
-        let services: Vec<Service> = hashes
+        let services: Vec<DockerService> = hashes
             .into_iter()
             .map(|yaml| parse_each_yaml_content(yaml.0, yaml.1))
             .collect();
@@ -86,7 +86,7 @@ pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<Service>> {
 /// # Argument
 /// * `content` Option of refrence to a string
 /// * `fallback` Vec<String>
-fn retrieve_array_or_fallback(content: Option<&Vec<String>>, fallback: Vec<String>) -> Vec<String> {
+fn get_value(content: Option<&Vec<String>>, fallback: Vec<String>) -> Vec<String> {
     match content {
         Some(value) => {
             if value.is_empty() {
@@ -110,9 +110,8 @@ fn retrieve_array_or_fallback(content: Option<&Vec<String>>, fallback: Vec<Strin
 /// 
 /// # Return
 /// Service struct
-fn parse_each_yaml_content(service_name: yaml::Yaml, service_content: yaml::Yaml) -> Service {
+fn parse_each_yaml_content(service_name: yaml::Yaml, service_content: yaml::Yaml) -> DockerService {
     let mut collection_attrs = HashMap::new();
-
     let single_type_vec: Vec<String> = get_supported_attributes(FieldType::Single)
         .into_iter()
         .map(|key| String::from(service_content[key].as_str().unwrap_or("")))
@@ -134,13 +133,13 @@ fn parse_each_yaml_content(service_name: yaml::Yaml, service_content: yaml::Yaml
     let fallback_cmd = vec![String::from(&single_type_vec[1])];
     let fallback_label = vec![String::from(&single_type_vec[2])];  
 
-    Service {
-        name: String::from(service_name.as_str().unwrap_or(UNKNOWN_SERVICE_NAME)),
+    DockerService {
+        name:  String::from(service_name.as_str().unwrap_or(UNKNOWN_SERVICE_NAME)),
         image: String::from(&single_type_vec[0]),
-        commands: retrieve_array_or_fallback(collection_attrs.get("command"), fallback_cmd),
-        labels: retrieve_array_or_fallback(collection_attrs.get("labels"), fallback_label),
-        ports: retrieve_array_or_fallback(collection_attrs.get("ports"), Vec::new()),
-        environment: retrieve_array_or_fallback(collection_attrs.get("environment"), Vec::new()),
-        volumes: retrieve_array_or_fallback(collection_attrs.get("volumes"), Vec::new())
+        commands: get_value(collection_attrs.get("command"), fallback_cmd),
+        labels: get_value(collection_attrs.get("labels"), fallback_label),
+        ports: get_value(collection_attrs.get("ports"), Vec::new()),
+        environment: get_value(collection_attrs.get("environment"), Vec::new()),
+        volumes: get_value(collection_attrs.get("volumes"), Vec::new())
     }
 }

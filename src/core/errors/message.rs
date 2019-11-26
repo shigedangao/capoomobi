@@ -9,5 +9,13 @@ pub mod cli {
     pub const DELETE_PROJECT: &str = "Unable to delete project";
     pub const UNKNOWN_SCENARIO: &str = "Command not found / supported";
     pub const UNKNOWN_ACTION: &str = "Missing arguments for command";
+}
 
+pub mod template {
+    pub const RENDERING: &str = "An error happened while rendering the template";
+}
+
+pub mod io {
+    pub const CREATE_KUBE_FOLDER: &str = "Unable to create kubernetes folder";
+    pub const CREATE_KUBE_FILES: &str = "Unable to create kubernetes file";
 }

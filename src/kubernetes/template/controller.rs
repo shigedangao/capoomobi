@@ -6,7 +6,7 @@
 /// # Description
 /// Module use to template a K8S controller
 pub mod controller {
-    use crate::kubernetes::controllers::container::{KubeContainer};
+    use crate::kubernetes::controllers::controller::{KubeController};
     use crate::kubernetes::template::helper::common::{TemplateBuilder};
 
     /// Controller Tmpl Builder
@@ -15,5 +15,5 @@ pub mod controller {
     /// Struct use to build the controller template
     pub struct ControllerTmplBuilder {}
 
-    impl TemplateBuilder<KubeContainer> for ControllerTmplBuilder {}
+    impl TemplateBuilder<KubeController> for ControllerTmplBuilder {}
 }

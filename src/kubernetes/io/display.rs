@@ -1,7 +1,7 @@
 use futures::future::{lazy};
 use crate::assets::loader::{K8SAssetType};
 use crate::kubernetes::tree::{Kube};
-use crate::kubernetes::controllers::container::{KubeContainer};
+use crate::kubernetes::controllers::controller::{KubeController};
 use crate::kubernetes::controllers::service::{KubeService};
 use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
 use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
@@ -18,9 +18,9 @@ use crate::core::errors::cli_error::{ErrHelper};
 pub fn compile_kubernetes_yaml(kubes: Vec<Kube>) {
     tokio::run(lazy(|| {
         for k in kubes.into_iter() {
-            display_controller(&k.object);
+            display_controller(&k.ctrl);
             println!("---");
-            display_service(&k.service);
+            display_service(&k.svc);
         }
 
         Ok(())
@@ -34,7 +34,7 @@ pub fn compile_kubernetes_yaml(kubes: Vec<Kube>) {
 /// 
 /// # Arguments
 /// * `kube` KubeContainer reference
-fn display_controller(kube: &KubeContainer) {
+fn display_controller(kube: &KubeController) {
     let ctrl = ControllerTmplBuilder{};
     match ctrl.render(kube, K8SAssetType::Controller) {
         Ok(s) => println!("{}", s),

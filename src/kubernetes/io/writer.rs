@@ -12,7 +12,7 @@ pub mod writer {
     use crate::core::errors::cli_error::{ErrHelper};
     use crate::assets::loader::{K8SAssetType};
     use crate::kubernetes::tree::{Kube};
-    use crate::kubernetes::controllers::container::{KubeContainer};
+    use crate::kubernetes::controllers::controller::{KubeController};
     use crate::kubernetes::controllers::service::{KubeService};
     use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
     use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
@@ -28,13 +28,10 @@ pub mod writer {
     pub fn write_kubernetes_yaml(kubes: Vec<Kube>) {
         tokio::run(lazy(|| {
             for kube in kubes.into_iter() {
-                let ctrl_path = PathBuf::from(&kube.object.controller_path);
-                let svc_path = PathBuf::from(&kube.object.service_path);
-
                 tokio::spawn(
                     lazy(move || {
-                        return write_controller(&kube.object, ctrl_path)
-                            .and_then(move |_| write_service(&kube.service, svc_path));
+                        return write_controller(&kube.ctrl, kube.ctrl.path)
+                            .and_then(move |_| write_service(&kube.svc, kube.svc.path));
                     })
                 );
             }
@@ -54,15 +51,13 @@ pub mod writer {
     /// 
     /// # Return
     /// FutureResult<(), ()>
-    fn write_controller(kube: &KubeContainer, path: PathBuf) -> FutureResult<(), ()> {
-        let ctrl_path = PathBuf::from(path);
-
+    fn write_controller(kube: &KubeController, path: PathBuf) -> FutureResult<(), ()> {
         // write controller
         let controller = ControllerTmplBuilder{};
         let tmpl = controller.render(kube, K8SAssetType::Controller);
 
         let res = match tmpl {
-            Ok(t) => write_yaml(ctrl_path, t),
+            Ok(t) => write_yaml(path, t),
             Err(e) => {
                 e.log_pretty();
                 return err::<(), ()>(());

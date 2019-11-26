@@ -11,9 +11,10 @@ pub mod bootstrap {
     use crate::core::fs::toolbox;
     use crate::core::logger::{log, LogType};
     use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
-
-    const CREATE_KUBE_FOLDER_ERR: &str = "Unable to create kubernetes folder";
-    const CREATE_KUBE_FILES_ERR: &str = "Unable to create kubernetes file";
+    use crate::core::errors::message::io::{
+        CREATE_KUBE_FILES,
+        CREATE_KUBE_FOLDER
+    };
 
     /// Prepare Kube
     /// 
@@ -33,9 +34,9 @@ pub mod bootstrap {
         );
 
         for kube in kubes.into_iter() {
-            let results = create_kubernetes_folder(&kube.object.path)
-                .and_then(|_| create_file(&kube.object.controller_path, "controller"))
-                .and_then(|_| create_file(&kube.object.service_path, "service"));
+            let results = create_kubernetes_folder(kube.project_path)
+                .and_then(|_| create_file(kube.ctrl.path, "controller"))
+                .and_then(|_| create_file(kube.svc.path, "service"));
 
             if results.is_err() {
                 return Err(results.err().unwrap());
@@ -55,8 +56,8 @@ pub mod bootstrap {
     /// 
     /// # Return
     /// Result<(), CliErr>
-    fn create_kubernetes_folder(path: &PathBuf) -> Result<(), CliErr> {
-        match toolbox::create_folder_from_pathbuf(path) {
+    fn create_kubernetes_folder(path: PathBuf) -> Result<(), CliErr> {
+        match toolbox::create_folder_from_pathbuf(&path) {
             Ok(()) => {
                 log(
                     LogType::Info,
@@ -66,7 +67,7 @@ pub mod bootstrap {
 
                 Ok(())
             },
-            Err(err) => Err(CliErr::new(CREATE_KUBE_FOLDER_ERR, String::from(err.description()), ErrMessage::IOError))
+            Err(err) => Err(CliErr::new(CREATE_KUBE_FOLDER, err.description(), ErrMessage::IOError))
         }
     }
 
@@ -81,8 +82,8 @@ pub mod bootstrap {
     /// 
     /// # Return
     /// Result<(), CliErr>
-    fn create_file(path: &PathBuf, message: &str) -> Result<(), CliErr> {
-        match toolbox::create_file(PathBuf::from(path)) {
+    fn create_file(path: PathBuf, message: &str) -> Result<(), CliErr> {
+        match toolbox::create_file(&path) {
             Ok(_) => {
                 log(
                     LogType::Success,
@@ -92,9 +93,7 @@ pub mod bootstrap {
 
                 Ok(())
             },
-            Err(err) => Err(
-                CliErr::new(CREATE_KUBE_FILES_ERR, String::from(err.description()), ErrMessage::IOError)
-            )
+            Err(err) => Err(CliErr::new(CREATE_KUBE_FILES, err.description(), ErrMessage::IOError))
         }
     }
 }
