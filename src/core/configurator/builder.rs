@@ -29,14 +29,14 @@ const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
 
 
 /// Structure refering to a project
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Project {
     pub name: String,
     pub path: String,
 }
 
 /// Structure refering to a set of projects
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Projects {
     pub projects: Vec<Project>,
     pub current: String,
@@ -71,14 +71,14 @@ impl Projects {
     /// 
     /// # Return
     /// Result<Self, CliErr>
-    pub fn add(self, pname: String, path: PathBuf) -> Result<Self, CliErr> {
+    pub fn add(mut self, pname: String, path: PathBuf) -> Result<Self, CliErr> {
         let pstr = path.to_str().unwrap_or("");
         if pstr.is_empty() {
             return Err(CliErr::new(PATH_GENERATE_ERROR, PATH_GENERATE_REASON, ErrMessage::ParsingError));
         }
 
         let new_project = Project {
-            name: pname,
+            name: String::from(&pname),
             path: String::from(pstr)
         };
 
@@ -101,7 +101,7 @@ impl Projects {
     /// Option<(usize, String)>
     fn get_project_idx(&self, name: String) -> Option<(usize, String)> {
         let project = &(&self.projects)
-            .into_iter()
+            .iter()
             .enumerate()
             .filter(|p| p.1.name == name)
             .last();
@@ -124,8 +124,8 @@ impl Projects {
     /// 
     /// # Return
     /// Result<(&Self, PathBuf)>
-    pub fn delete_project_by_name(&mut self, name: String) -> Result<(&Self, PathBuf), CliErr> {
-        let project_opt = &self.get_project_idx(String::from(name));
+    pub fn delete_project_by_name(mut self, name: &String) -> Result<(Self, PathBuf), CliErr> {
+        let project_opt = self.get_project_idx(String::from(name));
         if let None = project_opt {
             return Err(CliErr::new(DELETE_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
@@ -147,9 +147,9 @@ impl Projects {
     /// 
     /// # Return
     /// Result<&Self, CliErr>
-    pub fn switch_project(&mut self, name: &String) -> Result<&Self, CliErr> {
-        let project = &self.projects
-            .into_iter()
+    pub fn switch_project(mut self, name: &String) -> Result<Self, CliErr> {
+        let project = self.projects
+            .iter()
             .filter(|p| p.name == String::from(name))
             .last();
 

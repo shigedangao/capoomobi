@@ -119,16 +119,18 @@ fn delete_project(conf: CapooConfig, pname: String) {
     }
 
     let projects = projects_opt.unwrap();    
-    let new_projects = projects.delete_project_by_name(pname);
-    if let Err(e) = projects_opt {
+    let new_projects = projects.delete_project_by_name(&pname);
+    if let Err(e) = new_projects {
         e.log_pretty();
         return;
     }
 
     let projects = new_projects.unwrap();
-    projects
-        .0.serialize()
-        .and_then(|res| conf.write_json_file(res));
+    let serialize_res = projects.0.serialize().and_then(|res| conf.write_json_file(res));
+    if let Err(e) = serialize_res {
+        e.log_pretty();
+        return;
+    }
 
     match toolbox::delete_folder_from_pathbuf(&projects.1) {
         Ok(_) => log(LogType::Success, "Project has been deleted name: ", Some(pname)),

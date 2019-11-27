@@ -15,7 +15,7 @@ const PORT_SEPARATOR: &str = ":";
 /// Service Type
 /// 
 /// List supported K8S Service
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, Copy)]
 pub enum ServiceType {
     ClusterIP,
     NodePort,
@@ -49,7 +49,7 @@ impl KubeService {
     /// 
     /// # Return
     /// KubeService
-    pub fn new(dk: &DockerService, option: &ConfigService, kube_path: &PathBuf) -> Option<KubeService> {
+    pub fn new(dk: DockerService, option: &ConfigService, kube_path: &PathBuf) -> Option<KubeService> {
         let mut svc_path = PathBuf::from(kube_path);
         svc_path.push(SERVICE_FILENAME);
         

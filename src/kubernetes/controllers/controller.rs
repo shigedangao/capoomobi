@@ -14,7 +14,7 @@ const CONTROLLER_FILENAME: &str = "controller.yaml";
 /// Controller Kind
 /// 
 /// List type of supported K8S controller
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Copy)]
 pub enum ControllerKind {
     Deployment,
     ReplicaSet,
@@ -53,7 +53,7 @@ impl KubeController {
     /// 
     /// # Return
     /// Option<KubeController>
-    pub fn new(dk: &DockerService, option: &ConfigDeployment, kube_path: &PathBuf) -> Option<KubeController> {        
+    pub fn new(dk: DockerService, option: &ConfigDeployment, kube_path: &PathBuf) -> Option<KubeController> {        
         // Controller filename
         let mut ctrl_path = PathBuf::from(&kube_path);
         ctrl_path.push(CONTROLLER_FILENAME);

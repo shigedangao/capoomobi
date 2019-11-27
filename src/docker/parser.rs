@@ -9,7 +9,7 @@ const UNKNOWN_SERVICE_NAME: &str = "unknown";
 
 /// Service represent a service in the compose file
 /// e.g services.portainer
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DockerService {
     pub name: String,
     pub image: String,

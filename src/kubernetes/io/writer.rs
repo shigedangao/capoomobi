@@ -35,11 +35,7 @@ pub mod writer {
                         let ctrl_path = PathBuf::from(&kube.ctrl.path);
                         let svc_path = PathBuf::from(&kube.svc.path);
 
-                        match write_kube_cmp(ctrl_renderer, &kube.ctrl, K8SAssetType::Controller, ctrl_path) {
-                            Ok(Ok(()), _) => Ok(()),
-                            Err((e, _)) => Err(e)
-                        };
-
+                        let ctrl_res = write_kube_cmp(ctrl_renderer, &kube.ctrl, K8SAssetType::Controller, ctrl_path);
                         let svc_res = write_kube_cmp(svc_renderer, &kube.svc, K8SAssetType::Service, svc_path);
 
 

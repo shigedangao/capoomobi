@@ -34,9 +34,9 @@ pub mod bootstrap {
         );
 
         for kube in kubes.into_iter() {
-            let results = create_kubernetes_folder(kube.project_path)
-                .and_then(|_| create_file(kube.ctrl.path, "controller"))
-                .and_then(|_| create_file(kube.svc.path, "service"));
+            let results = create_kubernetes_folder(&kube.project_path)
+                .and_then(|_| create_file(&kube.ctrl.path, "controller"))
+                .and_then(|_| create_file(&kube.svc.path, "service"));
 
             if results.is_err() {
                 return Err(results.err().unwrap());
@@ -56,8 +56,8 @@ pub mod bootstrap {
     /// 
     /// # Return
     /// Result<(), CliErr>
-    fn create_kubernetes_folder(path: PathBuf) -> Result<(), CliErr> {
-        match toolbox::create_folder_from_pathbuf(&path) {
+    fn create_kubernetes_folder(path: &PathBuf) -> Result<(), CliErr> {
+        match toolbox::create_folder_from_pathbuf(path) {
             Ok(()) => {
                 log(
                     LogType::Info,
@@ -82,8 +82,8 @@ pub mod bootstrap {
     /// 
     /// # Return
     /// Result<(), CliErr>
-    fn create_file(path: PathBuf, message: &str) -> Result<(), CliErr> {
-        match toolbox::create_file(&path) {
+    fn create_file(path: &PathBuf, message: &str) -> Result<(), CliErr> {
+        match toolbox::create_file(path) {
             Ok(_) => {
                 log(
                     LogType::Success,

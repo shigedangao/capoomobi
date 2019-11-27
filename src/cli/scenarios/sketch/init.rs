@@ -46,7 +46,8 @@ pub fn launch(project_name: &str, cmd_args: &Vec<String>) {
 fn execute(project_name: &str, cmd_args: &Vec<String>, conf: configure::CapooConfig) {
     // Retrieve path from the arguments
     // capoomobi init mouse <path>
-    let path = cmd_args.get(0).unwrap_or(&String::new());
+    let empty_str = String::new();
+    let path = cmd_args.get(0).unwrap_or(&empty_str);
     let conf_helper = ConfigHelper::new(&path, project_name);
 
     let build_opt = conf_helper.build_project_folder();
