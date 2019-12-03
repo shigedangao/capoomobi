@@ -18,15 +18,12 @@ use serde::{Serialize, Deserialize};
 use serde_json;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::serde_utils::{SerdeUtil};
-
-// Errors
-const PATH_GENERATE_ERROR: &str     = "Error while generating absolute path";
-const PATH_GENERATE_REASON: &str    = "An error occured while converting the path";
-const PROJECT_GENERATE_ERROR: &str  = "Unable to generate new config for capoomobi.json";
-const PROJECT_GENERATE_REASON: &str = "An error occured while serializing the project";
-const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";
-const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
-
+use crate::core::errors::message::core::{
+    PATH_GENERATE_ERROR,
+    PATH_GENERATE_REASON,
+    DELETE_ERROR_MESSAGE,
+    SWITCH_ERROR_MESSAGE
+};
 
 /// Structure refering to a project
 #[derive(Serialize, Deserialize, Debug, Clone)]

@@ -41,7 +41,7 @@ pub fn retrieve_asset_content(k: K8SAssetType) -> Result<String, CliErr> {
     let res = K8SAsset::get(filename);
 
     if let Some(file) = res {
-        match str::from_utf8(&file) {
+        return match str::from_utf8(&file) {
             Ok(s) => Ok(String::from(s)),
             Err(_) => Err(CliErr::new(PARSE_ERROR, "", ErrMessage::ParsingError))
         };

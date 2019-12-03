@@ -19,3 +19,10 @@ pub mod io {
     pub const CREATE_KUBE_FOLDER: &str = "Unable to create kubernetes folder";
     pub const CREATE_KUBE_FILES: &str = "Unable to create kubernetes file";
 }
+
+pub mod core {
+    pub const PATH_GENERATE_ERROR: &str     = "Error while generating absolute path";
+    pub const PATH_GENERATE_REASON: &str    = "An error occured while converting the path";
+    pub const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";
+    pub const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
+}

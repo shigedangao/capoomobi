@@ -16,15 +16,15 @@ use crate::core::errors::cli_error::{ErrHelper};
 /// # Arguments
 /// * `kubes` Vec<kubes>
 pub fn compile_kubernetes_yaml(kubes: Vec<Kube>) {
-    tokio::run(lazy(|| {
-        for k in kubes.into_iter() {
-            display_controller(&k.ctrl);
-            println!("---");
-            display_service(&k.svc);
-        }
+    // tokio::run(lazy(|| {
+    //     for k in kubes.into_iter() {
+    //         display_controller(&k.ctrl);
+    //         println!("---");
+    //         display_service(&k.svc);
+    //     }
 
-        Ok(())
-    }))
+    //     Ok(())
+    // }))
 }
 
 /// Display Controller
