@@ -1,5 +1,6 @@
 use std::pin::Pin;
 use std::task::{Context, Poll};
+use async_std::{task};
 use futures::future::Future;
 use futures::future::join_all;
 use futures::prelude::*;
@@ -24,7 +25,7 @@ impl Future for KubeOutput<'_> {
             ctrl_renderer,
             &kube.ctrl,
             K8SAssetType::Controller,
-            kube.project_path.clone()
+            kube.ctrl.path.clone()
         );
 
         match res {
@@ -35,12 +36,29 @@ impl Future for KubeOutput<'_> {
 }
 
 pub fn run(k: Vec<Kube>) {
-    let futures: Vec<KubeOutput> = k
-        .iter()
-        .map(|k| KubeOutput{kube: k})
-        .collect();
+    let write_task = task::spawn(async move {
+        let futures: Vec<KubeOutput> = k
+            .iter()
+            .map(|k| KubeOutput{kube: k})
+            .collect();
 
-    let f = join_all(futures);
+        let vec = join_all(futures).await;
+        let out: Vec<Result<(), CliErr>> = vec
+            .into_iter()
+            .filter(|res| res.is_err())
+            .collect();
 
-    f.map(|v| {});
+        if out.len() > 0 {
+            return Err(());
+        }
+
+        return Ok(());
+    });
+
+    println!("write task run");
+    match task::block_on(write_task) {
+        Ok(()) => println!("task done ! success"),
+        Err(()) => println!("task error")
+    }
+    println!("write task done");
 }

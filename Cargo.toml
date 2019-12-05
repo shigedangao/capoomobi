@@ -13,4 +13,4 @@ yaml-rust = "0.4.3"
 handlebars = "2.0"
 rust-embed="5.1.0"
 futures = "0.3"
-tokio = { version = "0.2", features = ["full"] }
+async-std = "1.2.0"
