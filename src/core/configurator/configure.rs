@@ -22,6 +22,7 @@ const WRITE_JSON_ERROR: &str        = "Unable to write the capoomobi.json file";
 /// 
 /// # Description
 /// Structure use to configure the capoomobi.json
+#[derive(Debug)]
 pub struct CapooConfig {
     pub path: PathBuf
 }
@@ -40,7 +41,7 @@ impl CapooConfig {
     pub fn new(path: PathBuf) -> Self {
         CapooConfig {
             path: path
-        }  
+        }
     }
 
     /// Get Content
@@ -124,7 +125,7 @@ pub fn exist() -> Option<CapooConfig> {
     conf_path.push(CONFIG_FILE_PATH);
     
     if conf_path.exists() {
-        Some(CapooConfig::new(conf_path));
+        return Some(CapooConfig::new(conf_path));
     }
 
     None

@@ -24,8 +24,8 @@ pub fn launch(main_action: &str, options: &Vec<String>) {
         None => String::new()
     };
 
-    let configuration = exist();
-    if let Some(conf) = configuration {
+    let cnf = exist();
+    if let Some(conf) = cnf {
         match main_action {
             "current" => show_current_project(conf),
             "switch"  => switch_project(conf, arg),

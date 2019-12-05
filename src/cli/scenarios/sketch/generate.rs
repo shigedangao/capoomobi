@@ -2,7 +2,7 @@ use super::args;
 use crate::docker::{loader, parser};
 use crate::core::logger::{log, LogType};
 use crate::kubernetes::tree;
-use crate::kubernetes::io::{bootstrap, writer, display};
+use crate::kubernetes::io::{bootstrap, runner, display};
 use crate::confiture::config;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::cli::{
@@ -55,7 +55,7 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
         }
 
         return match bootstrap::bootstrap::prepare_kube(&kubes) {
-            Ok(()) => writer::writer::write_kubernetes_yaml(kubes),
+            Ok(()) => runner::run(kubes),
             Err(e) => e.log_pretty()
         };
     }
