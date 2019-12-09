@@ -13,41 +13,6 @@ use crate::core::errors::message::cli::{
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
-/// Message
-const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located on the path: ";
-
-/// Prepare
-/// 
-/// # Description
-/// Load the yaml configuration and retrieve the Docker struct representing the services
-fn prepare(path: &str) -> Option<Vec<Kube>> {
-    // get the yaml tree
-    let yaml_content = match loader::load(path, COMPOSE_FILE_NAME) {
-        Ok(content) => content,
-        Err(e) => {
-            e.log_pretty();
-            return None;
-        }
-    };
-
-    // get an array of docker services
-    let services = match parser::get_docker_services(yaml_content) {
-        Some(vector) => vector,
-        None => {
-            CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
-            return None;
-        }
-    };
-    
-    // load the configuration file
-    let conf_opts = config::load_conf(String::new(), path);
-    if let Some(conf) = conf_opts {
-        let kubes = get_kube_abstract_tree(services, conf);
-        return Some(kubes);
-    }
-
-    None
-}
 
 /// Launch
 /// 
@@ -85,20 +50,63 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
 /// * `options` args::GenerateOptions
 fn execute_with_options(k: Vec<Kube>, options: GenerateOptions) {
     match options {
-        GenerateOptions::Print => {},
+        GenerateOptions::Print => display::render_kubes_objects(k),
         GenerateOptions::Ingress => {
             
-        },
-        _ => {
-
         }
     }
 }
 
+/// Prepare
+/// 
+/// # Description
+/// Load the yaml configuration and retrieve the Docker struct representing the services
+/// 
+/// # Arguments
+/// * `path` &str
+/// 
+/// # Return
+/// Option<Vec<Kube>>
+fn prepare(path: &str) -> Option<Vec<Kube>> {
+    // get the yaml tree
+    let yaml_content = match loader::load(path, COMPOSE_FILE_NAME) {
+        Ok(content) => content,
+        Err(e) => {
+            e.log_pretty();
+            return None;
+        }
+    };
+
+    // get an array of docker services
+    let services = match parser::get_docker_services(yaml_content) {
+        Some(vector) => vector,
+        None => {
+            CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
+            return None;
+        }
+    };
+    
+    // load the configuration file
+    let conf_opts = config::load_conf(String::new(), path);
+    if let Some(conf) = conf_opts {
+        let kubes = get_kube_abstract_tree(services, conf);
+        return Some(kubes);
+    }
+
+    None
+}
+
+/// Create Kubes Files
+/// 
+/// # Description
+/// Create kubernetes files from the Vector of Kube services
+/// 
+/// # Arguments
+/// * `kubes` Vec<Kube>
 fn create_kubes_files(kubes: Vec<Kube>) {
     let res = folder::create(&kubes).and_then(|_| runner::run(kubes));
     match res {
         Ok(()) => log(LogType::Success, "Successfully created the Kubernetes files", None),
-        Err(()) => {}
+        Err(()) => CliErr::new(GENERATE_ERROR, "", ErrMessage::IOError).log_pretty()
     };
 }
