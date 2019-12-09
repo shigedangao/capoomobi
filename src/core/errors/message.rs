@@ -9,6 +9,7 @@ pub mod cli {
     pub const DELETE_PROJECT: &str = "Unable to delete project";
     pub const UNKNOWN_SCENARIO: &str = "Command not found / supported";
     pub const UNKNOWN_ACTION: &str = "Missing arguments for command";
+    pub const GENERATE_ERROR: &str = "An error happened while writing the content to the targeted yaml files";
 }
 
 pub mod template {
@@ -17,7 +18,6 @@ pub mod template {
 
 pub mod io {
     pub const CREATE_KUBE_FOLDER: &str = "Unable to create kubernetes folder";
-    pub const CREATE_KUBE_FILES: &str = "Unable to create kubernetes file";
 }
 
 pub mod core {

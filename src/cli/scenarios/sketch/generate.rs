@@ -2,18 +2,47 @@ use super::args;
 use crate::docker::{loader, parser};
 use crate::core::logger::{log, LogType};
 use crate::kubernetes::tree;
-use crate::kubernetes::io::{bootstrap, runner, display};
+use crate::kubernetes::io::{folder, runner, display};
 use crate::confiture::config;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::cli::{
     GET_DOCKER_SERVICE_LIST,
-    GET_CONFITURE
+    GET_CONFITURE,
+    GENERATE_ERROR
 };
 
 /// Constant referring to the compose file which need to be parse
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 /// Message
 const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located on the path: ";
+
+/// Prepare
+/// 
+/// # Description
+/// Load the yaml configuration and retrieve the Docker struct representing the services
+fn prepare(path: &str) {
+    // get the yaml tree
+    let yaml_content = match loader::load(path, COMPOSE_FILE_NAME) {
+        Ok(content) => content,
+        Err(e) => {
+            e.log_pretty();
+            return;
+        }
+    };
+
+    // get an array of docker services
+    let services = match parser::get_docker_services(yaml_content) {
+        Some(vector) => vector,
+        None => {
+            CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
+            return;
+        }
+    };
+    
+    // load the configuration file
+    let confiture_opts = config::load_conf(String::new(), path);
+   
+}
 
 /// Launch
 /// 
@@ -26,25 +55,7 @@ const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str, options: &Vec<String>) {
     log(LogType::Info, PREPARE_PARSING, Some(String::from(sub_action)));
-
-    let yaml_content = match loader::load(sub_action, COMPOSE_FILE_NAME) {
-        Ok(content) => content,
-        Err(e) => {
-            e.log_pretty();
-            return;
-        }
-    };
-
-    let services = match parser::get_docker_services(yaml_content) {
-        Some(vector) => vector,
-        None => {
-            CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
-            return;
-        }
-    };
-
-    let confiture_opts = config::load_conf(String::new(), sub_action);
-    if let Some(conf) = confiture_opts {
+     if let Some(conf) = confiture_opts {
         let kubes = tree::get_kube_abstract_tree(services, conf);
         let cmd_opt = args::retrieve_cmd_options(options);
 
@@ -54,10 +65,10 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
             return;
         }
 
-        return match bootstrap::bootstrap::prepare_kube(&kubes) {
-            Ok(()) => runner::run(kubes),
-            Err(e) => e.log_pretty()
-        };
+        // return match bootstrap::prepare_kube(&kubes) {
+        //     Ok(()) => runner::run(kubes),
+        //     Err(e) => e.log_pretty()
+        // };
     }
 
     CliErr::new(GET_CONFITURE, "", ErrMessage::MissingFieldError).log_pretty();

@@ -21,7 +21,6 @@ pub fn write_component<T: Serialize>(tmpl: impl TemplateBuilder, cmp: &T, k8s_ty
     let write_res = write_yaml(path, tmpl_str);
 
     if let Err(e) = write_res {
-        println!("error {:?}", e.description());
         return Err(CliErr::new("", e.description(), ErrMessage::IOError));
     }
 
