@@ -3,14 +3,14 @@
 /// # Description
 /// The boostrap module is use for creating the project folder
 use std::path::PathBuf;
-use crate::cli::core::fs::toolbox;
+use crate::core::fs::toolbox;
 
 /// Project Path struct
-pub struct ProjectPath {
+pub struct ConfigHelper {
     path: PathBuf
 }
 
-impl ProjectPath {
+impl ConfigHelper {
     /// New
     /// 
     /// # Description
@@ -32,7 +32,7 @@ impl ProjectPath {
 
         absolute_path.push(project_name);
 
-        ProjectPath {
+        ConfigHelper {
             path: absolute_path
         }
     }

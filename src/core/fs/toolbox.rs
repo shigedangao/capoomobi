@@ -13,10 +13,10 @@ use std::fs;
 /// # Return
 /// PathBuf
 pub fn get_home_dir() -> PathBuf {
-  match dirs::home_dir() {
-    Some(path) => path,
-    None => PathBuf::new()
-  }
+    match dirs::home_dir() {
+      Some(path) => path,
+      None => PathBuf::new()
+    }
 }
 
 /// Create File
@@ -28,25 +28,28 @@ pub fn get_home_dir() -> PathBuf {
 /// * `file_path` PathBuf
 /// 
 /// # Return
-/// Result<PathBuf, io::Error>
-pub fn create_file(file_path: PathBuf) -> Result<PathBuf, std::io::Error> {
-  match File::create(Path::new(&file_path)) {
-    Ok(_) => Ok(file_path),
-    Err(e) => Err(e)
-  }
+/// Result<(), io::Error>
+pub fn create_file(file_path: &PathBuf) -> Result<(), std::io::Error> {
+    match File::create(file_path) {
+      Ok(_) => Ok(()),
+      Err(e) => Err(e)
+    }
 }
 
 
-/// Open And Read String File
+/// Open File
 /// 
 /// # Description
 /// Open a file and return a string representation of the content
 /// 
+/// # Arguments
+/// * `file_path` &PathBuf
+/// 
 /// # Return
 /// Result<String>
-pub fn open_and_read_string_file(file_path: &PathBuf) -> io::Result<String> {
-  let file = fs::read_to_string(file_path)?;
-  Ok(file)
+pub fn open_file(file_path: &PathBuf) -> io::Result<String> {
+    let file = fs::read_to_string(file_path)?;
+    Ok(file)
 }
 
 /// Create Folder From Pathbuf
@@ -57,7 +60,7 @@ pub fn open_and_read_string_file(file_path: &PathBuf) -> io::Result<String> {
 /// # Return
 /// Result
 pub fn create_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
-  fs::create_dir_all(path)
+    fs::create_dir_all(path)
 }
 
 /// Delete Folder From Pathbug
@@ -71,7 +74,7 @@ pub fn create_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
 /// # Return
 /// io::Result
 pub fn delete_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
-  fs::remove_dir_all(path)
+    fs::remove_dir_all(path)
 }
 
 /// Concat String Path
@@ -86,10 +89,10 @@ pub fn delete_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
 /// # Return
 /// PathBuf
 pub fn concat_string_path(base: &String, extra: &String) -> PathBuf {
-  let mut path = PathBuf::from(base);
-  path.push(extra);
+    let mut path = PathBuf::from(base);
+    path.push(extra);
 
-  return path;
+    return path;
 }
 
 /// Get Absolute Path
@@ -103,8 +106,8 @@ pub fn concat_string_path(base: &String, extra: &String) -> PathBuf {
 /// # Return
 /// Result<PathBuf>
 pub fn get_absolute_path(path: &PathBuf) -> std::io::Result<PathBuf> {
-  let path = fs::canonicalize(path)?;
-  Ok(path)
+    let path = fs::canonicalize(path)?;
+    Ok(path)
 }
 
 /// Write Json Content
@@ -119,6 +122,6 @@ pub fn get_absolute_path(path: &PathBuf) -> std::io::Result<PathBuf> {
 /// # Return
 /// io::Result<()>
 pub fn write_json_content(path: &PathBuf, json: String) -> std::io::Result<()> {
-  fs::write(Path::new(&path), json.as_bytes())?;
-  Ok(())
+    fs::write(Path::new(&path), json.as_bytes())?;
+    Ok(())
 }

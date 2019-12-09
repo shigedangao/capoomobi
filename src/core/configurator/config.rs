@@ -1,5 +1,5 @@
-use crate::cli::configurator::configure;
-use crate::errors::cli_error::ErrHelper;
+use super::configure;
+use crate::core::errors::cli_error::ErrHelper;
 
 /// Get Current Project Path
 /// 
@@ -9,15 +9,13 @@ use crate::errors::cli_error::ErrHelper;
 /// # Return
 /// Option<String>
 pub fn get_current_project_path() -> Option<String> {
-    let capoo_configurator = match configure::bootstrap_capoo() {
-        Ok(configurator) => configurator,
-        Err(err) => {
-            err.log_pretty();
-            return None;
-        }
-    };
+    let config_opt = configure::exist();
+    if let None = config_opt {
+        return None;
+    }
 
-    let capoos = capoo_configurator.get_content();
+    let config = config_opt.unwrap();
+    let capoos = config.get_content();
     if let Err(err) = capoos {
         err.log_pretty();
         return None;

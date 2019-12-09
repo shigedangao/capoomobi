@@ -5,6 +5,13 @@
 pub mod picker {
     /// Trait to parse to get enum from string
     pub trait EnumHelper<T> {
+        /// From String
+        /// 
+        /// # Description
+        /// * `action` &String
+        /// 
+        /// # Return
+        /// Option<T>
         fn from_string(action: &String) -> Option<T>;
     }
 

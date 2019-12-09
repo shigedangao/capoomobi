@@ -9,9 +9,8 @@ services:
     command:
       - "sh start.sh"
     labels:
-      - "hey little mouse"
-      - "hey big cat"
-      - "dors bien petite souris"
+      - "go"
+      - "api"
   mysql:
     # replicas: 5
     image: mysql:5:7
@@ -23,8 +22,7 @@ services:
       - "MYSQL_USER=little_mouse"
       - "MYSQL_PASSWORD=big_cat"
     labels:
-      - "little_mouse"
-      - "little_cat"
+      - "database"
     command: "sh ./help.sh"
   front:
     image: node:12.4.0-stretch
@@ -34,3 +32,5 @@ services:
       - "npm install"
       - "npm run build"
       - "npm run start"
+    labels:
+      - "front"

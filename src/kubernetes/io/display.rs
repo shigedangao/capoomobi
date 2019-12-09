@@ -1,57 +1,45 @@
-use futures::future::{lazy};
-use crate::kubernetes::tree::tree::{Kube};
-use crate::kubernetes::controllers::container::{KubeContainer};
+use serde::{Serialize};
+use crate::assets::loader::{K8SAssetType};
+use crate::kubernetes::tree::{Kube};
+use crate::kubernetes::controllers::controller::{KubeController};
 use crate::kubernetes::controllers::service::{KubeService};
 use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
 use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
 use crate::kubernetes::template::helper::common::TemplateBuilder;
-use crate::errors::cli_error::{ErrHelper};
+use crate::core::errors::cli_error::{ErrHelper};
 
-/// Compile Kubernetes Yaml
+/// Render Kubes Objects
 /// 
 /// # Description
-/// Display the output of a Kubernetes Yaml
+/// Display the output of the Kubernetes objects
 /// 
 /// # Arguments
 /// * `kubes` Vec<kubes>
-pub fn compile_kubernetes_yaml(kubes: Vec<Kube>) {
-    tokio::run(lazy(|| {
-        for k in kubes.into_iter() {
-            display_controller(&k.object);
-            println!("---");
-            display_service(&k.service);
-        }
+pub fn render_kubes_objects(kubes: Vec<Kube>) {
+    let ctrl_tmpl = ControllerTmplBuilder {};
+    let svc_tmpl  = ServiceTmplBuilder {}; 
 
-        Ok(())
-    }))
-}
-
-/// Display Controller
-/// 
-/// # Description
-/// Display the value of the controller
-/// 
-/// # Arguments
-/// * `kube` KubeContainer reference
-fn display_controller(kube: &KubeContainer) {
-    let ctrl = ControllerTmplBuilder{};
-    match ctrl.render(kube) {
-        Ok(s) => println!("{}", s),
-        Err(e) => e.log_pretty()
+    for k in kubes.into_iter() {
+        display_template(&ctrl_tmpl, K8SAssetType::Controller, k.ctrl);
+        display_template(&svc_tmpl, K8SAssetType::Service, k.svc);
     }
 }
 
-/// Display Service
+/// Display Template
 /// 
 /// # Description
-/// Display the value of the service
+/// Render the template as a string and print it to the console
 /// 
 /// # Arguments
-/// * `kube` KubeService reference
-fn display_service(kube: &KubeService) {
-    let svc = ServiceTmplBuilder{};
-    match svc.render(kube) {
-        Ok(s) => println!("{}", s),
+/// * `tmpl` &impl TemplateBuilder
+/// * `t` K8SAssetType
+/// * `service` T: Serialize
+fn display_template<T: Serialize>(tmpl: &impl TemplateBuilder, t: K8SAssetType, service: T) {
+    match tmpl.render(&service, t) {
+        Ok(s) => {
+            println!("{}", s);
+            println!("-----");
+        },
         Err(e) => e.log_pretty()
     }
 }

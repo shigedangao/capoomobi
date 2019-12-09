@@ -2,10 +2,13 @@
 /// 
 /// # Path
 /// kubernetes/template
-pub mod interface {
+pub mod utils {
     use handlebars::{Handlebars, HelperDef, RenderContext, RenderError ,Helper, Context, HelperResult, Output};
 
-    /// Handlebar helper struct
+    /// Vector Raw Halper
+    /// 
+    /// # Description
+    /// Struct use to habdle the task of printing a list to the yaml template
     #[derive(Clone, Copy)]
     pub struct VectorRawHelper;
 
@@ -44,17 +47,45 @@ pub mod interface {
 /// # Path
 /// kubernetes/template
 pub mod common {
-    use handlebars::{RenderError};
-    use crate::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+    use handlebars::{RenderError, Handlebars};
+    use serde::{Serialize};
+    use super::utils;
+    use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
+    use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
+    use crate::core::errors::message::template::RENDERING;
 
     /// Use as an interface to create a common template builder method
-    pub trait TemplateBuilder<T, Y> {
+    pub trait TemplateBuilder {
+        /// Render
+        /// 
+        /// # Description
         /// Return a Kubernetes templated by Handlebars and datastrucutre
         /// 
-        /// # Return
+        /// # Arguments
+        /// * `&self` Self
+        /// * `data` &T
+        /// * `kind` K8SAssetType
         /// 
+        /// # Return
         /// Result<Y, CliErr>
-        fn render(&self, data: &T) -> Result<Y, CliErr>;
+        fn render<T>(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
+            let mut handlebars = Handlebars::new();
+            handlebars.register_helper("lilmouse", Box::new(utils::VectorRawHelper));
+
+            let content_opt = retrieve_asset_content(kind);
+            if let Err(e) = content_opt {
+                return Err(e);
+            }
+
+            let content = content_opt.unwrap();
+            match handlebars.render_template(content.as_str(), data) {
+                Ok(p) => Ok(p),
+                Err(e) => {
+                    let renderer_error = e.as_render_error();
+                    Err(handle_error(&renderer_error))
+                }
+            }
+        }
     }
 
     /// Handle Error
@@ -67,18 +98,9 @@ pub mod common {
     pub fn handle_error(err: &Option<&RenderError>) -> CliErr {
         if let Some(details) = err {
             let detail = &details.desc;
-
-            return CliErr::new(
-                "An error happened while rendering the template",
-                format!("{}", detail),
-                ErrMessage::RendererError
-            );
+            return CliErr::new(RENDERING, detail.as_str(), ErrMessage::RendererError);
         }
 
-        CliErr::new(
-            "An error happened while rendering the template",
-            String::new(),
-            ErrMessage::RendererError
-        )
+        CliErr::new(RENDERING, "", ErrMessage::RendererError)
     }
 }
