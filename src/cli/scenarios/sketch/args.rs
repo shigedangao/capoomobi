@@ -1,5 +1,4 @@
 use crate::cli::scenarios::scenes::picker::EnumHelper;
-use crate::cli::scenarios::sketch::helper;
 
 /// Generate Options
 /// 
@@ -31,10 +30,32 @@ impl EnumHelper<GenerateOptions> for GenerateOptions {
 /// # Return
 /// Option<GenerateOptions>
 pub fn retrieve_cmd_options(options: &Vec<String>) -> Option<GenerateOptions> {
-  let opt = match helper::retrieve_options_by_idx(options, 0) {
+  let opt = match retrieve_options_by_idx(options, 0) {
       Some(p) => p,
       None => String::new()
   };
 
   GenerateOptions::from_string(&opt)
+}
+
+/// Retrieve options by idx
+/// 
+/// # Description
+/// Retrieve an optional String by it's index
+/// 
+/// # Arguments
+/// * `vec` Reference to a vector of string
+/// * `idx` usize
+/// 
+/// # Return
+/// * `options` option of string
+pub fn retrieve_options_by_idx(vec: &Vec<String>, idx: usize) -> Option<String> {
+  if vec.is_empty() {
+      return None;
+  }
+
+  match vec.get(idx) {
+      Some(res) => Some(res.to_string()),
+      None => None
+  }
 }
