@@ -3,7 +3,7 @@ use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 use crate::core::errors::message::cli::{DELETE_PROJECT};
 use crate::core::configurator::configure::{exist, CapooConfig};
 use crate::core::logger::{log, LogType};
-use crate::cli::scenarios::sketch::helper;
+use crate::cli::scenarios::sketch::args;
 use crate::core::fs::toolbox;
 use crate::core::serde_utils::{SerdeUtil};
 
@@ -19,7 +19,7 @@ use crate::core::serde_utils::{SerdeUtil};
 /// # Arguments
 /// * `project_name` slice of a string
 pub fn launch(main_action: &str, options: &Vec<String>) {
-    let arg = match helper::retrieve_options_by_idx(options, 0) {
+    let arg = match args::retrieve_options_by_idx(options, 0) {
         Some(arg) => arg,
         None => String::new()
     };

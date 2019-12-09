@@ -1,7 +1,7 @@
-use super::args;
+use super::args::{GenerateOptions, retrieve_cmd_options};
 use crate::docker::{loader, parser};
 use crate::core::logger::{log, LogType};
-use crate::kubernetes::tree;
+use crate::kubernetes::tree::{Kube, get_kube_abstract_tree};
 use crate::kubernetes::io::{folder, runner, display};
 use crate::confiture::config;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
@@ -20,13 +20,13 @@ const PREPARE_PARSING: &str = "Preparing to parse the docker-compose.yml located
 /// 
 /// # Description
 /// Load the yaml configuration and retrieve the Docker struct representing the services
-fn prepare(path: &str) {
+fn prepare(path: &str) -> Option<Vec<Kube>> {
     // get the yaml tree
     let yaml_content = match loader::load(path, COMPOSE_FILE_NAME) {
         Ok(content) => content,
         Err(e) => {
             e.log_pretty();
-            return;
+            return None;
         }
     };
 
@@ -35,13 +35,18 @@ fn prepare(path: &str) {
         Some(vector) => vector,
         None => {
             CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
-            return;
+            return None;
         }
     };
     
     // load the configuration file
-    let confiture_opts = config::load_conf(String::new(), path);
-   
+    let conf_opts = config::load_conf(String::new(), path);
+    if let Some(conf) = conf_opts {
+        let kubes = get_kube_abstract_tree(services, conf);
+        return Some(kubes);
+    }
+
+    None
 }
 
 /// Launch
@@ -54,24 +59,21 @@ fn prepare(path: &str) {
 /// # Arguments
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str, options: &Vec<String>) {
-    log(LogType::Info, PREPARE_PARSING, Some(String::from(sub_action)));
-     if let Some(conf) = confiture_opts {
-        let kubes = tree::get_kube_abstract_tree(services, conf);
-        let cmd_opt = args::retrieve_cmd_options(options);
-
-        // For the moment only one option is support as such we're not checking the value of the cmd
-        if let Some(cmd) = cmd_opt {
-            execute_with_options(cmd, kubes);
-            return;
-        }
-
-        // return match bootstrap::prepare_kube(&kubes) {
-        //     Ok(()) => runner::run(kubes),
-        //     Err(e) => e.log_pretty()
-        // };
+    // Retrieve the kubernetes array which describe every services
+    let kubes_opt = prepare(sub_action);
+    if kubes_opt.is_none() {
+        CliErr::new(GET_CONFITURE, "", ErrMessage::NotFound).log_pretty();
+        return;
     }
 
-    CliErr::new(GET_CONFITURE, "", ErrMessage::MissingFieldError).log_pretty();
+    let kubes = kubes_opt.unwrap();
+    let args  = retrieve_cmd_options(options);
+    if args.is_none() {
+        create_kubes_files(kubes);
+        return;
+    }
+
+    execute_with_options(kubes, args.unwrap());
 }
 
 /// Execute With Options
@@ -81,12 +83,22 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
 /// 
 /// # Arguments
 /// * `options` args::GenerateOptions
-fn execute_with_options(options: args::GenerateOptions, kubes: Vec<tree::Kube>) {
+fn execute_with_options(k: Vec<Kube>, options: GenerateOptions) {
     match options {
-        args::GenerateOptions::Print => display::compile_kubernetes_yaml(kubes),
-        args::GenerateOptions::Ingress => {
+        GenerateOptions::Print => {},
+        GenerateOptions::Ingress => {
             
         },
+        _ => {
 
+        }
     }
+}
+
+fn create_kubes_files(kubes: Vec<Kube>) {
+    let res = folder::create(&kubes).and_then(|_| runner::run(kubes));
+    match res {
+        Ok(()) => log(LogType::Success, "Successfully created the Kubernetes files", None),
+        Err(()) => {}
+    };
 }

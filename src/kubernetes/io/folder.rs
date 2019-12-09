@@ -25,8 +25,8 @@ use crate::core::errors::message::io::CREATE_KUBE_FOLDER;
 /// Vec<impl Future<Output = io::Result<()>>>
 fn get_builders(paths: Vec<PathBuf>) -> Vec<impl Future<Output = io::Result<()>>> {
     log(LogType::Info,  "Creating kubernetes folders...", None);
-    let futures = Vec::new();
-    let builder = DirBuilder::new();
+    let mut futures = Vec::new();
+    let mut builder = DirBuilder::new();
     builder.recursive(true);
 
     for p in paths.into_iter() {
@@ -49,7 +49,7 @@ fn get_builders(paths: Vec<PathBuf>) -> Vec<impl Future<Output = io::Result<()>>
 pub fn create(kubes: &Vec<Kube>) -> Result<(), ()> {
     let paths: Vec<PathBuf> = kubes
         .into_iter()
-        .map(|v| v.project_path)
+        .map(|v| v.project_path.clone())
         .collect();
 
     let futures = get_builders(paths);
