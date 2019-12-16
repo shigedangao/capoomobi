@@ -1,52 +1,52 @@
-use std::pin::Pin;
-use std::task::{Context, Poll};
-use async_std::{task};
-use futures::future::Future;
+use std::error::Error;
+use async_std::{fs, io, task};
+use async_std::prelude::*;
 use futures::future::join_all;
 use super::{print_errors};
-use crate::kubernetes::io::output::{write_component};
-use crate::kubernetes::tree::{Kube};
+use crate::kubernetes::io::output;
+use crate::kubernetes::builder::{Kube};
 use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
 use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
 use crate::assets::loader::{K8SAssetType};
-use crate::core::errors::cli_error::{CliErr};
+use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::errors::message::io::CREATING_FILE;
 
-/// KubeOutput
-/// 
-/// # Description
-/// Struct which will be use by the future executor to write the files
-struct KubeOutput<'a> {
-    kube: &'a Kube
-}
+fn create_controller(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
+    let ctrl_tmpl = ControllerTmplBuilder {};
+    let mut vec = Vec::new();
 
-impl Future for KubeOutput<'_> {
-    type Output = Result<(), CliErr>;
-
-    fn poll(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<Self::Output>{
-        let kube = self.kube;
-        let ctrl_renderer = ControllerTmplBuilder {};
-        let svc_renderer = ServiceTmplBuilder {};
-
-        let ctrl_res = write_component(
-            ctrl_renderer,
-            &kube.ctrl,
-            K8SAssetType::Controller,
-            kube.ctrl.path.clone()
-        );
-
-        let res = ctrl_res
-            .and_then(|_| write_component(
-                svc_renderer,
-                &kube.svc,
-                K8SAssetType::Service,
-                kube.svc.path.clone())
-            );
-
-        match res {
-            Ok(()) => Poll::Ready(Ok(())),
-            Err(e) => Poll::Ready(Err(e)) 
+    for c in k {
+        let tmpl = output::render_component(&ctrl_tmpl, &c.ctrl, K8SAssetType::Controller);
+        match tmpl {
+            Ok(t) => {
+                let future = fs::write(c.ctrl.path.clone(), t.clone());
+                vec.push(future);
+            },
+            Err(err) => err.log_pretty()
         }
     }
+
+    vec
+}
+
+fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
+    let svc_tmpl = ServiceTmplBuilder {};
+    let mut vec = Vec::new();
+
+    for s in k {
+        if let Some(svc) = &s.svc {
+            let tmpl = output::render_component(&svc_tmpl, &svc, K8SAssetType::Service);
+            match tmpl {
+                Ok(t) => {
+                    let future = fs::write(svc.path.clone(), t.clone());
+                    vec.push(future);
+                },
+                Err(err) => err.log_pretty()
+            }
+        }
+    }
+
+    vec
 }
 
 /// Run
@@ -61,16 +61,19 @@ impl Future for KubeOutput<'_> {
 /// # Return
 /// Result<(), ()>
 pub fn run(k: Vec<Kube>) -> Result<(), ()> {
-    let write_task = task::spawn(async move {
-        let futures: Vec<KubeOutput> = k
-            .iter()
-            .map(|k| KubeOutput{kube: k})
-            .collect();
+    // thought it might have been better to use thread... cloning a lot...
+    let ctrl_fut = create_controller(&k);
+    let svc_fut  = create_service(&k);
 
-        let vec = join_all(futures).await;
-        let out: Vec<Result<(), CliErr>> = vec
+    let ctrl_task = task::spawn(async move {
+        let tasks = join_all(ctrl_fut).await;
+        let out: Vec<Result<(), CliErr>> = tasks
             .into_iter()
-            .filter(|res| res.is_err())
+            .filter(|v| v.is_err())
+            .map(|v| {
+                let err = v.unwrap_err();
+                return Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError));
+            })
             .collect();
 
         if out.len() > 0 {
@@ -80,7 +83,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
         return Ok(());
     });
 
-    match task::block_on(write_task) {
+    match task::block_on(ctrl_task) {
         Ok(()) => Ok(()),
         Err(err) => {
             print_errors(err);

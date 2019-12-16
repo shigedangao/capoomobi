@@ -14,10 +14,12 @@ pub mod cli {
 
 pub mod template {
     pub const RENDERING: &str = "An error happened while rendering the template";
+    pub const ARGUMENT: &str = "Could not retrieve the argument";
 }
 
 pub mod io {
     pub const CREATE_KUBE_FOLDER: &str = "Unable to create kubernetes folder";
+    pub const CREATING_FILE: &str = "Error while creating K8S file";
 }
 
 pub mod core {

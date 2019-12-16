@@ -32,7 +32,7 @@ pub struct ConfigService {
 
 /// Config structure
 #[derive(Deserialize, Debug, Clone)]
-pub struct Config {
+pub struct ConfigConfiture {
     pub deployment: ConfigDeployment,
     pub service: ConfigService,
     name: String
@@ -40,23 +40,44 @@ pub struct Config {
 
 /// Ingress Service
 #[derive(Deserialize, Debug)]
-pub struct IngressService {
+pub struct ConfigIngressService {
     pub name: String,
     pub path: String
 }
 
 /// Ingress
 #[derive(Deserialize, Debug)]
-pub struct Ingress {
+pub struct ConfigIngress {
     pub ip: String,
-    pub services: Vec<IngressService>
+    pub services: Vec<ConfigIngressService>
 }
 
 /// Confiture
 #[derive(Deserialize, Debug)]
 pub struct Confiture {
-    confitures: Vec<Config>,
-    ingress: Option<Ingress>
+    confitures: Vec<ConfigConfiture>,
+    pub ingress: Option<ConfigIngress>
+}
+
+impl Confiture {
+    /// Get Config Confiture Map
+    /// 
+    /// # Description
+    /// Get a hashmap from the confiture struct
+    /// 
+    /// # Arguments
+    /// * `conf` Confiture struct
+    /// 
+    /// # Return
+    /// HashMap<String, ConfigConfiture>
+    pub fn get_config_confiture_map(&self) -> HashMap<String, &ConfigConfiture> {
+        let mut map = HashMap::new();
+        for c in &self.confitures {
+            map.insert(String::from(&c.name), c);
+        }
+
+        map
+    }
 }
 
 /// Retrieve File Path
@@ -85,25 +106,6 @@ fn retrieve_file_path(path: String, folder: &str) -> PathBuf {
     PathBuf::from(path)
 }
 
-/// Get Hashmap From Confiture
-/// 
-/// # Description
-/// Get a hashmap from the confiture struct
-/// 
-/// # Arguments
-/// * `conf` Confiture struct
-/// 
-/// # Return
-/// HashMap<String, Config>
-fn get_hashmap_from_confiture(conf: Confiture) -> HashMap<String, Config> {
-    let mut map = HashMap::new();
-    for c in conf.confitures {
-        map.insert(String::from(&c.name), c);
-    }
-
-    map
-}
-
 /// Load Conf
 /// 
 /// # Description
@@ -114,8 +116,8 @@ fn get_hashmap_from_confiture(conf: Confiture) -> HashMap<String, Config> {
 /// * `target_folder` &str
 /// 
 /// # Return
-/// HashMap<String, Config>
-pub fn load_conf(path: String, target_folder: &str) -> Option<HashMap<String, Config>> {
+/// Option<Confiture>
+pub fn load_conf(path: String, target_folder: &str) -> Option<Confiture> {
     let p = retrieve_file_path(path, target_folder);
     let content = match open_file(&p) {
         Ok(c) => c,
@@ -133,6 +135,5 @@ pub fn load_conf(path: String, target_folder: &str) -> Option<HashMap<String, Co
         }
     };
 
-    let map = get_hashmap_from_confiture(confiture);
-    Some(map)
+    Some(confiture)
 }

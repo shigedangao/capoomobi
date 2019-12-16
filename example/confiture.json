@@ -34,7 +34,7 @@
     }
   ],
   "ingress": {
-    "ip": "",
+    "ip": "30.10.20.30",
     "services": [
       {
         "name": "web",

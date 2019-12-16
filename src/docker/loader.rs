@@ -39,13 +39,13 @@ pub fn load(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
         return Err(CliErr::new(UNABLE_READ_ERR, err.description(), ErrMessage::IOError));
     }
 
-    match parse_yaml_tree(content.unwrap()) {
+    match parse_yaml_builder(content.unwrap()) {
         Ok(yaml_content) => Ok(yaml_content),
         Err(err) => Err(CliErr::new(UNABLE_PARSE_ERR, err.description(), ErrMessage::IOError))
     }
 }
 
-/// Parse Yaml Tree
+/// Parse Yaml builder
 ///  
 /// # Description
 /// Retrieve the `yaml-rust` library yaml representation
@@ -55,7 +55,7 @@ pub fn load(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
 /// 
 /// # Return
 /// Result<Vec<yaml::Yaml>, yaml_rust::ScanError>
-fn parse_yaml_tree(content: String) -> Result<Vec<yaml::Yaml> , yaml_rust::ScanError> {
+fn parse_yaml_builder(content: String) -> Result<Vec<yaml::Yaml> , yaml_rust::ScanError> {
     let yaml_file = YamlLoader::load_from_str(content.as_str());
 
     return match yaml_file {

@@ -7,9 +7,8 @@ use crate::docker::parser::{DockerService};
 use crate::confiture::config::{ConfigService};
 
 /// Constant
-const EMPTY_PORT: &str = "Ports value is empty";
+pub const SVC_SUFFIX: &str = "-svc";
 const SERVICE_FILENAME: &str = "service.yaml";
-const SVC_SUFFIX: &str = "-svc";
 const PORT_SEPARATOR: &str = ":";
 
 /// Service Type
@@ -29,7 +28,7 @@ pub enum ServiceType {
 #[derive(Serialize)]
 pub struct KubeService {
     pub path: PathBuf,
-    name: String,
+    pub name: String,
     svc_port: u16,
     target_port: u16,
     service_type: ServiceType,
@@ -60,12 +59,7 @@ impl KubeService {
             return None;
         }
 
-        let mapped_ports: Vec<u16> = dk.ports[0]
-            .split(PORT_SEPARATOR)
-            .into_iter()
-            .map(|port| port.parse::<u16>().unwrap_or(0))
-            .collect();
-
+        let mapped_ports = get_ports(&dk.ports[0]);
         let svc = KubeService {
             name: svc_name,
             svc_port: mapped_ports[0],
@@ -78,4 +72,24 @@ impl KubeService {
 
         Some(svc)
     }
+}
+
+/// Get Ports
+/// 
+/// # Description
+/// Retrieve ports
+/// 
+/// # Arguments
+/// * `ports` String
+/// 
+/// # Return
+/// Vec<u16>
+pub fn get_ports(ports: &String) -> Vec<u16> {
+    let mapped_ports: Vec<u16> = ports
+        .split(PORT_SEPARATOR)
+        .into_iter()
+        .map(|port| port.parse::<u16>().unwrap_or(0))
+        .collect();
+
+    mapped_ports
 }

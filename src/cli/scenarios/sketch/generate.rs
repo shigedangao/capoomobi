@@ -1,9 +1,11 @@
 use super::args::{GenerateOptions, retrieve_cmd_options};
 use crate::docker::{loader, parser};
 use crate::core::logger::{log, LogType};
-use crate::kubernetes::tree::{Kube, get_kube_abstract_tree};
+use crate::kubernetes::builder;
 use crate::kubernetes::io::{folder, runner, display};
 use crate::confiture::config;
+use crate::confiture::config::{Confiture};
+use crate::docker::parser::DockerService;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::cli::{
     GET_DOCKER_SERVICE_LIST,
@@ -25,20 +27,15 @@ const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str, options: &Vec<String>) {
     // Retrieve the kubernetes array which describe every services
-    let kubes_opt = prepare(sub_action);
-    if kubes_opt.is_none() {
+    let config = prepare(sub_action);
+    if config.is_none() {
         CliErr::new(GET_CONFITURE, "", ErrMessage::NotFound).log_pretty();
         return;
     }
 
-    let kubes = kubes_opt.unwrap();
-    let args  = retrieve_cmd_options(options);
-    if args.is_none() {
-        create_kubes_files(kubes);
-        return;
-    }
-
-    execute_with_options(kubes, args.unwrap());
+    let args = retrieve_cmd_options(options);
+    let (confiture, docker) = config.unwrap();
+    execute_with_options(docker, confiture, args);
 }
 
 /// Execute With Options
@@ -47,12 +44,22 @@ pub fn launch(sub_action: &str, options: &Vec<String>) {
 /// Execute a scenario depending of the given options
 /// 
 /// # Arguments
+/// * `dk` DockerService
 /// * `options` args::GenerateOptions
-fn execute_with_options(k: Vec<Kube>, options: GenerateOptions) {
-    match options {
-        GenerateOptions::Print => display::render_kubes_objects(k),
+fn execute_with_options(dk: Vec<DockerService>, conf: Confiture, options: Option<GenerateOptions>) {
+    let map = conf.get_config_confiture_map();
+    let kube_objects = builder::get_basic_objects(&dk, map);
+    
+    if options.is_none() {
+        create_kubes_files(kube_objects);
+        return;
+    }
+
+    match options.unwrap() {
+        GenerateOptions::Print => display::render_kubes_objects(kube_objects),
         GenerateOptions::Ingress => {
-            
+            let ingress = builder::get_ingress_object(&dk, conf.ingress);
+            create_kubes_files(kube_objects);
         }
     }
 }
@@ -67,8 +74,8 @@ fn execute_with_options(k: Vec<Kube>, options: GenerateOptions) {
 /// 
 /// # Return
 /// Option<Vec<Kube>>
-fn prepare(path: &str) -> Option<Vec<Kube>> {
-    // get the yaml tree
+fn prepare(path: &str) -> Option<(config::Confiture, Vec<DockerService>)> {
+    // get the yaml builder
     let yaml_content = match loader::load(path, COMPOSE_FILE_NAME) {
         Ok(content) => content,
         Err(e) => {
@@ -77,8 +84,8 @@ fn prepare(path: &str) -> Option<Vec<Kube>> {
         }
     };
 
-    // get an array of docker services
-    let services = match parser::get_docker_services(yaml_content) {
+    // get a vector of docker services
+    let docker_svc = match parser::get_docker_services(yaml_content) {
         Some(vector) => vector,
         None => {
             CliErr::new(GET_DOCKER_SERVICE_LIST, "", ErrMessage::ParsingError).log_pretty();
@@ -88,12 +95,11 @@ fn prepare(path: &str) -> Option<Vec<Kube>> {
     
     // load the configuration file
     let conf_opts = config::load_conf(String::new(), path);
-    if let Some(conf) = conf_opts {
-        let kubes = get_kube_abstract_tree(services, conf);
-        return Some(kubes);
+    if conf_opts.is_none() {
+        return None
     }
 
-    None
+    Some((conf_opts.unwrap(), docker_svc))
 }
 
 /// Create Kubes Files
@@ -103,7 +109,7 @@ fn prepare(path: &str) -> Option<Vec<Kube>> {
 /// 
 /// # Arguments
 /// * `kubes` Vec<Kube>
-fn create_kubes_files(kubes: Vec<Kube>) {
+fn create_kubes_files(kubes: Vec<builder::Kube>) {
     let res = folder::create(&kubes).and_then(|_| runner::run(kubes));
     match res {
         Ok(()) => log(LogType::Success, "Successfully created the Kubernetes files", None),

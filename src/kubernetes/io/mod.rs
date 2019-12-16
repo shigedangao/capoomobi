@@ -1,6 +1,7 @@
 pub mod folder;
 pub mod display;
 pub mod output;
+pub mod objects;
 pub mod runner;
 
 use crate::core::errors::cli_error::{CliErr, ErrHelper};
