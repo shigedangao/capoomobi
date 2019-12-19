@@ -1,44 +1,3 @@
-/// Helper
-/// 
-/// # Path
-/// kubernetes/template
-pub mod utils {
-    use handlebars::{Handlebars, HelperDef, RenderContext, RenderError ,Helper, Context, HelperResult, Output};
-
-    /// Vector Raw Halper
-    /// 
-    /// # Description
-    /// Struct use to habdle the task of printing a list to the yaml template
-    #[derive(Clone, Copy)]
-    pub struct VectorRawHelper;
-
-    /// Default Padding value
-    const DEFAULT_PADDING: u64 = 0;
-
-    impl HelperDef for VectorRawHelper {
-        fn call<'reg: 'rc, 'rc>(&self, h: &Helper, _: &Handlebars, _: &Context, _: &mut RenderContext, out: &mut dyn Output) -> HelperResult {
-            let list = h.param(0);
-            if let None = list {
-                return Err(RenderError::new("param array not found"));
-            }
-
-            let ident = match h.param(1) {
-                Some(v) => v.value().as_u64().unwrap_or(DEFAULT_PADDING),
-                None => DEFAULT_PADDING
-            };
-
-            if let Some(v) = list.unwrap().value().as_array() {
-                for key in v {
-                    let value = format!("\n {:ident$}- {}", "", key, ident=ident as usize);
-                    out.write(value.as_str())?;
-                }
-            }
-
-            Ok(())
-        }
-    }
-}
-
 /// Common module
 /// 
 /// # Description
@@ -49,10 +8,10 @@ pub mod utils {
 pub mod common {
     use handlebars::{RenderError, Handlebars};
     use serde::{Serialize};
-    use super::utils;
     use crate::assets::loader::{K8SAssetType, retrieve_asset_content};
     use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
     use crate::core::errors::message::template::RENDERING;
+    use crate::kubernetes::template::formatter;
 
     /// Use as an interface to create a common template builder method
     pub trait TemplateBuilder {
@@ -70,7 +29,7 @@ pub mod common {
         /// Result<Y, CliErr>
         fn render<T>(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
             let mut handlebars = Handlebars::new();
-            handlebars.register_helper("lilmouse", Box::new(utils::VectorRawHelper));
+            handlebars.register_helper("lilmouse", Box::new(formatter::LilMouseHelper));
 
             let content_opt = retrieve_asset_content(kind);
             if let Err(e) = content_opt {

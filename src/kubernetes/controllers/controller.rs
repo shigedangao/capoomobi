@@ -1,6 +1,5 @@
 /// Container
 /// 
-/// @TODO refactor
 /// Module use to create a K8S controller datastructure
 use std::iter::Iterator;
 use std::path::PathBuf;

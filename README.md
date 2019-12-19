@@ -1,6 +1,6 @@
 # CapooMobi
 
-Capoomobi is a project where I'm learning rust ! Capoomobi is a helper tool allowing you to generate a Kubernetes boilerplate files from your docker-compose file
+Capoomobi is a project where I'm learning Rust ! Capoomobi is a helper tool allowing you to generate a Kubernetes boilerplate files from your docker-compose files
 
 ## Idea
 
@@ -21,3 +21,21 @@ capoomobi init rabbit ../rabbit
 ```shell
 capoomobi help
 ```
+
+- Generate command
+
+```shell
+capoomobi generate <path to docker-compose.yaml>
+capoomobi generate <path to docker-compose.yaml> (--print | --ingress)
+```
+
+- Project command
+
+```shell
+capoomobi project current -> display current project
+capoomobi project list --> display list of project
+capoomobi project switch --> change project to an other
+capoomobi project delete --> delete a project
+```
+
+A docker-compose.yaml file is available in the ```example folder```

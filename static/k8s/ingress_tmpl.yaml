@@ -1,9 +1,14 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: {{ ingress_name }}
-  annotations: {{ annotations }}
+  name: {{ name }}
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: {{ ip }}
 spec:
   rules:
     - http:
-      {{ block ingresses }}
+        paths: {{ #each backend as |b| }}
+          - path: {{ b.path }}
+            backend:
+              serviceName: {{ b.service_name }}
+              servicePort: {{ b.service_port }}{{ /each }}

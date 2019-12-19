@@ -1,10 +1,8 @@
 use serde::{Serialize};
 use crate::assets::loader::{K8SAssetType};
-use crate::kubernetes::tree::{Kube};
-use crate::kubernetes::controllers::controller::{KubeController};
-use crate::kubernetes::controllers::service::{KubeService};
-use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
-use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
+use crate::kubernetes::builder::{Kube};
+use crate::kubernetes::template::controller::{ControllerTmplBuilder};
+use crate::kubernetes::template::service::{ServiceTmplBuilder};
 use crate::kubernetes::template::helper::common::TemplateBuilder;
 use crate::core::errors::cli_error::{ErrHelper};
 

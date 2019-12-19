@@ -1,52 +1,94 @@
-use std::pin::Pin;
-use std::task::{Context, Poll};
-use async_std::{task};
-use futures::future::Future;
+use std::error::Error;
+use async_std::{fs, io, task};
+use async_std::prelude::*;
 use futures::future::join_all;
 use super::{print_errors};
-use crate::kubernetes::io::output::{write_component};
-use crate::kubernetes::tree::{Kube};
-use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
-use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
+use crate::kubernetes::io::output;
+use crate::kubernetes::builder::{Kube};
+use crate::kubernetes::template::controller::{ControllerTmplBuilder};
+use crate::kubernetes::template::service::{ServiceTmplBuilder};
 use crate::assets::loader::{K8SAssetType};
-use crate::core::errors::cli_error::{CliErr};
+use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::errors::message::io::CREATING_FILE;
 
-/// KubeOutput
+/// Create Controller
 /// 
 /// # Description
-/// Struct which will be use by the future executor to write the files
-struct KubeOutput<'a> {
-    kube: &'a Kube
-}
+/// Create the controller files asynchronously
+/// We return an array of Future that are executed in an async std thread
+/// 
+/// # Arguments
+/// * `k` &Vec<Kube>
+/// 
+/// Return
+/// Vec<impl Future<Output = io::Result<()>>>
+fn create_controller(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
+    let ctrl_tmpl = ControllerTmplBuilder {};
+    let mut vec = Vec::new();
 
-impl Future for KubeOutput<'_> {
-    type Output = Result<(), CliErr>;
-
-    fn poll(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<Self::Output>{
-        let kube = self.kube;
-        let ctrl_renderer = ControllerTmplBuilder {};
-        let svc_renderer = ServiceTmplBuilder {};
-
-        let ctrl_res = write_component(
-            ctrl_renderer,
-            &kube.ctrl,
-            K8SAssetType::Controller,
-            kube.ctrl.path.clone()
-        );
-
-        let res = ctrl_res
-            .and_then(|_| write_component(
-                svc_renderer,
-                &kube.svc,
-                K8SAssetType::Service,
-                kube.svc.path.clone())
-            );
-
-        match res {
-            Ok(()) => Poll::Ready(Ok(())),
-            Err(e) => Poll::Ready(Err(e)) 
+    for c in k {
+        let tmpl = output::render_component(&ctrl_tmpl, &c.ctrl, K8SAssetType::Controller);
+        match tmpl {
+            Ok(t) => {
+                let future = fs::write(c.ctrl.path.clone(), t.clone());
+                vec.push(future);
+            },
+            Err(err) => err.log_pretty()
         }
     }
+
+    vec
+}
+
+/// Create Service
+/// 
+/// # Description
+/// Create the service files asynchronously. We're retrieving a vector of
+/// future that are going to be resolve in a async std thread
+/// 
+/// # Arguments
+/// * `k` &Vec<Kube>
+/// 
+/// # Return
+/// Vec<impl Future<Output = io::Result<()>>>
+fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
+    let svc_tmpl = ServiceTmplBuilder {};
+    let mut vec = Vec::new();
+
+    for s in k {
+        if let Some(svc) = &s.svc {
+            let tmpl = output::render_component(&svc_tmpl, &svc, K8SAssetType::Service);
+            match tmpl {
+                Ok(t) => {
+                    let future = fs::write(svc.path.clone(), t.clone());
+                    vec.push(future);
+                },
+                Err(err) => err.log_pretty()
+            }
+        }
+    }
+
+    vec
+}
+
+/// Parse Output
+/// 
+/// # Description
+/// Parse the output of the executed future and return the results
+/// 
+/// # Arguments
+/// * `res` Vec<Result<(), io::Error>>
+/// 
+/// # Return
+/// Vec<Result<(), CliErr>>
+fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
+    res.into_iter()
+        .filter(|v| v.is_err())
+        .map(|v| {
+            let err = v.unwrap_err();
+            return Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError));
+        })
+        .collect()
 }
 
 /// Run
@@ -61,18 +103,13 @@ impl Future for KubeOutput<'_> {
 /// # Return
 /// Result<(), ()>
 pub fn run(k: Vec<Kube>) -> Result<(), ()> {
-    let write_task = task::spawn(async move {
-        let futures: Vec<KubeOutput> = k
-            .iter()
-            .map(|k| KubeOutput{kube: k})
-            .collect();
+    let ctrl_fut = create_controller(&k);
+    let svc_fut  = create_service(&k);
 
-        let vec = join_all(futures).await;
-        let out: Vec<Result<(), CliErr>> = vec
-            .into_iter()
-            .filter(|res| res.is_err())
-            .collect();
-
+    // Create the async task to run the vec of futures
+    let ctrl_task = task::spawn(async move {
+        let tasks = join_all(ctrl_fut).await;
+        let out: Vec<Result<(), CliErr>> = parse_output(tasks);
         if out.len() > 0 {
             return Err(out);
         }
@@ -80,11 +117,33 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
         return Ok(());
     });
 
-    match task::block_on(write_task) {
-        Ok(()) => Ok(()),
-        Err(err) => {
-            print_errors(err);
-            Err(())
+    let svc_task = task::spawn(async move {
+        let tasks = join_all(svc_fut).await;
+        let out: Vec<Result<(), CliErr>> = parse_output(tasks);
+        if out.len() > 0 {
+            return Err(out);
         }
-    }
+
+        return Ok(());
+    });
+
+    // run the tasks and wait for their results
+    let res = task::block_on(async {
+        let sres = svc_task.await;
+        let cres = ctrl_task.await;
+
+        if let Err(e) = sres {
+            print_errors(e);
+            return Err(());
+        }
+
+        if let Err(e) = cres {
+            print_errors(e);
+            return Err(());
+        }
+
+        Ok(())
+    });
+
+    res
 }
