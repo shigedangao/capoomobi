@@ -25,8 +25,29 @@ pub mod io {
 }
 
 pub mod core {
-    pub const PATH_GENERATE_ERROR: &str     = "Error while generating absolute path";
-    pub const PATH_GENERATE_REASON: &str    = "An error occured while converting the path";
+    pub const PATH_GENERATE_ERROR: &str  = "Error while generating absolute path";
+    pub const PATH_GENERATE_REASON: &str = "An error occured while converting the path";
     pub const DELETE_ERROR_MESSAGE: &str = "Unable to delete project";
     pub const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
+
+    // Confiture
+    pub const CONFIG_GENERATE_ERROR: &str   = "Unable to generate the config file for reason:"; 
+    pub const FILE_NOT_PARSABLE_ERROR: &str = "Unable to parse the config file for reason:";
+    pub const DECODE_ERROR: &str            = "Unable to parse the content of the config file for reason:";
+    pub const WRITE_JSON_ERROR: &str        = "Unable to write the capoomobi.json file";
+
+    // Serializer trait
+    pub const SERIALIZE_ERROR: &str = "Unable to serialize the data type";
+}
+
+pub mod assets {
+    pub const GET_ERROR: &str = "Unable to get the requested file";
+    pub const PARSE_ERROR: &str = "Something went wrong while parsing the content of a template file";
+}
+
+pub mod docker {
+    // loader
+    pub const UNABLE_READ: &str  = "Unable to open the docker-compose.yaml file";
+    pub const UNABLE_PARSE: &str = "Unable to parse the docker-compose.yaml for reason: ";
+    pub const ABS_PATH: &str   = "Unable to generate absolute path";
 }

@@ -39,6 +39,7 @@ pub fn create<T: Serialize>(data: T, filename: &'static str, kind: Objects) -> R
         Objects::Ingress => IngressTmplBuilder {}
     };
 
+    // render the component by using the template
     let res = output::render_component(&template, &data, K8SAssetType::Ingress);
     if let Err(e) = res {
         e.log_pretty();
@@ -46,6 +47,7 @@ pub fn create<T: Serialize>(data: T, filename: &'static str, kind: Objects) -> R
     }
 
     let rendered_tmpl = res.unwrap();
+    // Create the object asynchronously
     let task = spawn(async move {
         let path = config::get_current_project_path();
         if path.is_none() {

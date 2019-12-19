@@ -1,9 +1,10 @@
 use std::str;
 use rust_embed::{RustEmbed};
 use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
-
-const GET_ERROR: &str = "Unable to get the requested file";
-const PARSE_ERROR: &str = "Something went wrong while parsing the content of a template file";
+use crate::core::errors::message::assets::{
+    GET_ERROR,
+    PARSE_ERROR
+};
 
 #[derive(RustEmbed)]
 #[folder = "static/k8s/"]

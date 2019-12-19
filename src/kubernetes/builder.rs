@@ -5,7 +5,6 @@
 /// Module helping to generate a K8S struct with the following syntax
 /// - Object (Controller)
 /// - Service
-use std::iter::Iterator;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use crate::docker::parser::{DockerService};

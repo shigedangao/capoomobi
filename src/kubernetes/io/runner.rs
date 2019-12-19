@@ -5,8 +5,8 @@ use futures::future::join_all;
 use super::{print_errors};
 use crate::kubernetes::io::output;
 use crate::kubernetes::builder::{Kube};
-use crate::kubernetes::template::controller::controller::{ControllerTmplBuilder};
-use crate::kubernetes::template::service::service::{ServiceTmplBuilder};
+use crate::kubernetes::template::controller::{ControllerTmplBuilder};
+use crate::kubernetes::template::service::{ServiceTmplBuilder};
 use crate::assets::loader::{K8SAssetType};
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::io::CREATING_FILE;
@@ -106,6 +106,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
     let ctrl_fut = create_controller(&k);
     let svc_fut  = create_service(&k);
 
+    // Create the async task to run the vec of futures
     let ctrl_task = task::spawn(async move {
         let tasks = join_all(ctrl_fut).await;
         let out: Vec<Result<(), CliErr>> = parse_output(tasks);
@@ -126,6 +127,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
         return Ok(());
     });
 
+    // run the tasks and wait for their results
     let res = task::block_on(async {
         let sres = svc_task.await;
         let cres = ctrl_task.await;

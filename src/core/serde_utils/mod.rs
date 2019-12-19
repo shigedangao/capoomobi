@@ -1,12 +1,12 @@
 use std::error::Error;
-use serde::{Serialize, Deserialize};
+use serde::{Serialize};
 use super::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
+use crate::core::errors::message::core::SERIALIZE_ERROR;
 
-// Error message constant
-const SERIALIZE_ERROR: &str = "Unable to serialize the data type";
-const DESERIALIZE_ERROR: &str = "Unable to deserialize the JSON content";
-
-
+/// SerdeUtil
+/// 
+/// # Description
+/// Trait use to implement serialize a data T to a String
 pub trait SerdeUtil {
     /// Serialize
     /// 
@@ -22,23 +22,6 @@ pub trait SerdeUtil {
         match serde_json::to_string(&self) {
             Ok(p) => Ok(p),
             Err(e) => Err(CliErr::new(SERIALIZE_ERROR, e.description(), ErrMessage::SerializeError))
-        }
-    }
-    
-    /// Deserialize
-    /// 
-    /// # Description
-    /// Deserialize any data and return the wishes type
-    /// 
-    /// # Arguments
-    /// * `d` String
-    /// 
-    /// # Return
-    /// Result<T, &str>
-    fn deserialize<'de>(&self, d: &'de str) -> Result<Self, CliErr> where Self : Deserialize<'de> {
-        match serde_json::from_str(d) {
-            Ok(d) => Ok(d),
-            Err(e) => Err(CliErr::new(DESERIALIZE_ERROR, e.description(), ErrMessage::SerializeError))
         }
     }
 }

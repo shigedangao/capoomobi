@@ -4,19 +4,18 @@
 /// Module use as an entrypoint to configure the capoomobi.json file
 use std::path::{PathBuf};
 use std::error::Error;
+use super::builder;
 use crate::core::fs::toolbox;
 use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
-use super::builder;
-
+use crate::core::errors::message::core::{
+    CONFIG_GENERATE_ERROR,
+    FILE_NOT_PARSABLE_ERROR,
+    DECODE_ERROR,
+    WRITE_JSON_ERROR
+};
 
 /// Constant defining the paths available
 const CONFIG_FILE_PATH: &str = ".capoomobi.json";
-
-/// Constant referencing the error
-const CONFIG_GENERATE_ERROR: &str   = "Unable to generate the config file for reason:"; 
-const FILE_NOT_PARSABLE_ERROR: &str = "Unable to parse the config file for reason:";
-const DECODE_ERROR: &str            = "Unable to parse the content of the config file for reason:";
-const WRITE_JSON_ERROR: &str        = "Unable to write the capoomobi.json file";
 
 /// Capoo Config
 /// 

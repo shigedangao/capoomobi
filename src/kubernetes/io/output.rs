@@ -16,7 +16,6 @@ use crate::core::errors::cli_error::{CliErr};
 /// * `tmpl` impl TemplateBuilder
 /// * `cmp` &T impl serde::Serialize
 /// * `k8s_type` K8SAssetType
-/// * `path` PathBuf
 /// 
 /// # Return
 /// Result<(), CliErr>
