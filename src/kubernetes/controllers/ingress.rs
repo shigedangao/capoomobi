@@ -61,7 +61,7 @@ impl KubeIngress {
             .collect();
 
         let ingress = KubeIngress {
-            name: String::new(),
+            name: String::from("ingress"),
             ip: config.ip,
             backend: n
         };

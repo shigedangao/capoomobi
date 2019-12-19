@@ -10,6 +10,7 @@ pub mod cli {
     pub const UNKNOWN_SCENARIO: &str = "Command not found / supported";
     pub const UNKNOWN_ACTION: &str = "Missing arguments for command";
     pub const GENERATE_ERROR: &str = "An error happened while writing the content to the targeted yaml files";
+    pub const INGRESS_CONFIG: &str = "Ingress configuration not provided in confiture.json";
 }
 
 pub mod template {
@@ -20,6 +21,7 @@ pub mod template {
 pub mod io {
     pub const CREATE_KUBE_FOLDER: &str = "Unable to create kubernetes folder";
     pub const CREATING_FILE: &str = "Error while creating K8S file";
+    pub const GET_PROJECT_PATH: &str = "Unable to retrieve the project path";
 }
 
 pub mod core {

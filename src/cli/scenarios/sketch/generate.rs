@@ -2,15 +2,21 @@ use super::args::{GenerateOptions, retrieve_cmd_options};
 use crate::docker::{loader, parser};
 use crate::core::logger::{log, LogType};
 use crate::kubernetes::builder;
-use crate::kubernetes::io::{folder, runner, display};
+use crate::kubernetes::io::{
+    folder,
+    runner,
+    display,
+    objects
+};
 use crate::confiture::config;
-use crate::confiture::config::{Confiture};
+use crate::confiture::config::{Confiture, ConfigIngress};
 use crate::docker::parser::DockerService;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::cli::{
     GET_DOCKER_SERVICE_LIST,
     GET_CONFITURE,
-    GENERATE_ERROR
+    GENERATE_ERROR,
+    INGRESS_CONFIG
 };
 
 /// Constant referring to the compose file which need to be parse
@@ -57,10 +63,7 @@ fn execute_with_options(dk: Vec<DockerService>, conf: Confiture, options: Option
 
     match options.unwrap() {
         GenerateOptions::Print => display::render_kubes_objects(kube_objects),
-        GenerateOptions::Ingress => {
-            let ingress = builder::get_ingress_object(&dk, conf.ingress);
-            create_kubes_files(kube_objects);
-        }
+        GenerateOptions::Ingress => create_ingress_file(&dk, conf.ingress)
     }
 }
 
@@ -112,7 +115,29 @@ fn prepare(path: &str) -> Option<(config::Confiture, Vec<DockerService>)> {
 fn create_kubes_files(kubes: Vec<builder::Kube>) {
     let res = folder::create(&kubes).and_then(|_| runner::run(kubes));
     match res {
-        Ok(()) => log(LogType::Success, "Successfully created the Kubernetes files", None),
+        Ok(()) => log(LogType::Success, "Successfully creating the Kubernetes files", None),
         Err(()) => CliErr::new(GENERATE_ERROR, "", ErrMessage::IOError).log_pretty()
     };
+}
+
+/// Create Ingress File
+/// 
+/// # Description
+/// Create an ingress file based on the DockerServices and the confiture.json
+/// 
+/// # Arguments
+/// * `dk` &Vec<DockerService>
+/// * `ing` Option<ConfigIngress>
+fn create_ingress_file(dk: &Vec<DockerService>, ing: Option<ConfigIngress>) {
+    let ingress = builder::get_ingress_object(&dk, ing);
+    if ingress.is_none() {
+        CliErr::new(INGRESS_CONFIG, "", ErrMessage::MissingFieldError).log_pretty();
+        return;
+    }
+
+    let res = objects::create(ingress.unwrap(), "ingress.yaml", objects::Objects::Ingress);
+    match res {
+        Ok(()) => log(LogType::Success, "Successfully creating the ingress file", None),
+        Err(()) => CliErr::new(GENERATE_ERROR, "", ErrMessage::IOError).log_pretty()
+    }
 }
