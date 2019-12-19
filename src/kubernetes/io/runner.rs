@@ -11,6 +11,17 @@ use crate::assets::loader::{K8SAssetType};
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::io::CREATING_FILE;
 
+/// Create Controller
+/// 
+/// # Description
+/// Create the controller files asynchronously
+/// We return an array of Future that are executed in an async std thread
+/// 
+/// # Arguments
+/// * `k` &Vec<Kube>
+/// 
+/// Return
+/// Vec<impl Future<Output = io::Result<()>>>
 fn create_controller(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
     let ctrl_tmpl = ControllerTmplBuilder {};
     let mut vec = Vec::new();
@@ -29,6 +40,17 @@ fn create_controller(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>>
     vec
 }
 
+/// Create Service
+/// 
+/// # Description
+/// Create the service files asynchronously. We're retrieving a vector of
+/// future that are going to be resolve in a async std thread
+/// 
+/// # Arguments
+/// * `k` &Vec<Kube>
+/// 
+/// # Return
+/// Vec<impl Future<Output = io::Result<()>>>
 fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
     let svc_tmpl = ServiceTmplBuilder {};
     let mut vec = Vec::new();
@@ -49,6 +71,26 @@ fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
     vec
 }
 
+/// Parse Output
+/// 
+/// # Description
+/// Parse the output of the executed future and return the results
+/// 
+/// # Arguments
+/// * `res` Vec<Result<(), io::Error>>
+/// 
+/// # Return
+/// Vec<Result<(), CliErr>>
+fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
+    res.into_iter()
+        .filter(|v| v.is_err())
+        .map(|v| {
+            let err = v.unwrap_err();
+            return Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError));
+        })
+        .collect()
+}
+
 /// Run
 /// 
 /// # Description
@@ -61,21 +103,12 @@ fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
 /// # Return
 /// Result<(), ()>
 pub fn run(k: Vec<Kube>) -> Result<(), ()> {
-    // thought it might have been better to use thread... cloning a lot...
     let ctrl_fut = create_controller(&k);
     let svc_fut  = create_service(&k);
 
     let ctrl_task = task::spawn(async move {
         let tasks = join_all(ctrl_fut).await;
-        let out: Vec<Result<(), CliErr>> = tasks
-            .into_iter()
-            .filter(|v| v.is_err())
-            .map(|v| {
-                let err = v.unwrap_err();
-                return Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError));
-            })
-            .collect();
-
+        let out: Vec<Result<(), CliErr>> = parse_output(tasks);
         if out.len() > 0 {
             return Err(out);
         }
@@ -83,11 +116,32 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
         return Ok(());
     });
 
-    match task::block_on(ctrl_task) {
-        Ok(()) => Ok(()),
-        Err(err) => {
-            print_errors(err);
-            Err(())
+    let svc_task = task::spawn(async move {
+        let tasks = join_all(svc_fut).await;
+        let out: Vec<Result<(), CliErr>> = parse_output(tasks);
+        if out.len() > 0 {
+            return Err(out);
         }
-    }
+
+        return Ok(());
+    });
+
+    let res = task::block_on(async {
+        let sres = svc_task.await;
+        let cres = ctrl_task.await;
+
+        if let Err(e) = sres {
+            print_errors(e);
+            return Err(());
+        }
+
+        if let Err(e) = cres {
+            print_errors(e);
+            return Err(());
+        }
+
+        Ok(())
+    });
+
+    res
 }
