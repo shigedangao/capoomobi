@@ -83,12 +83,12 @@ pub fn delete_folder_from_pathbuf(path: &PathBuf) -> io::Result<()> {
 /// Concat 2 string and return a PathBuf
 /// 
 /// # Arguments
-/// * `base` Reference to a string
-/// * `extra` Reference to a string
+/// * `base` &str
+/// * `extra` &str
 /// 
 /// # Return
 /// PathBuf
-pub fn concat_string_path(base: &String, extra: &String) -> PathBuf {
+pub fn concat_string_path(base: &str, extra: &str) -> PathBuf {
     let mut path = PathBuf::from(base);
     path.push(extra);
 

@@ -60,7 +60,7 @@ pub fn create(kubes: &Vec<Kube>) -> Result<(), ()> {
             .filter(|v| v.is_err())
             .map(|v| {
                 let err = v.unwrap_err();
-                return Err(CliErr::new(CREATE_KUBE_FOLDER, err.description(), ErrMessage::IOError));
+                Err(CliErr::new(CREATE_KUBE_FOLDER, err.description(), ErrMessage::IOError))
             })
             .collect();
 

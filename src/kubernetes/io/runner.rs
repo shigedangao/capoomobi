@@ -86,7 +86,7 @@ fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
         .filter(|v| v.is_err())
         .map(|v| {
             let err = v.unwrap_err();
-            return Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError));
+            Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError))
         })
         .collect()
 }
@@ -128,7 +128,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
     });
 
     // run the tasks and wait for their results
-    let res = task::block_on(async {
+    task::block_on(async {
         let sres = svc_task.await;
         let cres = ctrl_task.await;
 
@@ -143,7 +143,5 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
         }
 
         Ok(())
-    });
-
-    res
+    })
 }

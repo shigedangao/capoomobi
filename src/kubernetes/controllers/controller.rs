@@ -84,21 +84,17 @@ impl KubeController {
 /// # Return
 /// Vec<u16>
 fn retrieve_container_port(docker_ports: Vec<String>) -> Vec<u16> {
-    let internal_port: Vec<u16> = docker_ports
+    docker_ports
     .into_iter()
     .map(|p| {
-        let port: String = p.split(':') 
+        p.split(':') 
             .into_iter()
             .enumerate()
             .filter(|(idx, _)| idx > &(0 as usize))
             .map(|(_, value)| String::from(value))
             .last()
-            .unwrap_or(String::new());
-
-            return port;
-        })
-        .map(|port_string| port_string.parse::<u16>().unwrap_or(0))
-        .collect();
-
-    return internal_port;
+            .unwrap_or(String::new())
+    })
+    .map(|port_string| port_string.parse::<u16>().unwrap_or(0))
+    .collect()
 }

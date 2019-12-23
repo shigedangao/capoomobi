@@ -75,7 +75,7 @@ pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<DockerService
         return Some(services);
     }
 
-    return None;
+    None
 }
 
 /// Retrieve Array Or Fallback
@@ -93,7 +93,7 @@ fn get_value(content: Option<&Vec<String>>, fallback: Vec<String>) -> Vec<String
                 return fallback;
             }
 
-            return value.to_vec();
+            value.to_vec()
         },
         None => fallback
     }

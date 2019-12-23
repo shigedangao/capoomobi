@@ -60,12 +60,10 @@ impl KubeIngress {
             })
             .collect();
 
-        let ingress = KubeIngress {
+        KubeIngress {
             name: String::from("ingress"),
             ip: config.ip,
             backend: n
-        };
-
-        ingress
+        }
     }
 }

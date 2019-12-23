@@ -20,7 +20,5 @@ use crate::core::errors::cli_error::{CliErr};
 /// # Return
 /// Result<(), CliErr>
 pub fn render_component<T: Serialize>(tmpl: &impl TemplateBuilder, cmp: &T, k8s_type: K8SAssetType) -> Result<String, CliErr> {
-    let render_res = tmpl.render(cmp, k8s_type);
-    render_res
+    tmpl.render(cmp, k8s_type)
 }
-
