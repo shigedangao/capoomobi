@@ -31,7 +31,7 @@ const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 /// 
 /// # Arguments
 /// * `sub_action`: slice of string representing the path
-pub fn launch(sub_action: &str, options: &Vec<String>) {
+pub fn launch(sub_action: &str, options: &[String]) {
     // Retrieve the kubernetes array which describe every services
     let config = prepare(sub_action);
     if config.is_none() {

@@ -39,7 +39,7 @@ impl CapooConfig {
     /// ConfigureCapoo structure
     pub fn new(path: PathBuf) -> Self {
         CapooConfig {
-            path: path
+            path
         }
     }
 

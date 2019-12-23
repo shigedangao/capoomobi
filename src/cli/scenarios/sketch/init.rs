@@ -19,7 +19,7 @@ const PROJECT_CREATED: &str = "Project successfully create";
 /// # Arguments
 /// * `project_name`: slice of string
 /// * `cmd_args`: reference to Vec of string
-pub fn launch(project_name: &str, cmd_args: &Vec<String>) {
+pub fn launch(project_name: &str, cmd_args: &[String]) {
     // Check if the capoomobi configurator already exist
     let config = configure::exist();
     if let Some(conf) = config {
@@ -43,7 +43,7 @@ pub fn launch(project_name: &str, cmd_args: &Vec<String>) {
 /// * `project_name` &str
 /// * `cmd_args` &Vec<String>
 /// * `conf` configure::CapooConfig
-fn execute(project_name: &str, cmd_args: &Vec<String>, conf: configure::CapooConfig) {
+fn execute(project_name: &str, cmd_args: &[String], conf: configure::CapooConfig) {
     // Retrieve path from the arguments
     // capoomobi init mouse <path>
     let empty_str = String::new();
@@ -51,7 +51,7 @@ fn execute(project_name: &str, cmd_args: &Vec<String>, conf: configure::CapooCon
     let conf_helper = ConfigHelper::new(&path, project_name);
 
     let build_opt = conf_helper.build_project_folder();
-    if let None = build_opt {
+    if build_opt.is_none() {
         CliErr::new(RETRIEVE_PATH, path, ErrMessage::NotFound).log_pretty();
         return;
     }

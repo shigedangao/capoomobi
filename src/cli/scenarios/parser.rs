@@ -58,12 +58,13 @@ pub fn parse() -> Result<(), CliErr> {
 /// 
 /// # Description
 /// Trigger the selected scenario
+/// See: https://stackoverflow.com/a/40006220/7489243 in order to understand why it's better to pass a slice
 /// 
 /// # Arguments
 /// * `scenario` Scenarios enum value
-/// * `sub_action` Reference to a String struct
-/// * `options` Reference to a vec of String
-fn trigger_scenario(scenario: Scenarios, sub_action: &String, options: &Vec<String>) {
+/// * `sub_action` &str
+/// * `options` &[String]
+fn trigger_scenario(scenario: Scenarios, sub_action: &str, options: &[String]) {
     match scenario {
         Scenarios::Init     => sketch::init::launch(sub_action, options),
         Scenarios::Help     => sketch::help::launch(sub_action),

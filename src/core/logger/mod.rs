@@ -49,9 +49,8 @@ pub fn log(level: LogType, message: &str, rest: Option<String>) {
     };
 
     println!("{}", colored_mess);
-    match rest {
-        Some(m) => println!("{} {}", "Details:".yellow().bold(), m),
-        None => ()
+    if let Some(r) = rest {
+        println!("{} {}", "Details:".yellow().bold(), r)
     }
 }
 

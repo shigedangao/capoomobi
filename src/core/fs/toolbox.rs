@@ -92,7 +92,7 @@ pub fn concat_string_path(base: &str, extra: &str) -> PathBuf {
     let mut path = PathBuf::from(base);
     path.push(extra);
 
-    return path;
+    path
 }
 
 /// Get Absolute Path

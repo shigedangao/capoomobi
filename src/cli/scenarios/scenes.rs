@@ -8,11 +8,11 @@ pub mod picker {
         /// From String
         /// 
         /// # Description
-        /// * `action` &String
+        /// * `action` &str
         /// 
         /// # Return
         /// Option<T>
-        fn from_string(action: &String) -> Option<T>;
+        fn from_string(action: &str) -> Option<T>;
     }
 
     /// Scenarios
@@ -40,8 +40,8 @@ pub mod picker {
     }
 
     impl EnumHelper<Scenarios> for Scenarios {
-        fn from_string(action: &String) -> Option<Scenarios> {      
-            match action.as_str() {
+        fn from_string(action: &str) -> Option<Scenarios> {      
+            match action {
                 "init" => Some(Scenarios::Init),
                 "help" => Some(Scenarios::Help),
                 "generate" => Some(Scenarios::Generate),
@@ -52,8 +52,8 @@ pub mod picker {
     }
 
     impl EnumHelper<HelpScenarios> for HelpScenarios {
-        fn from_string(action: &String) -> Option<HelpScenarios> {
-            match action.as_str() {
+        fn from_string(action: &str) -> Option<HelpScenarios> {
+            match action {
                 "init" => Some(HelpScenarios::Init),
                 "generate" => Some(HelpScenarios::Generate),
                 "project" => Some(HelpScenarios::Project),

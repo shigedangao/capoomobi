@@ -54,7 +54,7 @@ pub fn get_basic_objects(dk_vec: &Vec<DockerService>, options: HashMap<String, &
             Some(
                 Kube {
                     ctrl: ctrl.unwrap(),
-                    svc: svc,
+                    svc,
                     project_path: base_path
                 }
             )
