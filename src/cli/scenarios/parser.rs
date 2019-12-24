@@ -1,5 +1,5 @@
 /// Parser module
-/// 
+///
 /// # Description
 /// Parser module is use to parse the action provided by the boostrap module
 use std::env;
@@ -25,10 +25,10 @@ pub struct Arguments {
 }
 
 /// Parse
-/// 
+///
 /// # Description
 /// Parse arguments provided by the bootstrap method
-/// 
+///
 /// # Return
 /// Return a result
 pub fn parse() -> Result<(), CliErr> {
@@ -45,21 +45,21 @@ pub fn parse() -> Result<(), CliErr> {
             }
 
             if args.is_none() {
-                trigger_scenario(Scenarios::Help, &String::new() , &vec![]);
+                trigger_scenario(Scenarios::Help, &String::new() , &[]);
                 return Ok(());
             }
-            
+
             Err(CliErr::new(UNKNOWN_ACTION, format!("{}{:?}", "Command: ", cmd).as_str(), ErrMessage::MissingFieldError))
         }
     }
 }
 
 /// Trigger Scenario
-/// 
+///
 /// # Description
 /// Trigger the selected scenario
 /// See: https://stackoverflow.com/a/40006220/7489243 in order to understand why it's better to pass a slice
-/// 
+///
 /// # Arguments
 /// * `scenario` Scenarios enum value
 /// * `sub_action` &str
@@ -74,10 +74,10 @@ fn trigger_scenario(scenario: Scenarios, sub_action: &str, options: &[String]) {
 }
 
 /// Retrieve args
-/// 
+///
 /// # Description
 /// Retrieve the arguments from the cli
-/// 
+///
 /// # Return
 /// Main action
 /// Return an `Arguments` option
@@ -102,7 +102,7 @@ fn retrieve_args() -> (String, Option<Arguments>) {
         .filter(|t| t.0 >= DEFAULT_ACTION_SIZE)
         .map(|t| t.1)
         .collect();
-    
+
     // retrieve the actions
     let secondary = actions.get(2).unwrap();
     let arg = Arguments {

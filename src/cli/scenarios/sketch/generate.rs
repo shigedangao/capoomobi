@@ -23,12 +23,12 @@ use crate::core::errors::message::cli::{
 const COMPOSE_FILE_NAME: &str = "docker-compose.yaml";
 
 /// Launch
-/// 
+///
 /// # Description
 /// Launch the generate scenario with the command below
 /// capoomobi generate <path_to_docker-compose.yaml>
 /// e.g: capoomobi generate ./example
-/// 
+///
 /// # Arguments
 /// * `sub_action`: slice of string representing the path
 pub fn launch(sub_action: &str, options: &[String]) {
@@ -45,17 +45,17 @@ pub fn launch(sub_action: &str, options: &[String]) {
 }
 
 /// Execute With Options
-/// 
+///
 /// # Description
 /// Execute a scenario depending of the given options
-/// 
+///
 /// # Arguments
 /// * `dk` DockerService
 /// * `options` args::GenerateOptions
 fn execute_with_options(dk: Vec<DockerService>, conf: Confiture, options: Option<GenerateOptions>) {
     let map = conf.get_config_confiture_map();
     let kube_objects = builder::get_basic_objects(&dk, map);
-    
+
     if options.is_none() {
         create_kubes_files(kube_objects);
         return;
@@ -68,13 +68,13 @@ fn execute_with_options(dk: Vec<DockerService>, conf: Confiture, options: Option
 }
 
 /// Prepare
-/// 
+///
 /// # Description
 /// Load the yaml configuration and retrieve the Docker struct representing the services
-/// 
+///
 /// # Arguments
 /// * `path` &str
-/// 
+///
 /// # Return
 /// Option<Vec<Kube>>
 fn prepare(path: &str) -> Option<(config::Confiture, Vec<DockerService>)> {
@@ -95,21 +95,19 @@ fn prepare(path: &str) -> Option<(config::Confiture, Vec<DockerService>)> {
             return None;
         }
     };
-    
+
     // load the configuration file
     let conf_opts = config::load_conf(String::new(), path);
-    if conf_opts.is_none() {
-        return None
-    }
+    conf_opts.as_ref()?;
 
     Some((conf_opts.unwrap(), docker_svc))
 }
 
 /// Create Kubes Files
-/// 
+///
 /// # Description
 /// Create kubernetes files from the Vector of Kube services
-/// 
+///
 /// # Arguments
 /// * `kubes` Vec<Kube>
 fn create_kubes_files(kubes: Vec<builder::Kube>) {
@@ -121,14 +119,14 @@ fn create_kubes_files(kubes: Vec<builder::Kube>) {
 }
 
 /// Create Ingress File
-/// 
+///
 /// # Description
 /// Create an ingress file based on the DockerServices and the confiture.json
-/// 
+///
 /// # Arguments
 /// * `dk` &Vec<DockerService>
 /// * `ing` Option<ConfigIngress>
-fn create_ingress_file(dk: &Vec<DockerService>, ing: Option<ConfigIngress>) {
+fn create_ingress_file(dk: &[DockerService], ing: Option<ConfigIngress>) {
     let ingress = builder::get_ingress_object(&dk, ing);
     if ingress.is_none() {
         CliErr::new(INGRESS_CONFIG, "", ErrMessage::MissingFieldError).log_pretty();
