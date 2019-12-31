@@ -124,7 +124,7 @@ fn create_kubes_files(kubes: Vec<builder::Kube>) {
 /// Create an ingress file based on the DockerServices and the confiture.json
 ///
 /// # Arguments
-/// * `dk` &Vec<DockerService>
+/// * `dk` &[DockerService]
 /// * `ing` Option<ConfigIngress>
 fn create_ingress_file(dk: &[DockerService], ing: Option<ConfigIngress>) {
     let ingress = builder::get_ingress_object(&dk, ing);

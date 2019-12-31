@@ -67,7 +67,7 @@ pub fn get_basic_objects(dk_vec: &[DockerService], options: HashMap<String, &Con
 /// Get Ingress Object
 ///
 /// # Arguments
-/// * `dk` &Vec<DockerService>
+/// * `dk` &[DockerService]
 /// * `conf` ConfigIngress
 ///
 /// # Return
