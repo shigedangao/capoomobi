@@ -1,12 +1,16 @@
 image: "rust:1.40-stretch"
 
+stages:
+    - build
+    - test
+
 before_script:
     - apt-get update
 
 install:
-    script:
-        - cargo build
+    stage: build
+    script: cargo build
 
 run_test:
-    script:
-        - cargo test
+    stage: test
+    script: cargo test
