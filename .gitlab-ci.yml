@@ -4,7 +4,9 @@ before_script:
     - apt-get update
 
 install:
-    - cargo build
+    script:
+        - cargo build
 
 run_test:
-    - cargo test
+    script:
+        - cargo test
