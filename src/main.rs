@@ -5,6 +5,7 @@ mod kubernetes;
 mod confiture;
 mod bootstrap;
 mod assets;
+mod tests;
 
 extern crate handlebars;
 
