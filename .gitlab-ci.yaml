@@ -1,0 +1,7 @@
+image: "rust:1.40-stretch"
+
+before_script:
+    - apt-get update
+
+install:
+    - cargo build
