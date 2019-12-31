@@ -10,9 +10,8 @@ use crate::core::errors::cli_error::ErrHelper;
 /// Option<String>
 pub fn get_current_project_path() -> Option<String> {
     let config_opt = configure::exist();
-    if let None = config_opt {
-        return None;
-    }
+    // Check if None
+    config_opt.as_ref()?;
 
     let config = config_opt.unwrap();
     let capoos = config.get_content();

@@ -1,5 +1,5 @@
 /// Boostrap module
-/// 
+///
 /// # Description
 /// Module use to preparing the following phases for create K8S yaml files
 /// - creating folders
@@ -14,13 +14,13 @@ use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::io::CREATE_KUBE_FOLDER;
 
 /// Get Builders
-/// 
+///
 /// # Description
 /// Create a set of Future that will create the folder in an asynchronous way
-/// 
+///
 /// # Arguments
 /// * `paths` Vec<PathBuf>
-/// 
+///
 /// # Return
 /// Vec<impl Future<Output = io::Result<()>>>
 fn get_builders(paths: Vec<PathBuf>) -> Vec<impl Future<Output = io::Result<()>>> {
@@ -37,18 +37,18 @@ fn get_builders(paths: Vec<PathBuf>) -> Vec<impl Future<Output = io::Result<()>>
 }
 
 /// Create
-/// 
+///
 /// # Description
 /// Create the folder asynchronously
-/// 
+///
 /// # Arguments
-/// * `kubes` &Vec<Kube>
-/// 
+/// * `kubes` &[Kube]
+///
 /// # Return
 /// Result<(), ()>
-pub fn create(kubes: &Vec<Kube>) -> Result<(), ()> {
+pub fn create(kubes: &[Kube]) -> Result<(), ()> {
     let paths: Vec<PathBuf> = kubes
-        .into_iter()
+        .iter()
         .map(|v| v.project_path.clone())
         .collect();
 
@@ -60,11 +60,11 @@ pub fn create(kubes: &Vec<Kube>) -> Result<(), ()> {
             .filter(|v| v.is_err())
             .map(|v| {
                 let err = v.unwrap_err();
-                return Err(CliErr::new(CREATE_KUBE_FOLDER, err.description(), ErrMessage::IOError));
+                Err(CliErr::new(CREATE_KUBE_FOLDER, err.description(), ErrMessage::IOError))
             })
             .collect();
 
-        if out.len() > 0 {
+        if !out.is_empty() {
             return Err(out);
         }
 

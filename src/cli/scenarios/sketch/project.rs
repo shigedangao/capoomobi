@@ -18,7 +18,7 @@ use crate::core::serde_utils::{SerdeUtil};
 /// 
 /// # Arguments
 /// * `project_name` slice of a string
-pub fn launch(main_action: &str, options: &Vec<String>) {
+pub fn launch(main_action: &str, options: &[String]) {
     let arg = match args::retrieve_options_by_idx(options, 0) {
         Some(arg) => arg,
         None => String::new()

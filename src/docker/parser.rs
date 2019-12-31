@@ -1,5 +1,5 @@
 /// Lexer
-/// 
+///
 /// Retrieve a representation of the docker-compose.yaml file
 use std::collections::HashMap;
 use yaml_rust::{yaml};
@@ -28,13 +28,13 @@ enum FieldType {
 }
 
 /// Get Supported Attributes
-/// 
+///
 /// # Description
 /// Retrieve the list of attribute that is supported by each kind of field type
-/// 
+///
 /// # Arguments
 /// * `field` FieldType
-/// 
+///
 /// # Return
 /// Vec of static str
 fn get_supported_attributes(field: FieldType) -> Vec<&'static str> {
@@ -45,13 +45,13 @@ fn get_supported_attributes(field: FieldType) -> Vec<&'static str> {
 }
 
 /// Get Docker Services
-/// 
+///
 /// # Description
 /// Retrieve the list of docker services
-/// 
+///
 /// # Arguments
 /// * `content` Vector of Yaml struct
-/// 
+///
 /// # Return
 /// Option of vector services
 pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<DockerService>> {
@@ -75,14 +75,14 @@ pub fn get_docker_services(content: Vec<yaml::Yaml>) -> Option<Vec<DockerService
         return Some(services);
     }
 
-    return None;
+    None
 }
 
 /// Retrieve Array Or Fallback
-/// 
+///
 /// # Description
 /// Retrieve an array of the fallback array
-/// 
+///
 /// # Argument
 /// * `content` Option of refrence to a string
 /// * `fallback` Vec<String>
@@ -93,21 +93,21 @@ fn get_value(content: Option<&Vec<String>>, fallback: Vec<String>) -> Vec<String
                 return fallback;
             }
 
-            return value.to_vec();
+            value.to_vec()
         },
         None => fallback
     }
 }
 
 /// Parse Each Yaml Content
-/// 
+///
 /// # Description
 /// Retrieve the service struct
-/// 
+///
 /// # Arguments
 /// * `service_name` yaml::Yaml the service name (e.g: service: web)
 /// * `service_content` yaml::Yaml the content of the service (e.g: service: web: image, labels...)
-/// 
+///
 /// # Return
 /// Service struct
 fn parse_each_yaml_content(service_name: yaml::Yaml, service_content: yaml::Yaml) -> DockerService {
@@ -117,10 +117,10 @@ fn parse_each_yaml_content(service_name: yaml::Yaml, service_content: yaml::Yaml
         .map(|key| String::from(service_content[key].as_str().unwrap_or("")))
         .collect();
 
-    for attr in get_supported_attributes(FieldType::Collection) {      
+    for attr in get_supported_attributes(FieldType::Collection) {
         if let Some(service) = service_content[attr].as_vec() {
             let str_vec_fields: Vec<String> = service
-                .into_iter()
+                .iter()
                 .map(|value| String::from(value.as_str().unwrap_or("")))
                 .collect();
 
@@ -131,7 +131,7 @@ fn parse_each_yaml_content(service_name: yaml::Yaml, service_content: yaml::Yaml
     }
 
     let fallback_cmd = vec![String::from(&single_type_vec[1])];
-    let fallback_label = vec![String::from(&single_type_vec[2])];  
+    let fallback_label = vec![String::from(&single_type_vec[2])];
 
     DockerService {
         name:  String::from(service_name.as_str().unwrap_or(UNKNOWN_SERVICE_NAME)),

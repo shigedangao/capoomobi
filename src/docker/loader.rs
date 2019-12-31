@@ -58,8 +58,8 @@ pub fn load(path: &str, file_name: &str) -> Result<Vec<yaml::Yaml>, CliErr> {
 fn parse_yaml_builder(content: String) -> Result<Vec<yaml::Yaml> , yaml_rust::ScanError> {
     let yaml_file = YamlLoader::load_from_str(content.as_str());
 
-    return match yaml_file {
+    match yaml_file {
         Ok(yaml_content) => Ok(yaml_content),
         Err(e) => Err(e)
-    };
+    }
 }

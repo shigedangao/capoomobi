@@ -22,7 +22,7 @@ impl ConfigHelper {
     /// 
     /// # Return
     /// ProjectPath struct
-    pub fn new(input: &String, project_name: &str) -> Self {
+    pub fn new(input: &str, project_name: &str) -> Self {
         let mut absolute_path = PathBuf::new();
         if input.is_empty() {
             absolute_path.push("./");
@@ -46,7 +46,7 @@ impl ConfigHelper {
     /// PathBuf
     pub fn build_project_folder(&self) -> Option<PathBuf> {
         let res = toolbox::create_folder_from_pathbuf(&self.path);
-        if let Err(_) = res {
+        if res.is_err() {
             return None;
         }
 

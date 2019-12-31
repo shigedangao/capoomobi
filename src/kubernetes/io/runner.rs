@@ -12,17 +12,17 @@ use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::io::CREATING_FILE;
 
 /// Create Controller
-/// 
+///
 /// # Description
 /// Create the controller files asynchronously
 /// We return an array of Future that are executed in an async std thread
-/// 
+///
 /// # Arguments
-/// * `k` &Vec<Kube>
-/// 
+/// * `k` &[Kube]
+///
 /// Return
 /// Vec<impl Future<Output = io::Result<()>>>
-fn create_controller(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
+fn create_controller(k: &[Kube]) -> Vec<impl Future<Output = io::Result<()>>> {
     let ctrl_tmpl = ControllerTmplBuilder {};
     let mut vec = Vec::new();
 
@@ -41,17 +41,17 @@ fn create_controller(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>>
 }
 
 /// Create Service
-/// 
+///
 /// # Description
 /// Create the service files asynchronously. We're retrieving a vector of
 /// future that are going to be resolve in a async std thread
-/// 
+///
 /// # Arguments
-/// * `k` &Vec<Kube>
-/// 
+/// * `k` &[Kube]
+///
 /// # Return
 /// Vec<impl Future<Output = io::Result<()>>>
-fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
+fn create_service(k: &[Kube]) -> Vec<impl Future<Output = io::Result<()>>> {
     let svc_tmpl = ServiceTmplBuilder {};
     let mut vec = Vec::new();
 
@@ -72,13 +72,13 @@ fn create_service(k: &Vec<Kube>) -> Vec<impl Future<Output = io::Result<()>>> {
 }
 
 /// Parse Output
-/// 
+///
 /// # Description
 /// Parse the output of the executed future and return the results
-/// 
+///
 /// # Arguments
 /// * `res` Vec<Result<(), io::Error>>
-/// 
+///
 /// # Return
 /// Vec<Result<(), CliErr>>
 fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
@@ -86,20 +86,20 @@ fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
         .filter(|v| v.is_err())
         .map(|v| {
             let err = v.unwrap_err();
-            return Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError));
+            Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError))
         })
         .collect()
 }
 
 /// Run
-/// 
+///
 /// # Description
 /// Create an array of Kube Future that are run asynchronously
 /// This future write the content to the targeted yaml files
-/// 
+///
 /// # Arguments
 /// * `k` Vec<Kube>
-/// 
+///
 /// # Return
 /// Result<(), ()>
 pub fn run(k: Vec<Kube>) -> Result<(), ()> {
@@ -110,7 +110,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
     let ctrl_task = task::spawn(async move {
         let tasks = join_all(ctrl_fut).await;
         let out: Vec<Result<(), CliErr>> = parse_output(tasks);
-        if out.len() > 0 {
+        if !out.is_empty() {
             return Err(out);
         }
 
@@ -120,7 +120,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
     let svc_task = task::spawn(async move {
         let tasks = join_all(svc_fut).await;
         let out: Vec<Result<(), CliErr>> = parse_output(tasks);
-        if out.len() > 0 {
+        if !out.is_empty() {
             return Err(out);
         }
 
@@ -128,7 +128,7 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
     });
 
     // run the tasks and wait for their results
-    let res = task::block_on(async {
+    task::block_on(async {
         let sres = svc_task.await;
         let cres = ctrl_task.await;
 
@@ -143,7 +143,5 @@ pub fn run(k: Vec<Kube>) -> Result<(), ()> {
         }
 
         Ok(())
-    });
-
-    res
+    })
 }

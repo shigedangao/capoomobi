@@ -7,8 +7,8 @@ use crate::core::logger::{HelpLogType, log_help};
 /// Launch the help scenario
 /// 
 /// # Arguments
-/// * `main_action` Reference to a String
-pub fn launch(main_action: &String) {
+/// * `main_action` &str
+pub fn launch(main_action: &str) {
     let parsed_action = match HelpScenarios::from_string(main_action) {
         Some(value) => value,
         None => HelpScenarios::Init

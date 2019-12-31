@@ -45,11 +45,11 @@ pub struct Projects {
 /// Parse the string content to reflect to the Projects structure
 /// 
 /// # Arguments
-/// * `config_values` Reference to a String
+/// * `config_values` &str
 /// 
 /// # Return
 /// io::Result<Projects>
-pub fn parse_string_to_struct(config_values: &String) -> std::io::Result<Projects> {
+pub fn parse_string_to_struct(config_values: &str) -> std::io::Result<Projects> {
     let p: Projects = serde_json::from_str(&config_values)?;
     Ok(p)
 }
@@ -117,18 +117,18 @@ impl Projects {
     /// 
     /// # Arguments
     /// * `self` Projects struct
-    /// * `idx` usize
+    /// * `name` &str
     /// 
     /// # Return
     /// Result<(&Self, PathBuf)>
-    pub fn delete_project_by_name(mut self, name: &String) -> Result<(Self, PathBuf), CliErr> {
+    pub fn delete_project_by_name(mut self, name: &str) -> Result<(Self, PathBuf), CliErr> {
         let project_opt = self.get_project_idx(String::from(name));
-        if let None = project_opt {
+        if project_opt.is_none() {
             return Err(CliErr::new(DELETE_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
 
         let project = project_opt.unwrap();
-        &self.projects.remove(project.0);
+        self.projects.remove(project.0);
 
         Ok((self, PathBuf::from(project.1)))
     }
@@ -140,17 +140,17 @@ impl Projects {
     /// 
     /// # Arguments
     /// * `self` Projets struct
-    /// * `name` String
+    /// * `name` &str
     /// 
     /// # Return
     /// Result<&Self, CliErr>
-    pub fn switch_project(mut self, name: &String) -> Result<Self, CliErr> {
+    pub fn switch_project(mut self, name: &str) -> Result<Self, CliErr> {
         let project = self.projects
             .iter()
-            .filter(|p| p.name == String::from(name))
+            .filter(|p| p.name == name)
             .last();
 
-        if let None = project {
+        if project.is_none() {
             return Err(CliErr::new(SWITCH_ERROR_MESSAGE, "", ErrMessage::NotFound));
         }
 

@@ -1,6 +1,6 @@
 
 /// Builder
-/// 
+///
 /// # Description
 /// Module helping to generate a K8S struct with the following syntax
 /// - Object (Controller)
@@ -24,21 +24,21 @@ pub struct Kube {
 }
 
 /// Get Basic Objects
-/// 
+///
 /// # Description
 /// Retrieve a List of Kube datastructure
-/// 
+///
 /// # Arguments
-/// * `dk_vec` List of Docker Services
+/// * `dk_vec` &[DockerService]
 /// * `options` Confiture configuration struct
-/// 
+///
 /// # Return
 /// * - `Kube vector` List of Kube
-pub fn get_basic_objects(dk_vec: &Vec<DockerService>, options: HashMap<String, &ConfigConfiture>) -> Vec<Kube> {
+pub fn get_basic_objects(dk_vec: &[DockerService], options: HashMap<String, &ConfigConfiture>) -> Vec<Kube> {
     let kube_containers: Vec<Kube> = dk_vec
         .iter()
         .filter_map(|dk| {
-            let base_path = get_object_path(&dk.name).unwrap_or(PathBuf::new());
+            let base_path = get_object_path(&dk.name).unwrap_or_default();
             let option = options.get(&dk.name).unwrap();
 
             // Create the 2 basic element of a K8S cluster
@@ -47,54 +47,52 @@ pub fn get_basic_objects(dk_vec: &Vec<DockerService>, options: HashMap<String, &
             // controller (workload)
             let ctrl = KubeController::new(dk.clone(), &option.deployment, &base_path);
 
-            if ctrl.is_none() {
-                return None;
-            }
-
+            ctrl.as_ref()?;
             Some(
                 Kube {
                     ctrl: ctrl.unwrap(),
-                    svc: svc,
+                    svc,
                     project_path: base_path
                 }
             )
         })
         .collect();
-        
+
     kube_containers
 }
 
 /// Get Ingress Object
-/// 
+///
 /// # Description
 /// Get Ingress Object
 ///
 /// # Arguments
-/// * `dk` &Vec<DockerService>
+/// * `dk` &[DockerService]
 /// * `conf` ConfigIngress
-/// 
+///
 /// # Return
 /// KubeIngress
-pub fn get_ingress_object(dk: &Vec<DockerService>, conf: Option<ConfigIngress>) -> Option<KubeIngress> {
+pub fn get_ingress_object(dk: &[DockerService], conf: Option<ConfigIngress>) -> Option<KubeIngress> {
     if let Some(cnf) = conf {
-        return Some(KubeIngress::new(dk, cnf));    
+        return Some(KubeIngress::new(dk, cnf));
     }
-    
+
     None
 }
 
 /// Get Object Path
-/// 
+///
 /// # Description
 /// Create the destination path of the object based on the setted project path
-/// 
+///
+/// # Arguments
+/// * `name` &str
+///
 /// # Return
 /// Optional PathBuf
-fn get_object_path(name: &String) -> Option<PathBuf> {
+fn get_object_path(name: &str) -> Option<PathBuf> {
     let project_path_opts = config::get_current_project_path();
-    if project_path_opts.is_none() {
-        return None;
-    }
+    project_path_opts.as_ref()?;
 
     let object_path = project_path_opts.unwrap();
     Some(toolbox::concat_string_path(&object_path, &name))

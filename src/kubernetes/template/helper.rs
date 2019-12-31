@@ -1,8 +1,8 @@
 /// Common module
-/// 
+///
 /// # Description
 /// Module which handle the trait use by the template
-/// 
+///
 /// # Path
 /// kubernetes/template
 pub mod common {
@@ -16,15 +16,15 @@ pub mod common {
     /// Use as an interface to create a common template builder method
     pub trait TemplateBuilder {
         /// Render
-        /// 
+        ///
         /// # Description
         /// Return a Kubernetes templated by Handlebars and datastrucutre
-        /// 
+        ///
         /// # Arguments
         /// * `&self` Self
         /// * `data` &T
         /// * `kind` K8SAssetType
-        /// 
+        ///
         /// # Return
         /// Result<Y, CliErr>
         fn render<T>(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
@@ -41,20 +41,20 @@ pub mod common {
                 Ok(p) => Ok(p),
                 Err(e) => {
                     let renderer_error = e.as_render_error();
-                    Err(handle_error(&renderer_error))
+                    Err(handle_error(renderer_error))
                 }
             }
         }
     }
 
     /// Handle Error
-    /// 
+    ///
     /// # Description
     /// Method use to handle comment templating error
-    /// 
+    ///
     /// # Arguments
-    /// * `err` Option ptr of RenderError ptr
-    pub fn handle_error(err: &Option<&RenderError>) -> CliErr {
+    /// * `err` Option<&RenderError>
+    pub fn handle_error(err: Option<&RenderError>) -> CliErr {
         if let Some(details) = err {
             let detail = &details.desc;
             return CliErr::new(RENDERING, detail.as_str(), ErrMessage::RendererError);

@@ -21,7 +21,7 @@ impl HelperDef for LilMouseHelper {
         out: &mut dyn Output
     ) -> HelperResult {
         let list = h.param(0);
-        if let None = list {
+        if list.is_none() {
             return Err(RenderError::new(ARGUMENT));
         }
 

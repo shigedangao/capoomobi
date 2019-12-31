@@ -5,7 +5,7 @@ use crate::docker::parser::DockerService;
 use crate::kubernetes::controllers::service::{get_ports};
 
 /// Kube Ingress
-/// 
+///
 /// # Description
 /// Structure which define a K8S ingress object
 #[derive(Serialize)]
@@ -16,7 +16,7 @@ pub struct KubeIngress {
 }
 
 /// Ingress Backend
-/// 
+///
 /// # Description
 /// Struct representing a K8S backend
 #[derive(Serialize)]
@@ -28,24 +28,24 @@ pub struct IngressBackend {
 
 impl KubeIngress {
     /// New
-    /// 
+    ///
     /// # Description
     /// Retrieve the ingress service file
-    /// 
+    ///
     /// # Arguments
-    /// * `nodes` &Vec<KubeService>
+    /// * `nodes` &[KubeService]
     /// * `config` ConfigIngress
-    /// 
+    ///
     /// # Return
     /// KubeIngress
-    pub fn new(docker: &Vec<DockerService>, config: ConfigIngress) -> KubeIngress {
+    pub fn new(docker: &[DockerService], config: ConfigIngress) -> KubeIngress {
         let specified_ingress: Vec<String> = config.services
             .iter()
             .map(|s| String::from(&s.name))
             .collect();
 
         let n: Vec<IngressBackend> = docker
-            .into_iter()
+            .iter()
             .filter(|ns| specified_ingress.contains(&ns.name))
             .enumerate()
             .map(|(i, ns)| {
@@ -60,12 +60,10 @@ impl KubeIngress {
             })
             .collect();
 
-        let ingress = KubeIngress {
+        KubeIngress {
             name: String::from("ingress"),
             ip: config.ip,
             backend: n
-        };
-
-        ingress
+        }
     }
 }
