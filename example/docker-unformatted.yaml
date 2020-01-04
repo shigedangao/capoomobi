@@ -1,0 +1,5 @@
+version: "3"
+services:
+  web:
+    image: golang:1.12.6-stretch
+&&&&&&@@@@@@
