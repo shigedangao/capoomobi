@@ -8,6 +8,4 @@ WORKDIR ${APP_PATH}
 
 COPY . .
 
-RUN cargo build
-
-CMD [ "cargo run init capoomobi ../ && cargo run generate ./example" ]
+RUN cargo build --release
