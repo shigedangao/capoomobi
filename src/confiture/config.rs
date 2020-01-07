@@ -1,5 +1,5 @@
 /// Conf module
-/// 
+///
 /// # Description
 /// Module use to retrieve the configuration of the docker-compose K8S bindings
 use std::path::PathBuf;
@@ -35,7 +35,7 @@ pub struct ConfigService {
 pub struct ConfigConfiture {
     pub deployment: ConfigDeployment,
     pub service: ConfigService,
-    name: String
+    pub name: String
 }
 
 /// Ingress Service
@@ -61,13 +61,13 @@ pub struct Confiture {
 
 impl Confiture {
     /// Get Config Confiture Map
-    /// 
+    ///
     /// # Description
     /// Get a hashmap from the confiture struct
-    /// 
+    ///
     /// # Arguments
     /// * `conf` Confiture struct
-    /// 
+    ///
     /// # Return
     /// HashMap<String, ConfigConfiture>
     pub fn get_config_confiture_map(&self) -> HashMap<String, &ConfigConfiture> {
@@ -81,13 +81,13 @@ impl Confiture {
 }
 
 /// Retrieve File Path
-/// 
+///
 /// # Description
 /// Retrieve the file path in the PathBuf format
-/// 
+///
 /// # Arguments
 /// * `path` String
-/// 
+///
 /// # Return
 /// PathBuf
 fn retrieve_file_path(path: String, folder: &str) -> PathBuf {
@@ -106,19 +106,18 @@ fn retrieve_file_path(path: String, folder: &str) -> PathBuf {
     PathBuf::from(path)
 }
 
-/// Load Conf
-/// 
+/// Load
+///
 /// # Description
 /// Load the configuration file and retrieve it's contents
-/// 
+///
 /// # Param
-/// * `path` String
 /// * `target_folder` &str
-/// 
+///
 /// # Return
 /// Option<Confiture>
-pub fn load_conf(path: String, target_folder: &str) -> Option<Confiture> {
-    let p = retrieve_file_path(path, target_folder);
+pub fn load(target_folder: &str) -> Option<Confiture> {
+    let p = retrieve_file_path(String::new(), target_folder);
     let content = match open_file(&p) {
         Ok(c) => c,
         Err(err) => {

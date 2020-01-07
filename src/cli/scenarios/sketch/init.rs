@@ -2,8 +2,7 @@ use crate::core::logger::{log, LogType};
 use crate::core::configurator::configure;
 use crate::core::fs::config::ConfigHelper;
 use crate::core::configurator::builder::{Projects};
-use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
-use crate::core::errors::message::cli::RETRIEVE_PATH;
+use crate::core::errors::cli_error::{ErrHelper};
 use crate::core::serde_utils::SerdeUtil;
 
 /// Message
@@ -51,9 +50,8 @@ fn execute(project_name: &str, cmd_args: &[String], conf: configure::CapooConfig
     let conf_helper = ConfigHelper::new(&path, project_name);
 
     let build_opt = conf_helper.build_project_folder();
-    if build_opt.is_none() {
-        CliErr::new(RETRIEVE_PATH, path, ErrMessage::NotFound).log_pretty();
-        return;
+    if let Err(err) = build_opt {
+        return err.log_pretty();
     }
 
     let build_path = build_opt.unwrap();
@@ -68,7 +66,7 @@ fn execute(project_name: &str, cmd_args: &[String], conf: configure::CapooConfig
     };
 
     match content_builder
-        .add(String::from(project_name), build_path)
+        .add(project_name, build_path)
         .and_then(|res| res.serialize())
         .and_then(|res| conf.write_json_file(res)) {
             Ok(_) => log(LogType::Success, PROJECT_CREATED, Some(conf_helper.get_path_as_string())),

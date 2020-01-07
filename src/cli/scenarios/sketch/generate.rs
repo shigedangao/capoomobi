@@ -97,7 +97,7 @@ fn prepare(path: &str) -> Option<(config::Confiture, Vec<DockerService>)> {
     };
 
     // load the configuration file
-    let conf_opts = config::load_conf(String::new(), path);
+    let conf_opts = config::load(path);
     conf_opts.as_ref()?;
 
     Some((conf_opts.unwrap(), docker_svc))
@@ -111,7 +111,7 @@ fn prepare(path: &str) -> Option<(config::Confiture, Vec<DockerService>)> {
 /// # Arguments
 /// * `kubes` Vec<Kube>
 fn create_kubes_files(kubes: Vec<builder::Kube>) {
-    let res = folder::create(&kubes).and_then(|_| runner::run(kubes));
+    let res = folder::create(&kubes).and_then(|_| runner::create_default_object(kubes));
     match res {
         Ok(()) => log(LogType::Success, "Successfully creating the Kubernetes files", None),
         Err(()) => CliErr::new(GENERATE_ERROR, "", ErrMessage::IOError).log_pretty()
