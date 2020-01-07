@@ -1,10 +1,10 @@
 /// Cli
-/// 
+///
 /// # Description
 /// List of error message related to the CLI itself
 pub mod cli {
     pub const GET_DOCKER_SERVICE_LIST: &str = "Unable to retrieve list of services in the docker-compose";
-    pub const GET_CONFITURE: &str = "Unable to parse the confiture.json file as it's empty"; 
+    pub const GET_CONFITURE: &str = "Unable to parse the confiture.json file as it's empty";
     pub const RETRIEVE_PATH: &str = "Unable to retrieve absolute path {:?}";
     pub const DELETE_PROJECT: &str = "Unable to delete project";
     pub const UNKNOWN_SCENARIO: &str = "Command not found / supported";
@@ -31,7 +31,7 @@ pub mod core {
     pub const SWITCH_ERROR_MESSAGE: &str = "Unable to switch project";
 
     // Confiture
-    pub const CONFIG_GENERATE_ERROR: &str   = "Unable to generate the config file for reason:"; 
+    pub const CONFIG_GENERATE_ERROR: &str   = "Unable to generate the config file for reason:";
     pub const FILE_NOT_PARSABLE_ERROR: &str = "Unable to parse the config file for reason:";
     pub const DECODE_ERROR: &str            = "Unable to parse the content of the config file for reason:";
     pub const WRITE_JSON_ERROR: &str        = "Unable to write the capoomobi.json file";
@@ -49,5 +49,5 @@ pub mod docker {
     // loader
     pub const UNABLE_READ: &str  = "Unable to open the docker-compose.yaml file";
     pub const UNABLE_PARSE: &str = "Unable to parse the docker-compose.yaml for reason: ";
-    pub const ABS_PATH: &str   = "Unable to generate absolute path";
+    pub const ABS_PATH: &str   = "Unable to find the docker-compose.yaml file";
 }
