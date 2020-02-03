@@ -91,7 +91,7 @@ fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
         .collect()
 }
 
-/// Run
+/// Create default object
 ///
 /// # Description
 /// Create an array of Kube Future that are run asynchronously
@@ -102,7 +102,7 @@ fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
 ///
 /// # Return
 /// Result<(), ()>
-pub fn run(k: Vec<Kube>) -> Result<(), ()> {
+pub fn create_default_object(k: Vec<Kube>) -> Result<(), ()> {
     let ctrl_fut = create_controller(&k);
     let svc_fut  = create_service(&k);
 

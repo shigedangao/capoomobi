@@ -1,4 +1,4 @@
-image: "rust:1.40-stretch"
+image: "rust:1.41-stretch"
 
 stages:
     - build
@@ -10,11 +10,20 @@ before_script:
 
 install:
     stage: build
-    script: cargo build
+    script: cargo check
 
 run test:
     stage: test
+    before_script:
+        - touch ~/.capoomobi.json
+        - echo ${CAPOOMOBI} >> ~/.capoomobi.json
     script: cargo test
+
+run lint:
+    stage: test
+    before_script:
+        - rustup component add clippy
+    script: cargo clippy
 
 build release:
     stage: build_release

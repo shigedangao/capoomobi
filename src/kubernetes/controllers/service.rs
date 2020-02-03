@@ -14,7 +14,7 @@ const PORT_SEPARATOR: &str = ":";
 /// Service Type
 ///
 /// List supported K8S Service
-#[derive(Serialize, Deserialize, Clone, Debug, Copy)]
+#[derive(Serialize, Deserialize, Clone, Debug, Copy, PartialEq)]
 pub enum ServiceType {
     ClusterIP,
     NodePort,
@@ -29,11 +29,11 @@ pub enum ServiceType {
 pub struct KubeService {
     pub path: PathBuf,
     pub name: String,
-    svc_port: u16,
-    target_port: u16,
-    service_type: ServiceType,
-    labels: Vec<String>,
-    nodeport: u16,
+    pub host_port: u16,
+    pub target_port: u16,
+    pub kind: ServiceType,
+    pub labels: Vec<String>,
+    pub nodeport: u16,
 }
 
 impl KubeService {
@@ -63,9 +63,9 @@ impl KubeService {
         let mapped_ports = get_ports(&dk.ports[0]);
         let svc = KubeService {
             name: svc_name,
-            svc_port: mapped_ports[0],
+            host_port: mapped_ports[0],
             target_port: mapped_ports[1],
-            service_type: option.kind,
+            kind: option.kind,
             labels: dk.labels,
             nodeport: option.nodeport,
             path: svc_path

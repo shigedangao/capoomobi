@@ -13,7 +13,7 @@ const CONTROLLER_FILENAME: &str = "controller.yaml";
 /// Controller Kind
 ///
 /// List type of supported K8S controller
-#[derive(Serialize, Deserialize, Clone, Debug, Copy)]
+#[derive(Serialize, Deserialize, Clone, Debug, Copy, PartialEq)]
 pub enum ControllerKind {
     Deployment,
     ReplicaSet,
