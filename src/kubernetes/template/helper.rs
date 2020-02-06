@@ -29,7 +29,8 @@ pub mod common {
         /// Result<Y, CliErr>
         fn render<T>(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
             let mut handlebars = Handlebars::new();
-            handlebars.register_helper("lilmouse", Box::new(formatter::LilMouseHelper));
+            handlebars.register_helper("dictionnary", Box::new(formatter::Dictionnary));
+            handlebars.register_helper("mapper", Box::new(formatter::Mapper));
 
             let content_opt = retrieve_asset_content(kind);
             if let Err(e) = content_opt {

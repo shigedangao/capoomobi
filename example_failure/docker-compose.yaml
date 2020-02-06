@@ -24,19 +24,3 @@ services:
     labels:
       - "tier=database"
     command: "sh ./help.sh"
-  front:
-    image: node:12.4.0-stretch
-    ports:
-      - 8000:8000
-    command:
-      - "npm install"
-      - "npm run build"
-      - "npm run start"
-    labels:
-      - "front"
-  bobba:
-    image: marci/bobbaorder:latest
-    ports:
-      - 8088:8088
-    labels:
-      - "app=bobba"

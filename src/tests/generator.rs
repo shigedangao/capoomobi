@@ -5,17 +5,12 @@ mod directory {
     use crate::kubernetes::builder::{get_basic_objects};
     use crate::kubernetes::controllers::controller::ControllerKind;
     use crate::kubernetes::controllers::service::ServiceType;
-    use crate::kubernetes::controllers::ingress::{KubeIngress, IngressBackend};
     use crate::confiture::config::{
         ConfigConfiture,
         ConfigDeployment,
         ConfigService
     };
-    use crate::kubernetes::io::{
-        runner,
-        folder,
-        objects
-    };
+    use crate::kubernetes::io::{folder};
 
     // Create a docker service to test the kube io process
     fn setup() -> (DockerService, ConfigConfiture) {
@@ -88,15 +83,67 @@ mod directory {
             Err(_) => panic!("Expect to create folders")
         }
     }
+}
 
-    #[test]
-    fn expect_to_create_kube() {
-        let (dk, conf) = setup();
+#[cfg(test)]
+mod create {
+    use std::collections::HashMap;
+    use crate::docker::parser::DockerService;
+    use crate::kubernetes::builder::{get_basic_objects};
+    use crate::kubernetes::controllers::controller::ControllerKind;
+    use crate::kubernetes::controllers::service::ServiceType;
+    use crate::kubernetes::builder::Kube;
+    use crate::kubernetes::controllers::ingress::{KubeIngress, IngressBackend};
+    use crate::confiture::config::{
+        ConfigConfiture,
+        ConfigDeployment,
+        ConfigService
+    };
+    use crate::kubernetes::io::{
+        runner,
+        objects,
+        folder
+    };
+
+    // Create a docker service to test the kube io process
+    fn setup() -> Vec<Kube> {
+        let dk = DockerService {
+            name: "nginx".to_string(),
+            image: "nginx:1.3.0".to_string(),
+            commands: vec!["sudo nginx reload".to_string()],
+            ports: vec!["9000:9000".to_string()],
+            labels: vec!["back".to_string()],
+            environment: vec!["API_ENV=dev".to_string()],
+            volumes: vec![]
+        };
+
+        let conf = ConfigConfiture {
+            name: "nginx".to_string(),
+            deployment: ConfigDeployment {
+                replicas: 3,
+                controller: ControllerKind::Deployment
+            },
+            service: ConfigService {
+                kind: ServiceType::NodePort,
+                nodeport: 30320
+            }
+        };
+
         // create a map
         let mut map: HashMap<String, &ConfigConfiture> = HashMap::new();
         map.insert("nginx".to_string(), &conf);
 
-        let kubes = get_basic_objects(&vec![dk], map);
+        get_basic_objects(&vec![dk], map)
+    }
+
+    #[test]
+    fn expect_to_create_kube() {
+        let kubes = setup();
+        match folder::create(&kubes) {
+            Ok(_) => {},
+            Err(_) => panic!("Expect to create folders")
+        };
+
         match runner::create_default_object(kubes) {
             Ok(_) => {},
             Err(_) => panic!("Expect writing kubernetes object to not fail")
@@ -105,6 +152,7 @@ mod directory {
 
     #[test]
     fn expect_to_create_ingress() {
+        let kubes = setup();
         let ingress = KubeIngress {
             name: "foo".to_string(),
             ip: "10.20.30.150".to_string(),
@@ -115,6 +163,11 @@ mod directory {
                     path: "/foo".to_string()
                 }
             ]
+        };
+
+        match folder::create(&kubes) {
+            Ok(_) => {},
+            Err(_) => panic!("Expect to create folders")
         };
 
         match objects::create(ingress, "ingress.yaml", objects::Objects::Ingress) {

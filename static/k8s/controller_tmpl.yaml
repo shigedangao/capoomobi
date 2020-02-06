@@ -1,15 +1,15 @@
 apiVersion: apps/v1
-kind: {{ controller_type }}
+kind: {{ ctrl }}
 metadata:
   name: {{ name }}
-  labels: {{ lilmouse labels 2 }}
+  labels: {{ mapper labels 2 }}
 spec:
   replicas: {{ replicas }}
   selector:
-    matchLabels: {{ lilmouse labels 6 }}
+    matchLabels: {{ mapper labels 4 }}
   template:
     metadata:
-      labels: {{ lilmouse labels 7 }}
+      labels: {{ mapper labels 6 }}
     spec:
       containers:
       - name: {{ name }}

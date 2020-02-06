@@ -5,7 +5,7 @@ mod confiture {
     use crate::kubernetes::controllers::service::ServiceType;
 
     #[test]
-    fn test_load_confiture() {
+    fn expect_to_load_confiture() {
         let cnf = config::load("./example");
         if cnf.is_none() {
             panic!("Expect to retrieve a confiture.json");
@@ -13,7 +13,7 @@ mod confiture {
     }
 
     #[test]
-    fn test_confiture_value() {
+    fn expect_to_get_confiture_value() {
         let cnf = config::load("./example").unwrap();
         let value = cnf.get_config_confiture_map();
 
@@ -28,12 +28,18 @@ mod confiture {
     }
 
     #[test]
-    fn test_get_ingress() {
+    fn expect_to_get_ingress() {
         let cnf = config::load("./example").unwrap();
         let ingress = cnf.ingress.unwrap();
 
         assert_eq!(ingress.ip, "30.10.20.30");
         assert_eq!(ingress.services[0].name, "web");
         assert_eq!(ingress.services[0].path, "/web");
+    }
+
+    #[test]
+    fn expect_missing_property_to_return_none() {
+        let cnf = config::load("./example_failure");
+        assert!(cnf.is_none());
     }
 }

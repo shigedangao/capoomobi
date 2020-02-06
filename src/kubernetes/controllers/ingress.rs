@@ -61,7 +61,7 @@ impl KubeIngress {
             .collect();
 
         KubeIngress {
-            name: String::from("ingress"),
+            name: "ingress".to_owned(),
             ip: config.ip,
             backend: n
         }
