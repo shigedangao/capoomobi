@@ -1,4 +1,4 @@
-use handlebars::{Handlebars, HelperDef, RenderContext, RenderError ,Helper, Context, HelperResult, Output};
+use handlebars::*;
 use crate::core::errors::message::template::{ARGUMENT};
 
 #[derive(Clone, Copy)]
@@ -6,6 +6,9 @@ pub struct Dictionnary;
 
 #[derive(Clone, Copy)]
 pub struct Mapper;
+
+#[derive(Clone, Copy)]
+pub struct Lengthie;
 
 /// Default Padding value
 const DEFAULT_PADDING: u64 = 0;
@@ -70,6 +73,43 @@ impl HelperDef for Mapper {
     }
 }
 
+impl HelperDef for Lengthie {
+    fn call<'reg: 'rc, 'rc>(
+        &self,
+        h: &Helper<'reg, 'rc>,
+        r: &'reg Handlebars,
+        ctx: &'rc Context,
+        rc: &mut RenderContext<'reg, 'rc>,
+        out: &mut dyn Output
+    ) -> HelperResult {
+        let param = h
+            .param(0)
+            .unwrap()
+            .value()
+            .as_array();
+
+        if param.is_none() {
+            return Ok(());
+        }
+
+        let value: Vec<&str> = param
+            .unwrap()
+            .iter()
+            .map(|v| v.as_str().unwrap_or(""))
+            .filter(|v| !v.is_empty())
+            .collect();
+
+        if !value.is_empty() {
+            return match h.template() {
+                Some(ref t) => t.render(r, ctx, rc, out),
+                None => Ok(())
+            };
+        }
+
+        Ok(())
+    }
+}
+
 /// Formatter
 ///
 /// # Description
@@ -79,7 +119,7 @@ impl HelperDef for Mapper {
 /// String
 fn formatter(key: &handlebars::JsonValue, ident: u64, prefix: &str) -> String {
     let s: Vec<String> = format!("{}", key)
-        .split("=")
+        .split('=')
         .map(|value| value.replace('"', ""))
         .collect();
 

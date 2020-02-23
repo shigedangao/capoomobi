@@ -15,5 +15,5 @@ spec:
       - name: {{ name }}
         image: {{ image }}
         ports: {{ #each ports as |p| }}
-          - containerPort: {{p}}
-        {{ /each }}
+          - containerPort: {{p}}{{ /each }}
+        {{ #lengthie commands }}command: [{{ #each commands as |cmd| }}"{{ cmd }}"{{ /each }}]{{ /lengthie }}

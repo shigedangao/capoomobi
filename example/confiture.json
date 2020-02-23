@@ -3,7 +3,7 @@
     {
       "name": "web",
       "deployment": {
-        "replicas": 10,
+        "replicas": 1,
         "controller": "Deployment"
       },
       "service": {
@@ -24,12 +24,11 @@
     {
       "name": "front",
       "deployment": {
-        "replicas": 10,
+        "replicas": 1,
         "controller": "Deployment"
       },
       "service": {
-        "kind": "NodePort",
-        "nodeport": 30302
+        "kind": "ClusterIP"
       }
     },
     {

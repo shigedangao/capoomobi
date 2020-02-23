@@ -25,15 +25,11 @@ services:
       - "tier=database"
     command: "sh ./help.sh"
   front:
-    image: node:12.4.0-stretch
+    image: gcr.io/hello-minikube-zero-install/hello-node
     ports:
-      - 8000:8000
-    command:
-      - "npm install"
-      - "npm run build"
-      - "npm run start"
+      - 8080:8080
     labels:
-      - "front"
+      - "app=front"
   bobba:
     image: marci/bobbaorder:latest
     ports:
