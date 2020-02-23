@@ -59,8 +59,8 @@ mod parser {
             None => panic!("No services has been founded")
         };
 
-        if contents.len() != 3 {
-            panic!("Expect to have retrieve 3 services");
+        if contents.is_empty() {
+            panic!("Expect to have retrieve services");
         }
     }
 
@@ -79,14 +79,14 @@ mod parser {
         assert_eq!(contents[0].image, "golang:1.12.6-stretch");
         assert_eq!(contents[0].name, "web");
         assert_eq!(contents[0].commands, vec!["sh start.sh"]);
-        assert_eq!(contents[0].labels, vec!["go", "api"]);
+        assert_eq!(contents[0].labels, vec!["app=go", "tier=api"]);
         assert_eq!(contents[0].environment, vec!["GO111MODULE=on"]);
         assert_eq!(contents[0].ports, vec!["5000:5000"]);
     }
 
     #[test]
     fn expect_to_not_err_during_missing_fields() {
-        let empty_vec_string: Vec<String> = Vec::new(); 
+        let empty_vec_string: Vec<String> = Vec::new();
 
         let yaml = match loader::load("./example", "docker-compose-missing-field.yaml") {
             Ok(res) => res,

@@ -5,10 +5,6 @@
       "deployment": {
         "replicas": 10,
         "controller": "Deployment"
-      },
-      "service": {
-        "kind": "NodePort",
-        "nodeport": 30302
       }
     },
     {

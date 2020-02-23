@@ -3,4 +3,5 @@ mod conf;
 mod confiture;
 mod kube;
 mod fs;
-mod kube_io;
+mod generator;
+mod templating;

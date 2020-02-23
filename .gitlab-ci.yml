@@ -1,5 +1,8 @@
 image: "rust:1.41-stretch"
 
+variables:
+    RUST_BACKTRACE: 1
+
 stages:
     - build
     - test
@@ -17,7 +20,7 @@ run test:
     before_script:
         - touch ~/.capoomobi.json
         - echo ${CAPOOMOBI} >> ~/.capoomobi.json
-    script: cargo test
+    script: cargo test -- --nocapture
 
 run lint:
     stage: test

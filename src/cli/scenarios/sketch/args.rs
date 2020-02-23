@@ -55,7 +55,7 @@ pub fn retrieve_options_by_idx(vec: &[String], idx: usize) -> Option<String> {
     }
 
     match vec.get(idx) {
-        Some(res) => Some(res.to_string()),
+        Some(res) => Some(res.to_owned()),
         None => None
     }
 }

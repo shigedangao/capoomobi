@@ -11,6 +11,8 @@ use crate::assets::loader::{K8SAssetType};
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::io::CREATING_FILE;
 
+// Does this mod have too much responsability ? -> generate template + write it to the file in async
+
 /// Create Controller
 ///
 /// # Description
