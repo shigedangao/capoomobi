@@ -5,3 +5,4 @@ mod kube;
 mod fs;
 mod generator;
 mod templating;
+mod scenarios;

@@ -28,6 +28,13 @@ run lint:
         - rustup component add clippy
     script: cargo clippy
 
+run coverage:
+    before_script: 
+        - cargo install cargo-tarpaulin -f
+    script:
+        - cargo tarpaulin -v
+    coverage: ^\d+.\d+% coverage
+
 build release:
     stage: build_release
     script: cargo build --release

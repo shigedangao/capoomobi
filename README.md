@@ -1,5 +1,7 @@
 # CapooMobi
 
+[![pipeline status](https://gitlab.com/MarcInthaamnouay/capoomobi/badges/master/pipeline.svg)](https://gitlab.com/MarcInthaamnouay/capoomobi/commits/master)
+
 Capoomobi is a project where I'm learning Rust ! Capoomobi is a helper tool allowing you to generate a Kubernetes boilerplate files from your docker-compose files
 
 ## Idea
