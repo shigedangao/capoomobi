@@ -29,8 +29,12 @@ pub mod common {
         /// Result<Y, CliErr>
         fn render<T>(&self, data: &T, kind: K8SAssetType) -> Result<String, CliErr> where T : Serialize {
             let mut handlebars = Handlebars::new();
+            // Print Yaml dictionnary
             handlebars.register_helper("dictionnary", Box::new(formatter::Dictionnary));
+            // Print Array yaml
             handlebars.register_helper("mapper", Box::new(formatter::Mapper));
+            // Display block if the array is fill
+            handlebars.register_helper("lengthie", Box::new(formatter::Lengthie));
 
             let content_opt = retrieve_asset_content(kind);
             if let Err(e) = content_opt {

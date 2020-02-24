@@ -19,7 +19,7 @@ mod confiture {
 
         // testing the values
         // deployment
-        assert_eq!(value.get("web").unwrap().deployment.replicas, 10);
+        assert_eq!(value.get("web").unwrap().deployment.replicas, 1);
         assert_eq!(value.get("web").unwrap().deployment.controller, ControllerKind::Deployment);
 
         // service
