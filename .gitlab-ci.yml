@@ -33,7 +33,7 @@ run coverage:
         - cargo install cargo-tarpaulin -f
     script:
         - cargo tarpaulin -v
-    coverage: ^\d+.\d+% coverage
+    coverage: "^\d+.\d+% coverage"
 
 build release:
     stage: build_release
