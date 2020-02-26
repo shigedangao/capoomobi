@@ -34,7 +34,7 @@ run coverage:
         - apt-get -y install libssl-dev pkg-config cmake zlib1g-dev
         - cargo install cargo-tarpaulin -f
     script:
-        - cargo tarpaulin -v
+        - cargo tarpaulin -v -- --test-threads=1
     coverage: '/\d+.\d+% coverage, \d+\/\d+ lines covered/'
 
 build release:
