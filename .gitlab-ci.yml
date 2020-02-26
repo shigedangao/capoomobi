@@ -30,6 +30,7 @@ run lint:
 
 run coverage:
     before_script: 
+        - apt-get install libssl-dev pkg-config cmake zlib1g-dev
         - cargo install cargo-tarpaulin -f
     script:
         - cargo tarpaulin -v
