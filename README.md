@@ -1,35 +1,93 @@
-# CapooMobi
+# ▓ Capoo ⣿ Mobi ▓
 
-Capoomobi is a project where I'm learning Rust ! Capoomobi is a helper tool allowing you to generate a Kubernetes boilerplate files from your docker-compose files
+[![pipeline status](https://gitlab.com/MarcInthaamnouay/capoomobi/badges/master/pipeline.svg)](https://gitlab.com/MarcInthaamnouay/capoomobi/commits/master)
 
-## Idea
+Capoomobi is a small project which helps you to convert your docker-compose.yaml file to a valid set of kubernetes manifest files.
 
-Ever wondering how hard is to translate a simple to a set of complex docker-compose to a set of Kubernetes objects ? Well this project aim to render this process automatic.
+# Installation
 
-Deploying your docker-compose to Kubernetes with ease
+Install the project by downloading the latest binary
 
-## Examples
+# Build the project
 
-- Create a project
-
-```shell
-capoomobi init rabbit ../rabbit
-```
-
-- Help command
+The project is made with Rust as such if you wish to contribute you'll need to install it on the first hand
+Run the project by using the command below
 
 ```shell
-capoomobi help
+cargo run <command> <args>
 ```
 
-- Generate command
+# Commands available
+
+## Init
+
+Create command allow you to init a new project
 
 ```shell
-capoomobi generate <path to docker-compose.yaml>
-capoomobi generate <path to docker-compose.yaml> (--print | --ingress)
+cargo run init <name> <path of your project>
+
+## example
+
+cargo run init my-nginx ../nginx
 ```
 
-- Project command
+## Generate
+
+Generate command generate a set of kubernetes manifests. The command will generate these manifests for each services:
+- controller.yaml
+- service.yaml
+
+In order to generate a set of manifests you'll need to configure a small configuration file on your folder which contain the docker-compose.yaml. This file should be name ```confiture.json```. This file helps the command to know what to generate.
+
+```json
+{
+  "confitures": [
+    {
+      "name": "<name of a docker-compose service>",
+      "deployment": {
+        "replicas": <number>,
+        "controller": "either: Deployment|StatefulSet|DaemonSet"
+      },
+      "service": {
+        "kind": "either: NodePort (expose outside of the cluster) | ClusterIP (not expose outside of the cluster)",
+        "nodeport": <number (only use for nodeport)>
+      }
+    }
+  ],
+  // optional
+  "ingress": {
+    "ip": <ip given by a provider>
+    "services": [
+      {
+        "name": "name of the docker-compose service",
+        "path": "path expose to the world"
+      }
+    ]
+  }
+}
+```
+
+### Generate a configuration w/o the ingress configuration file
+
+```shell
+cargo run generate <path of your project>
+```
+
+### Generate the ingress configuration file
+
+```shell
+cargo run generate <path of your project> --ingress
+```
+
+### Print the manifest (output mode)
+
+```shell
+cargo run generate <path of your project> --print
+```
+
+## Project
+
+Project command allow you to switch, delete, list between projects. The command are below
 
 ```shell
 capoomobi project current -> display current project
@@ -37,5 +95,3 @@ capoomobi project list --> display list of project
 capoomobi project switch --> change project to an other
 capoomobi project delete --> delete a project
 ```
-
-A docker-compose.yaml file is available in the ```example folder```
