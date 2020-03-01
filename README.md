@@ -6,7 +6,7 @@ Capoomobi is a small project which helps you to convert your docker-compose.yaml
 
 # Installation
 
-Install the project by downloading the latest binary
+Binary will be available in a few days. In the meantime you can clone this repository and build the project by yourself. 
 
 # Build the project
 
@@ -94,4 +94,15 @@ capoomobi project current -> display current project
 capoomobi project list --> display list of project
 capoomobi project switch --> change project to an other
 capoomobi project delete --> delete a project
+```
+
+## Help
+
+Get some help on how to use the cli
+
+```shell
+capoomobi help
+capoomobi help init
+capoomobi help generate
+capoomobi help project
 ```
