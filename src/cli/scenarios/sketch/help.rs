@@ -45,6 +45,14 @@ fn describe_generate() {
         HelpLogType::Description,
         "Generate K8S files which describes your docker-compose.yaml file".to_owned()
     );
+    log_help(
+        HelpLogType::Action,
+        format!(
+            "{}\n{}\n",
+            "- --print: Print the manifests that will be write to the project",
+            "- --ingress: Generate an ingress file based on the docker-compose.yaml & confiture.json"
+        )
+    );
     log_help(HelpLogType::Example, "capoomobi generate /workspace/my-docker-project".to_owned());
 }
 
