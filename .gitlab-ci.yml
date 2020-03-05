@@ -33,5 +33,5 @@ build release:
     script: cargo build --release
     artifacts:
         paths:
-        - /builds/MarcInthaamnouay/capoomobi
+        - target/release/capoomobi
         expire_in: 1 week
