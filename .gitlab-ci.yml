@@ -34,4 +34,4 @@ build release:
     artifacts:
         paths:
         - capoomobi
-        expired_in: 1 week
+        expire_in: 1 week
