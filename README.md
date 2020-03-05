@@ -6,7 +6,11 @@ Capoomobi is a small project which helps you to convert your docker-compose.yaml
 
 # Installation
 
-Binary will be available in a few days. In the meantime you can clone this repository and build the project by yourself. 
+Binary is available in the download section. If you wish to build it yourself clone the repository and run the command
+
+```shell
+cargo build
+```
 
 # Build the project
 

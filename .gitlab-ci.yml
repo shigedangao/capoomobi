@@ -31,3 +31,7 @@ run lint:
 build release:
     stage: build_release
     script: cargo build --release
+    artifacts:
+        paths:
+        - capoomobi
+        expired_in: 1 week
