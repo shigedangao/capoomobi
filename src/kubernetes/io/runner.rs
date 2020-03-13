@@ -1,4 +1,3 @@
-use std::error::Error;
 use async_std::{fs, io, task};
 use async_std::prelude::*;
 use futures::future::join_all;
@@ -88,7 +87,7 @@ fn parse_output(res: Vec<Result<(), io::Error>>) -> Vec<Result<(), CliErr>> {
         .filter(|v| v.is_err())
         .map(|v| {
             let err = v.unwrap_err();
-            Err(CliErr::new(CREATING_FILE, err.description(), ErrMessage::IOError))
+            Err(CliErr::new(CREATING_FILE, &err.to_string(), ErrMessage::IOError))
         })
         .collect()
 }

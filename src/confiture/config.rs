@@ -3,7 +3,6 @@
 /// # Description
 /// Module use to retrieve the configuration of the docker-compose K8S bindings
 use std::path::PathBuf;
-use std::error::Error;
 use std::collections::HashMap;
 use serde::{Deserialize};
 use serde_json;
@@ -121,7 +120,7 @@ pub fn load(target_folder: &str) -> Option<Confiture> {
     let content = match open_file(&p) {
         Ok(c) => c,
         Err(err) => {
-            log(LogType::Warning, err.description(), None);
+            log(LogType::Warning, &err.to_string(), None);
             return None;
         }
     };
@@ -129,7 +128,7 @@ pub fn load(target_folder: &str) -> Option<Confiture> {
     let confiture: Confiture = match serde_json::from_str(&content) {
         Ok(c) => c,
         Err(err) => {
-            log(LogType::Warning, err.description(), None);
+            log(LogType::Warning, &err.to_string(), None);
             return None;
         }
     };

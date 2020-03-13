@@ -1,4 +1,3 @@
-use std::error::Error;
 use serde::{Serialize, Deserialize};
 use super::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 use crate::core::errors::message::core::{SERIALIZE_ERROR, DESERIALIZE_ERROR};
@@ -21,7 +20,7 @@ pub trait SerdeUtil {
     fn serialize(&self) -> Result<String, CliErr> where Self : Serialize {
         match serde_json::to_string_pretty(&self) {
             Ok(p) => Ok(p),
-            Err(e) => Err(CliErr::new(SERIALIZE_ERROR, e.description(), ErrMessage::SerializeError))
+            Err(err) => Err(CliErr::new(SERIALIZE_ERROR, &err.to_string(), ErrMessage::SerializeError))
         }
     }
 }
@@ -39,6 +38,6 @@ pub trait SerdeUtil {
 pub fn deserialize<'de, T>(d: &'de str) -> Result<T, CliErr> where T: Deserialize<'de> {
     match serde_json::from_str(d) {
         Ok(res) => Ok(res),
-        Err(e) => Err(CliErr::new(DESERIALIZE_ERROR, e.description(), ErrMessage::SerializeError))
+        Err(err) => Err(CliErr::new(DESERIALIZE_ERROR, &err.to_string(), ErrMessage::SerializeError))
     }
 }

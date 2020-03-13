@@ -2,7 +2,6 @@
 #[cfg(test)]
 mod capooconfig {
     use std::path::PathBuf;
-    use std::error::Error;
     use serde_json;
     use crate::core::fs::toolbox;
     use crate::core::configurator::configure::{CapooConfig};
@@ -36,7 +35,7 @@ mod capooconfig {
         }
 
         if let Err(err) = config.get_content() {
-            assert_eq!(err.description(), "Unable to parse the content of the config file for reason:");
+            assert_eq!(&err.message.to_string(), "Unable to parse the content of the config file for reason:");
         } else {
             panic!("Expect to not retrieve any content");
         }
@@ -56,12 +55,12 @@ mod capooconfig {
 
         match config.write_json_file(value) {
             Ok(_) => {},
-            Err(err) => panic!(err.description().to_string())
+            Err(err) => panic!(err.message.to_string())
         };
 
         match config.get_content() {
             Ok(conf) => assert_eq!(conf.projects[0].name, "capoo"),
-            Err(err) => panic!(err.description().to_string())
+            Err(err) => panic!(err.message.to_string())
         }
     }
 }
@@ -69,7 +68,6 @@ mod capooconfig {
 #[cfg(test)]
 mod builder {
     use std::path::PathBuf;
-    use std::error::Error;
     use crate::core::configurator::builder::Projects;
     use crate::core::configurator::config;
     use crate::core::errors::message;
@@ -87,7 +85,7 @@ mod builder {
         let projects = setup();
         match projects.add("foo", PathBuf::from("capoomobi.json")) {
             Ok(res) => assert_eq!(res.current, "foo"),
-            Err(err) => panic!(err.description().to_string())
+            Err(err) => panic!(err.message.to_string())
         }
     }
 
@@ -96,7 +94,7 @@ mod builder {
         let projects = setup();
         match projects.add("", PathBuf::new()) {
             Ok(_) => panic!("Expect to not have create a project with an empty name"),
-            Err(err) => assert_eq!(err.description(), message::core::PROJECT_NAME_EMPTY)
+            Err(err) => assert_eq!(&err.message.to_string(), message::core::PROJECT_NAME_EMPTY)
         }
     }
 
@@ -105,7 +103,7 @@ mod builder {
         let projects = setup();
         match projects.add("foo", PathBuf::new()) {
             Ok(_) => panic!("Expect to not add a project"),
-            Err(err) => assert_eq!(err.description(), message::core::PATH_GENERATE_ERROR)
+            Err(err) => assert_eq!(&err.message.to_string(), message::core::PATH_GENERATE_ERROR)
         }
     }
 
@@ -114,7 +112,7 @@ mod builder {
         let projects = setup();
         match projects.delete_project_by_name("foo") {
             Ok(_) => panic!("Expect to not find any project to be deleted"),
-            Err(err) => assert_eq!(err.description(), message::core::DELETE_ERROR_MESSAGE)
+            Err(err) => assert_eq!(&err.message.to_string(), message::core::DELETE_ERROR_MESSAGE)
         }
     }
 
@@ -123,13 +121,13 @@ mod builder {
         let projects = setup();
         let p = match projects.add("foo", PathBuf::from("../foo")) {
             Ok(p) => p,
-            Err(err) => panic!(err.description().to_string())
+            Err(err) => panic!(err.message.to_string())
         };
 
 
         match p.delete_project_by_name("foo") {
             Ok(res) => assert_eq!(res.0.projects.len(), 0),
-            Err(err) => panic!(err.description().to_string())
+            Err(err) => panic!(err.message.to_string())
         }
 
     }
@@ -143,7 +141,7 @@ mod builder {
 
         match r.switch_project("foo") {
             Ok(s) => assert_eq!(s.current, "foo"),
-            Err(err) => panic!(err.description().to_string())
+            Err(err) => panic!(err.message.to_string())
         }
     }
 
@@ -152,7 +150,7 @@ mod builder {
         let projects = setup();
         match projects.switch_project("foo") {
             Ok(_) => panic!("Expect to not have switch a project as projects vector is empty"),
-            Err(err) => assert_eq!(err.description(), message::core::SWITCH_ERROR_MESSAGE)
+            Err(err) => assert_eq!(&err.message.to_string(), message::core::SWITCH_ERROR_MESSAGE)
         }
     }
 
@@ -163,7 +161,7 @@ mod builder {
 
         match p.switch_project("foo") {
             Ok(_) => panic!("Expect to not have switch to the 'foo' project"),
-            Err(err) => assert_eq!(err.description(), message::core::SWITCH_ERROR_MESSAGE)
+            Err(err) => assert_eq!(&err.message.to_string(), message::core::SWITCH_ERROR_MESSAGE)
         }
 
     }

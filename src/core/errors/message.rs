@@ -6,8 +6,6 @@ pub mod cli {
     pub const GET_DOCKER_SERVICE_LIST: &str = "Unable to retrieve list of services in the docker-compose";
     pub const GET_CONFITURE: &str = "Unable to parse the confiture.json file as it's empty";
     pub const DELETE_PROJECT: &str = "Unable to delete project";
-    pub const UNKNOWN_SCENARIO: &str = "Command not found / supported";
-    pub const UNKNOWN_ACTION: &str = "Missing arguments for command";
     pub const GENERATE_ERROR: &str = "An error happened while writing the content to the targeted yaml files";
     pub const INGRESS_CONFIG: &str = "Ingress configuration not provided in confiture.json";
 }

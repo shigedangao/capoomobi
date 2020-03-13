@@ -4,7 +4,6 @@
 /// Module use to preparing the following phases for create K8S yaml files
 /// - creating folders
 use std::path::PathBuf;
-use std::error::Error;
 use async_std::{fs::DirBuilder, io, task};
 use futures::future::{Future, join_all};
 use super::{print_errors};
@@ -60,7 +59,7 @@ pub fn create(kubes: &[Kube]) -> Result<(), ()> {
             .filter(|v| v.is_err())
             .map(|v| {
                 let err = v.unwrap_err();
-                Err(CliErr::new(CREATE_KUBE_FOLDER, err.description(), ErrMessage::IOError))
+                Err(CliErr::new(CREATE_KUBE_FOLDER, &err.to_string(), ErrMessage::IOError))
             })
             .collect();
 

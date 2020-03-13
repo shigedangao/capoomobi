@@ -1,7 +1,7 @@
 pub mod message;
 
 /// CliErr module
-/// 
+///
 /// # Description
 /// Module use for handling custom error
 pub mod cli_error {
@@ -29,38 +29,38 @@ pub mod cli_error {
     }
 
     /// Err Helper
-    /// 
+    ///
     /// # Description
     /// Trait which implement a set of function for the error
     pub trait ErrHelper {
         /// New
-        /// 
+        ///
         /// # Description
         /// Return a new CLiErr struct
-        /// 
+        ///
         /// # Arguments
         /// * `message` slice of a static str
         /// * `reason` &str
         /// * `codename` ErrMessage enum value
-        /// 
+        ///
         /// # Return
         /// CliErr struct
         fn new(message: &str, reason: &str, codename: ErrMessage) -> Self;
         /// Log Pretty
-        /// 
+        ///
         /// # Description
         /// Log the error in a pretty way
-        fn log_pretty(&self); 
+        fn log_pretty(&self);
     }
-    
+
     /// CliErr
-    /// 
+    ///
     /// # Description
     /// structure use to handle information about the error
     pub struct CliErr {
-        message: String,
-        reason: String,
-        code_msg: String
+        pub message: String,
+        pub reason: String,
+        pub code_msg: String
     }
 
     impl ErrHelper for CliErr {
