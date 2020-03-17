@@ -1,4 +1,3 @@
-use std::error::Error;
 use crate::core::errors::cli_error::{CliErr, ErrMessage, ErrHelper};
 use crate::core::errors::message::cli::{DELETE_PROJECT};
 use crate::core::configurator::configure::{exist, CapooConfig};
@@ -10,12 +9,12 @@ use crate::core::serde_utils::{SerdeUtil};
 // Errors
 
 /// Project
-/// 
+///
 /// # Description
 /// Project allow you to see the current & switch the project to an other. This scenario allow you to change project below is an example
 /// capoomobi project current
 /// capoomobi project switch <project_name>
-/// 
+///
 /// # Arguments
 /// * `project_name` slice of a string
 pub fn launch(main_action: &str, options: &[String]) {
@@ -32,15 +31,15 @@ pub fn launch(main_action: &str, options: &[String]) {
             "list"    => list_project(conf),
             "delete"  => delete_project(conf, arg),
             _ => show_current_project(conf)
-        }   
+        }
     }
 }
 
 /// Show Current Project
-/// 
+///
 /// # Description
 /// Show the current setted project
-/// 
+///
 /// # Arguments
 /// * `configuration` CapooConfig struct
 fn show_current_project(configuration: CapooConfig) {
@@ -51,10 +50,10 @@ fn show_current_project(configuration: CapooConfig) {
 }
 
 /// List Project
-/// 
+///
 /// # Description
 /// list the known project
-/// 
+///
 /// # Arguments
 /// * `configuration` CapooConfig struct
 fn list_project(configuration: CapooConfig) {
@@ -69,14 +68,14 @@ fn list_project(configuration: CapooConfig) {
             }
         },
         Err(err) => err.log_pretty()
-    }  
+    }
 }
 
 /// Switch Project
-/// 
+///
 /// # Description
 /// Switch the project with the provided project name
-/// 
+///
 /// # Arguments
 /// * `conf` CapooConfig struct
 /// * `pname` name of the project
@@ -104,10 +103,10 @@ fn switch_project(conf: CapooConfig ,pname: String) {
 }
 
 /// Delete Project
-/// 
+///
 /// # Description
 /// Delete a project from the list of setted project
-/// 
+///
 /// # Arguments
 /// * `conf` CapooConfig
 /// * `pname` String
@@ -118,7 +117,7 @@ fn delete_project(conf: CapooConfig, pname: String) {
         return;
     }
 
-    let projects = projects_opt.unwrap();    
+    let projects = projects_opt.unwrap();
     let new_projects = projects.delete_project_by_name(&pname);
     if let Err(e) = new_projects {
         e.log_pretty();
@@ -134,6 +133,6 @@ fn delete_project(conf: CapooConfig, pname: String) {
 
     match toolbox::delete_folder_from_pathbuf(&projects.1) {
         Ok(_) => log(LogType::Success, "Project has been deleted name: ", Some(pname)),
-        Err(err) => CliErr::new(DELETE_PROJECT, err.description(), ErrMessage::IOError).log_pretty()
+        Err(err) => CliErr::new(DELETE_PROJECT, &err.to_string(), ErrMessage::IOError).log_pretty()
     }
 }

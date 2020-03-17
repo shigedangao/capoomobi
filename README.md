@@ -49,18 +49,18 @@ In order to generate a set of manifests you'll need to configure a small configu
     {
       "name": "<name of a docker-compose service>",
       "deployment": {
-        "replicas": <number>,
-        "controller": "either: Deployment|StatefulSet|DaemonSet"
+        "replicas": 3,
+        "controller": "Deployment"
       },
       "service": {
-        "kind": "either: NodePort (expose outside of the cluster) | ClusterIP (not expose outside of the cluster)",
-        "nodeport": <number (only use for nodeport)>
+        "kind": "NodePort",
+        "nodeport": 30301
       }
     }
   ],
   // optional
   "ingress": {
-    "ip": <ip given by a provider>
+    "ip": 127.0.0.1
     "services": [
       {
         "name": "name of the docker-compose service",

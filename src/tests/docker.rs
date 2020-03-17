@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod loader {
-    use std::error::Error;
     use crate::docker::loader;
 
     #[test]
@@ -15,14 +14,13 @@ mod loader {
     fn expect_to_not_load_dk() {
         match loader::load("./lol", "unexisted-docker-compose.yaml") {
             Ok(_) => panic!("Expect to not have found any file"),
-            Err(err) => assert_eq!(err.description(), "Unable to find the docker-compose.yaml file")
+            Err(err) => assert_eq!(&err.message.to_string(), "Unable to find the docker-compose.yaml file")
         };
     }
 }
 
 #[cfg(test)]
 mod parser {
-    use std::error::Error;
     use crate::docker::parser;
     use crate::docker::loader;
 
@@ -110,7 +108,7 @@ mod parser {
     fn expect_load_to_fail() {
         match loader::load("./example", "docker-unformatted.yaml") {
             Ok(_) => panic!("Expect to have return an error"),
-            Err(err) => assert_eq!(err.description(), "Unable to parse the docker-compose.yaml for reason: ")
+            Err(err) => assert_eq!(&err.message.to_string(), "Unable to parse the docker-compose.yaml for reason: ")
         }
     }
 }

@@ -3,7 +3,6 @@
 /// # Description
 /// Module use as an entrypoint to configure the capoomobi.json file
 use std::path::{PathBuf};
-use std::error::Error;
 use super::builder;
 use crate::core::fs::toolbox;
 use crate::core::serde_utils;
@@ -56,7 +55,7 @@ impl CapooConfig {
 
         if let Err(err) = content_res {
             return Err(
-                CliErr::new(FILE_NOT_PARSABLE_ERROR, err.description(), ErrMessage::ParsingError)
+                CliErr::new(FILE_NOT_PARSABLE_ERROR, &err.to_string(), ErrMessage::ParsingError)
             );
         }
 
@@ -65,7 +64,7 @@ impl CapooConfig {
             Ok(p) => p,
             Err(err) => {
                 return Err(
-                    CliErr::new(DECODE_ERROR, err.description(), ErrMessage::ParsingError)
+                    CliErr::new(DECODE_ERROR, &err.to_string(), ErrMessage::ParsingError)
                 )
             }
         };
@@ -88,7 +87,7 @@ impl CapooConfig {
         match toolbox::write_json_content(&self.path, json) {
             Ok(_) => Ok(()),
             Err(err) => Err(
-                CliErr::new(WRITE_JSON_ERROR, err.description(), ErrMessage::IOError)
+                CliErr::new(WRITE_JSON_ERROR, &err.to_string(), ErrMessage::IOError)
             )
         }
     }
@@ -108,7 +107,7 @@ pub fn create_config() -> Result<CapooConfig, CliErr> {
     match toolbox::create_file(&conf_file_path) {
         Ok(_) => Ok(CapooConfig::new(conf_file_path)),
         Err(err) => Err(
-            CliErr::new(CONFIG_GENERATE_ERROR, err.description(), ErrMessage::IOError)
+            CliErr::new(CONFIG_GENERATE_ERROR, &err.to_string(), ErrMessage::IOError)
         )
     }
 }

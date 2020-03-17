@@ -1,4 +1,4 @@
-FROM rust:1.40.0-alpine
+FROM rust:1.42-alpine
 
 RUN apk update
 

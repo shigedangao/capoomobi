@@ -3,7 +3,6 @@
 /// # Description
 /// The boostrap module is use for creating the project folder
 use std::path::PathBuf;
-use std::error::Error;
 use crate::core::fs::toolbox;
 use crate::core::errors::cli_error::{CliErr, ErrHelper, ErrMessage};
 
@@ -49,12 +48,12 @@ impl ConfigHelper {
     pub fn build_project_folder(&self) -> Result<PathBuf, CliErr> {
         let res = toolbox::create_folder_from_pathbuf(&self.path);
         if let Err(err) = res {
-            return Err(CliErr::new("", err.description(), ErrMessage::IOError));
+            return Err(CliErr::new("", &err.to_string(), ErrMessage::IOError));
         }
 
         match toolbox::get_absolute_path(&self.path) {
             Ok(p) => Ok(p),
-            Err(err) => Err(CliErr::new("", err.description(), ErrMessage::IOError))
+            Err(err) => Err(CliErr::new("", &err.to_string(), ErrMessage::IOError))
         }
     }
 

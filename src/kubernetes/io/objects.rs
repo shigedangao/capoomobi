@@ -1,4 +1,3 @@
-use std::error::Error;
 use std::path::PathBuf;
 use serde::{Serialize};
 use async_std::task::{spawn, block_on};
@@ -14,7 +13,7 @@ use crate::core::errors::message::io::{
 };
 
 /// Objcts
-/// 
+///
 /// # Description
 /// List of K8S Objects (exclude from controller & services)
 pub enum Objects {
@@ -22,16 +21,16 @@ pub enum Objects {
 }
 
 /// Create
-/// 
+///
 /// # Description
 /// Write an object T with the provided name and template
-/// 
+///
 /// # Arguments
 /// * `data` T where T = Serialize
 /// * `filename` String
 /// * `pp` PathBuf (project path)
 /// * `kind` Objects
-/// 
+///
 /// # Return
 /// Result<(), ()>
 pub fn create<T: Serialize>(data: T, filename: &'static str, kind: Objects) -> Result<(), ()> {
@@ -60,7 +59,7 @@ pub fn create<T: Serialize>(data: T, filename: &'static str, kind: Objects) -> R
         let io_res = fs::write(pp, rendered_tmpl).await;
         match io_res {
             Ok(()) => Ok(()),
-            Err(e) => Err(CliErr::new(CREATING_FILE, e.description(), ErrMessage::IOError))
+            Err(e) => Err(CliErr::new(CREATING_FILE, &e.to_string(), ErrMessage::IOError))
         }
     });
 
